@@ -2,16 +2,16 @@
 #define __TINVERTEX_H__
 
 #include "../Common.h"
-#include "../ITinVector.h"
+#include "../BaseStorage/ITinVector.h"
 
 class CTinHalfEdge;
 
-class CTinVertex : public ITinVertex
+class CTinMemVertex : public ITinVertex
 {
 public :
-	CTinVertex();
-	CTinVertex(double x, double y);
-	virtual ~CTinVertex();
+	CTinMemVertex();
+	CTinMemVertex(double x, double y);
+	virtual ~CTinMemVertex();
 
 	// X좌표
 	virtual double GetX();

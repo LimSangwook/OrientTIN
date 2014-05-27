@@ -1,5 +1,5 @@
 #include "TinFace.h"
-#include "TinHalfEdge.h"
+#include "TinMemHalfEdge.h"
 
 CTinFace::CTinFace() :
 m_HalfEdge(0), m_nNumVertexs(0)

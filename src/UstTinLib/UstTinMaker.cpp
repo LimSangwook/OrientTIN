@@ -21,13 +21,13 @@ int CTinDataManager::GetCountOfVertexs()
 
 ITinVertex* CTinDataManager::CreateVertex()
 {
- CTinVertex* pVertex = new CTinVertex;
+ CTinMemVertex* pVertex = new CTinMemVertex;
   m_VertexList.push_back(pVertex);
  return pVertex;
 }
 ITinHalfEdge* CTinDataManager::CreateEdge()
 {
- CTinHalfEdge* pEdge = new CTinHalfEdge();
+ CTinMemHalfEdge* pEdge = new CTinMemHalfEdge();
 
 
 

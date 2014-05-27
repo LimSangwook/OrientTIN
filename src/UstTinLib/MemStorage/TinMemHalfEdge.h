@@ -1,16 +1,16 @@
 #ifndef __TIN_HALFEDGE_H__
 #define __TIN_HALFEDGE_H__
 
-#include "TinVertex.h"
+#include "TinMemVertex.h"
 #include "TinFace.h"
 #include "../Common.h"
-#include "../ITinHalfEdge.h"
+#include "../BaseStorage/ITinHalfEdge.h"
 
-class CTinHalfEdge : public ITinHalfEdge
+class CTinMemHalfEdge : public ITinHalfEdge
 {
 public:
-	CTinHalfEdge();
-	virtual ~CTinHalfEdge();
+	CTinMemHalfEdge();
+	virtual ~CTinMemHalfEdge();
 
 	virtual ITinVertex* GetVertex();
 	virtual void SetVertex(ITinVertex* pVertex);

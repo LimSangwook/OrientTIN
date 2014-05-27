@@ -3,9 +3,9 @@
 
 #include <vector>
 #include <set>
-#include "DataStructure/TinVertex.h"
-#include "DataStructure/TinHalfEdge.h"
-#include "DataStructure/TinDelaunay.h"
+#include "MemStorage/TinMemVertex.h"
+#include "MemStorage/TinMemHalfEdge.h"
+#include "BaseStorage/TinDelaunay.h"
 
 class CTinDataManager
 {
