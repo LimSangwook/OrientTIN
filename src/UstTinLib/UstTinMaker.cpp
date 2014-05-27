@@ -9,7 +9,7 @@ CTinDataManager::CTinDataManager()
 CTinDataManager::~CTinDataManager()
 {
 }
-CTinVertex* CTinDataManager::GetVertex(int idx)
+ITinVertex* CTinDataManager::GetVertex(int idx)
 {
  return m_VertexList.at(idx);
 }
@@ -19,20 +19,23 @@ int CTinDataManager::GetCountOfVertexs()
  return m_VertexList.size();
 }
 
-CTinVertex* CTinDataManager::CreateVertex()
+ITinVertex* CTinDataManager::CreateVertex()
 {
  CTinVertex* pVertex = new CTinVertex;
- pVertex->idx = m_VertexList.size();
- m_VertexList.push_back(pVertex);
+  m_VertexList.push_back(pVertex);
  return pVertex;
 }
-CTinHalfEdge* CTinDataManager::CreateEdge()
+ITinHalfEdge* CTinDataManager::CreateEdge()
 {
- CTinHalfEdge* pEdge = new CTinHalfEdge;
+ CTinHalfEdge* pEdge = new CTinHalfEdge();
+
+
+
+
  m_HalfEdgeList.insert(pEdge);
  return pEdge;
 }
-void PutVertexPoint(CTinVertex* pVertex)
+void PutVertexPoint(ITinVertex* pVertex)
 {
  std::cout << "(" << pVertex->GetX() << " , " <<pVertex->GetY() << ")";
 }
@@ -70,7 +73,7 @@ void CTinDataManager::SetRamdomVertexs(int DATA_NUM)
   for(int j = 0 ; j < sq * 10 + 1 ; j += 10){
    double  x = (double)i;
    double y = (double)j;
-   CTinVertex* pVertex = CreateVertex();
+   ITinVertex* pVertex = CreateVertex();
    pVertex->SetX(x);
    pVertex->SetY(y);
    idx++;
@@ -87,39 +90,39 @@ void CTinDataManager::MakeDelaunayEdge()
 }
 void CTinDataManager::MakeDelaunayFace()
 {
- int  i;
- CTinHalfEdge *curr;
- m_delaunay.SetNumberOfFaces(0);
- m_delaunay.GetFaces().clear();
- /* build external face first */
- _Build_Halfedge_Face(&m_delaunay, m_delaunay.GetRightMostEdge()->GetPairEdge());
- for( i = m_delaunay.GetStartPointIdx(); i <= m_delaunay.GetEndPointIdx(); i++ )
- {
-  curr = m_VertexList.at(i)->GetHalfEdge();
-  do {
-   _Build_Halfedge_Face(& m_delaunay, curr );
-   curr = curr->GetCCWEdge();
-  } while( curr != m_VertexList.at(i)->GetHalfEdge() );
- }
+// int  i;
+// ITinHalfEdge *curr;
+// m_delaunay.SetNumberOfFaces(0);
+// m_delaunay.GetFaces().clear();
+// /* build external face first */
+// _Build_Halfedge_Face(&m_delaunay, m_delaunay.GetRightMostEdge()->GetPairEdge());
+// for( i = m_delaunay.GetStartPointIdx(); i <= m_delaunay.GetEndPointIdx(); i++ )
+// {
+//  curr = m_VertexList.at(i)->GetHalfEdge();
+//  do {
+//   _Build_Halfedge_Face(& m_delaunay, curr );
+//   curr = curr->GetCCWEdge();
+//  } while( curr != m_VertexList.at(i)->GetHalfEdge() );
+// }
 }
-void CTinDataManager::_Build_Halfedge_Face( CTinDelaunay *del, CTinHalfEdge *d )
-{
- CTinHalfEdge *curr;
- /* test if the halfedge has already a pointing face */
- if( d->GetFace() != NULL )
-  return;
- CTinFace* f = new CTinFace();
- del->GetFaces().push_back(f);
- curr = d;
- f->SetHalfEdge(d);
- f->SetNumberOfVertexs(0);
- do {
-  curr->SetFace(f);
-  f->SetNumberOfVertexs(f->GetNumberOfVertexs() + 1);
-  curr = curr->GetPairEdge()->GetCWEdge();
- } while( curr != d );
- del->SetNumberOfFaces(del->GetNumberOfFaces() + 1);
-}
+//void CTinDataManager::_Build_Halfedge_Face( CTinDelaunay *del, ITinHalfEdge *d )
+//{
+// ITinHalfEdge *curr;
+// /* test if the halfedge has already a pointing face */
+// if( d->GetFace() != NULL )
+//  return;
+// CTinFace* f = new CTinFace();
+// del->GetFaces().push_back(f);
+// curr = d;
+// f->SetHalfEdge(d);
+// f->SetNumberOfVertexs(0);
+// do {
+//  curr->SetFace(f);
+//  f->SetNumberOfVertexs(f->GetNumberOfVertexs() + 1);
+//  curr = curr->GetPairEdge()->GetCWEdge();
+// } while( curr != d );
+// del->SetNumberOfFaces(del->GetNumberOfFaces() + 1);
+//}
 void CTinDataManager::_DivideAndConquer(CTinDelaunay& delaunay)
 {
  CTinDelaunay left, right;
@@ -146,8 +149,8 @@ void CTinDataManager::_DivideAndConquer(CTinDelaunay& delaunay)
 }
 void CTinDataManager::_Del_Link( CTinDelaunay& result, CTinDelaunay& left, CTinDelaunay& right )
 {
- CTinVertex  *u, *v, *ml, *mr;
- CTinHalfEdge  *b;
+ ITinVertex  *u, *v, *ml, *mr;
+ ITinHalfEdge  *b;
  /* save the most right point and the most left point */
  ml  = left.GetLeftMostEdge()->GetVertex();
  mr  = right.GetRightMostEdge()->GetVertex();
@@ -173,10 +176,10 @@ void CTinDataManager::_Del_Link( CTinDelaunay& result, CTinDelaunay& left, CTinD
  result.SetStartPointIdx(left.GetStartPointIdx());
  result.SetEndPointIdx(right.GetEndPointIdx());
 }
-CTinHalfEdge* CTinDataManager::_Del_Valid_Link( CTinHalfEdge *b )
+ITinHalfEdge* CTinDataManager::_Del_Valid_Link( ITinHalfEdge *b )
 {
- CTinVertex *g, *g_p, *d, *d_p;
- CTinHalfEdge *gd, *dd, *new_gd, *new_dd;
+ ITinVertex *g, *g_p, *d, *d_p;
+ ITinHalfEdge *gd, *dd, *new_gd, *new_dd;
  int  a;
  g = b->GetVertex();
  gd = _Del_Valid_Left(b);
@@ -238,10 +241,10 @@ CTinHalfEdge* CTinDataManager::_Del_Valid_Link( CTinHalfEdge *b )
  dd->SetCWEdge(new_dd);
  return new_gd;
 }
-CTinHalfEdge* CTinDataManager::_Del_Valid_Right( CTinHalfEdge *b )
+ITinHalfEdge* CTinDataManager::_Del_Valid_Right( ITinHalfEdge *b )
 {
- CTinVertex  *g, *d, *u, *v;
- CTinHalfEdge  *c, *dd, *du;
+ ITinVertex  *g, *d, *u, *v;
+ ITinHalfEdge  *c, *dd, *du;
  b = b->GetPairEdge();
  d = b->GetVertex();
  dd = b;
@@ -265,10 +268,10 @@ CTinHalfEdge* CTinDataManager::_Del_Valid_Right( CTinHalfEdge *b )
   du = dd;
  return du;
 }
-CTinHalfEdge* CTinDataManager::_Del_Valid_Left( CTinHalfEdge* b )
+ITinHalfEdge* CTinDataManager::_Del_Valid_Left( ITinHalfEdge* b )
 {
- CTinVertex  *g, *d, *u, *v;
- CTinHalfEdge  *c, *du, *dg;
+ ITinVertex  *g, *d, *u, *v;
+ ITinHalfEdge  *c, *du, *dg;
  g = b->GetVertex();    /* base halfedge point */
  dg = b;
  d = b->GetPairEdge()->GetVertex();   /* alpha(halfedge) point */
@@ -293,16 +296,16 @@ CTinHalfEdge* CTinDataManager::_Del_Valid_Left( CTinHalfEdge* b )
   du  = dg;
  return du;
 }
-void CTinDataManager::_Del_Remove_Halfedge( CTinHalfEdge *d )
+void CTinDataManager::_Del_Remove_Halfedge( ITinHalfEdge *d )
 {
- CTinHalfEdge *alpha;
+ ITinHalfEdge *alpha;
  alpha = d->GetPairEdge();
  _Del_Remove_Single_Halfedge(d);
  _Del_Remove_Single_Halfedge(alpha);
 }
-void CTinDataManager::_Del_Remove_Single_Halfedge( CTinHalfEdge *d )
+void CTinDataManager::_Del_Remove_Single_Halfedge( ITinHalfEdge *d )
 {
- CTinHalfEdge *sigma, *amgis, *alpha;
+ ITinHalfEdge *sigma, *amgis, *alpha;
  sigma = d->GetCCWEdge();
  amgis = d->GetCWEdge();
  alpha = d->GetPairEdge();
@@ -322,25 +325,25 @@ void CTinDataManager::_Del_Remove_Single_Halfedge( CTinHalfEdge *d )
  /* finally free the halfedge */
  _Halfedge_Free(d);
 }
-void CTinDataManager::_Halfedge_Free( CTinHalfEdge* d )
+void CTinDataManager::_Halfedge_Free( ITinHalfEdge* d )
 {
  assert( d != NULL );
  delete(d);
 }
-#define CCW(A,B,C) ((B.GetX()-A.GetX())*(C.GetY()-A.GetY())-(B.GetY()-A.GetY())*(C.GetX()-A.GetX()))
-CTinDataManager::IN_OUT_CIRCLE CTinDataManager::_In_Circle( CTinVertex *pt0, CTinVertex *pt1, CTinVertex *pt2, CTinVertex *p )
+#define CCW(A,B,C) ((B->GetX()-A->GetX())*(C->GetY()-A->GetY())-(B->GetY()-A->GetY())*(C->GetX()-A->GetX()))
+CTinDataManager::IN_OUT_CIRCLE CTinDataManager::_In_Circle( ITinVertex *pt0, ITinVertex *pt1, ITinVertex *pt2, ITinVertex *p )
 {
- CTinVertex A = *pt0;
- CTinVertex B = *pt1;
- CTinVertex C = *pt2;
- CTinVertex D = *p;
+ ITinVertex* A = pt0;
+ ITinVertex* B = pt1;
+ ITinVertex* C = pt2;
+ ITinVertex* D = p;
  double ccw = CCW(A, B, C);
- double adx = A.GetX() - D.GetX();
- double ady = A.GetY() - D.GetY();
- double bdx = B.GetX() - D.GetX();
- double bdy = B.GetY() - D.GetY();
- double cdx = C.GetX() - D.GetX();
- double cdy = C.GetY() - D.GetY();
+ double adx = A->GetX() - D->GetX();
+ double ady = A->GetY() - D->GetY();
+ double bdx = B->GetX() - D->GetX();
+ double bdy = B->GetY() - D->GetY();
+ double cdx = C->GetX() - D->GetX();
+ double cdy = C->GetY() - D->GetY();
  double bdxcdy = bdx * cdy;
  double cdxbdy = cdx * bdy;
  double alift = adx * adx + ady * ady;
@@ -366,10 +369,10 @@ CTinDataManager::IN_OUT_CIRCLE CTinDataManager::_In_Circle( CTinVertex *pt0, CTi
    return IN_SIDE;
  }
 }
-CTinHalfEdge* CTinDataManager::_Del_Get_Lower_Supportant( CTinDelaunay& left, CTinDelaunay& right )
+ITinHalfEdge* CTinDataManager::_Del_Get_Lower_Supportant( CTinDelaunay& left, CTinDelaunay& right )
 {
- CTinVertex *pl, *pr;
- CTinHalfEdge *right_d, *left_d, *new_ld, *new_rd;
+ ITinVertex *pl, *pr;
+ ITinHalfEdge *right_d, *left_d, *new_ld, *new_rd;
  int  sl, sr;
  left_d = left.GetRightMostEdge();
  right_d = right.GetLeftMostEdge();
@@ -403,17 +406,17 @@ CTinHalfEdge* CTinDataManager::_Del_Get_Lower_Supportant( CTinDelaunay& left, CT
  right_d->SetCWEdge(new_rd);
  return new_ld;
 }
-CTinDataManager::LEFT_RIGHT CTinDataManager::_Del_Classify_Point( CTinHalfEdge *d, CTinVertex *pt )
+CTinDataManager::LEFT_RIGHT CTinDataManager::_Del_Classify_Point( ITinHalfEdge *d, ITinVertex *pt )
 {
- CTinVertex  *s, *e;
+ ITinVertex  *s, *e;
  s  = d->GetVertex();
  e  = d->GetPairEdge()->GetVertex();
  return _Classify_Point_Seg(s, e, pt);
 }
 void CTinDataManager::_Del_Init_Seg(CTinDelaunay& del)
 {
- CTinHalfEdge *d0, *d1;
- CTinVertex  *pt0, *pt1;
+ ITinHalfEdge *d0, *d1;
+ ITinVertex  *pt0, *pt1;
  int start =  del.GetStartPointIdx();
  /* setup pt0 and pt1 */
  pt0   = GetVertex(start);
@@ -437,8 +440,8 @@ void CTinDataManager::_Del_Init_Seg(CTinDelaunay& del)
 void CTinDataManager::_Del_Init_Tri( CTinDelaunay& del)
 {
  int start = del.GetStartPointIdx();
- CTinHalfEdge *d0, *d1, *d2, *d3, *d4, *d5;
- CTinVertex  *pt0, *pt1, *pt2;
+ ITinHalfEdge *d0, *d1, *d2, *d3, *d4, *d5;
+ ITinVertex  *pt0, *pt1, *pt2;
  /* setup the points */
  pt0     = GetVertex(start);
  pt1     = GetVertex(start + 1);
@@ -515,15 +518,15 @@ void CTinDataManager::_Del_Init_Tri( CTinDelaunay& del)
   del.SetLeftMostEdge(d0);
  }
 }
-CTinDataManager::LEFT_RIGHT CTinDataManager::_Classify_Point_Seg( CTinVertex *s, CTinVertex *e, CTinVertex *pt )
+CTinDataManager::LEFT_RIGHT CTinDataManager::_Classify_Point_Seg( ITinVertex *s, ITinVertex *e, ITinVertex *pt )
 {
- CTinVertex  se, spt;
  double  res;
- se.SetX(e->GetX() - s->GetX());
- se.SetY(e->GetY() - s->GetY());
- spt.SetX(pt->GetX() - s->GetX());
- spt.SetY(pt->GetY() - s->GetY());
- res = (( se.GetX() * spt.GetY() ) - ( se.GetY() * spt.GetX() ));
+ double se_x, se_y, spt_x, spt_y;
+ se_x = (e->GetX() - s->GetX());
+ se_y = (e->GetY() - s->GetY());
+ spt_x = (pt->GetX() - s->GetX());
+ spt_y = (pt->GetY() - s->GetY());
+ res = (( se_x * spt_y ) - ( se_y * spt_x ));
  if( res < 0.0f )
   return ONRIGHT;
  else if( res > 0.0f )

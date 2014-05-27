@@ -4,33 +4,34 @@
 #include "TinVertex.h"
 #include "TinFace.h"
 #include "../Common.h"
+#include "../ITinHalfEdge.h"
 
-class CTinHalfEdge
+class CTinHalfEdge : public ITinHalfEdge
 {
 public:
 	CTinHalfEdge();
-	~CTinHalfEdge();
+	virtual ~CTinHalfEdge();
 
-	CTinVertex* GetVertex();
-	void SetVertex(CTinVertex* pVertex);
+	virtual ITinVertex* GetVertex();
+	virtual void SetVertex(ITinVertex* pVertex);
 
-	CTinHalfEdge* GetPairEdge();
-	void SetPairEdge(CTinHalfEdge* pEdge);
+	virtual ITinHalfEdge* GetPairEdge();
+	virtual void SetPairEdge(ITinHalfEdge* pEdge);
 
-	CTinHalfEdge* GetCCWEdge();
-	void SetCCWEdge(CTinHalfEdge* pEdge);
+	virtual ITinHalfEdge* GetCCWEdge();
+	virtual void SetCCWEdge(ITinHalfEdge* pEdge);
 
-	CTinHalfEdge* GetCWEdge();
-	void SetCWEdge(CTinHalfEdge* pEdge);
+	virtual ITinHalfEdge* GetCWEdge();
+	virtual void SetCWEdge(ITinHalfEdge* pEdge);
 
 	CTinFace* GetFace();
 	void SetFace(CTinFace* pFace);
 private:
 	RID m_RID;
-	CTinVertex*		m_pVertex;
-	CTinHalfEdge*		m_pPair;
-	CTinHalfEdge*		m_pCCW;
-	CTinHalfEdge*		m_pCW;
+	ITinVertex*		m_pVertex;
+	ITinHalfEdge*		m_pPair;
+	ITinHalfEdge*		m_pCCW;
+	ITinHalfEdge*		m_pCW;
 	CTinFace*			m_pFace;
 };
 

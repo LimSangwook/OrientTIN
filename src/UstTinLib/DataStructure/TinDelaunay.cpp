@@ -9,12 +9,12 @@ CTinDelaunay::~CTinDelaunay()
 {
 }
 
-void CTinDelaunay::SetRightMostEdge(CTinHalfEdge* pEdge)
+void CTinDelaunay::SetRightMostEdge(ITinHalfEdge* pEdge)
 {
 	m_pRightMost_Edge = pEdge;
 }
 
-void CTinDelaunay::SetLeftMostEdge(CTinHalfEdge* pEdge)
+void CTinDelaunay::SetLeftMostEdge(ITinHalfEdge* pEdge)
 {
 	m_pLeftMost_Edge = pEdge;
 }
@@ -39,12 +39,12 @@ void CTinDelaunay::SetEndPointIdx(int idx)
 	m_EndPointIdx = idx;
 }
 
-CTinHalfEdge* CTinDelaunay::GetRightMostEdge()
+ITinHalfEdge* CTinDelaunay::GetRightMostEdge()
 {
 	return m_pRightMost_Edge;
 }
 
-CTinHalfEdge* CTinDelaunay::GetLeftMostEdge()
+ITinHalfEdge* CTinDelaunay::GetLeftMostEdge()
 {
 	return m_pLeftMost_Edge;
 }

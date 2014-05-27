@@ -25,7 +25,7 @@ double CTinVertex::GetY()
 	return m_Y;
 }
 
-CTinHalfEdge* CTinVertex::GetHalfEdge()
+ITinHalfEdge* CTinVertex::GetHalfEdge()
 {
 	return m_pHalfEdge;
 }
@@ -40,7 +40,7 @@ void CTinVertex::SetY(double y)
 	m_Y = y;
 }
 
-void CTinVertex::SetHalfEdge(CTinHalfEdge* pHalfEdge)
+void CTinVertex::SetHalfEdge(ITinHalfEdge* pHalfEdge)
 {
 	m_pHalfEdge = pHalfEdge;
 }

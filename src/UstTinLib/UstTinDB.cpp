@@ -166,7 +166,7 @@ CUstTinDB::ErrCode CUstTinDB::MakeTin()
 	clock_t StartClock, LoadingClock, TinClock;
 	StartClock = clock();
 
-	tinDataMaanger.SetRamdomVertexs(1000000);
+	tinDataMaanger.SetRamdomVertexs(100000);
 	LoadingClock = clock();
 
 	tinDataMaanger.PrintVertexList();

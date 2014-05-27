@@ -10,42 +10,42 @@ CTinHalfEdge::~CTinHalfEdge()
 {
 }
 
-CTinVertex* CTinHalfEdge::GetVertex()
+ITinVertex* CTinHalfEdge::GetVertex()
 {
 	return m_pVertex;
 }
 
-CTinHalfEdge* CTinHalfEdge::GetPairEdge()
+ITinHalfEdge* CTinHalfEdge::GetPairEdge()
 {
 	return m_pPair;
 }
 
-CTinHalfEdge* CTinHalfEdge::GetCCWEdge()
+ITinHalfEdge* CTinHalfEdge::GetCCWEdge()
 {
 	return m_pCCW;
 }
 
-CTinHalfEdge* CTinHalfEdge::GetCWEdge()
+ITinHalfEdge* CTinHalfEdge::GetCWEdge()
 {
 	return m_pCW;
 }
 
-void CTinHalfEdge::SetVertex(CTinVertex* pVertex)
+void CTinHalfEdge::SetVertex(ITinVertex* pVertex)
 {
 	m_pVertex = pVertex;
 }
 
-void CTinHalfEdge::SetPairEdge(CTinHalfEdge* pEdge)
+void CTinHalfEdge::SetPairEdge(ITinHalfEdge* pEdge)
 {
 	m_pPair = pEdge;
 }
 
-void CTinHalfEdge::SetCCWEdge(CTinHalfEdge* pEdge)
+void CTinHalfEdge::SetCCWEdge(ITinHalfEdge* pEdge)
 {
 	m_pCCW = pEdge;
 }
 
-void CTinHalfEdge::SetCWEdge(CTinHalfEdge* pEdge)
+void CTinHalfEdge::SetCWEdge(ITinHalfEdge* pEdge)
 {
 	m_pCW = pEdge;
 }

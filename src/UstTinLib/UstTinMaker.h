@@ -9,8 +9,8 @@
 
 class CTinDataManager
 {
-typedef std::vector<CTinVertex*> VertexList;
-typedef std::set<CTinHalfEdge*> HalfEdgeList;
+typedef std::vector<ITinVertex*> VertexList;
+typedef std::set<ITinHalfEdge*> HalfEdgeList;
 typedef std::set<CTinDelaunay*> DelaunayList;
 
 
@@ -30,10 +30,10 @@ enum IN_OUT_CIRCLE{
 	CTinDataManager();
 	~CTinDataManager();
 
-	CTinVertex* GetVertex(int idx);
+	ITinVertex* GetVertex(int idx);
 
-	CTinVertex* CreateVertex();
-	CTinHalfEdge* CreateEdge();
+	ITinVertex* CreateVertex();
+	ITinHalfEdge* CreateEdge();
 	//CTinDelaunay* CreateDelaunay();
 
 	int GetCountOfVertexs();
@@ -47,22 +47,22 @@ enum IN_OUT_CIRCLE{
 	void PrintFaceList();
 
 private:
-	//알고리즘부분
+	// D&C Tin 알고리즘부분
 	void _DivideAndConquer(CTinDelaunay& delaunay);
 	void _Del_Link( CTinDelaunay& result, CTinDelaunay& left, CTinDelaunay& right );
 	void _Del_Init_Seg( CTinDelaunay& del);
 	void _Del_Init_Tri( CTinDelaunay& del);
-	LEFT_RIGHT  _Classify_Point_Seg( CTinVertex *s, CTinVertex *e, CTinVertex *pt );
-	LEFT_RIGHT  _Del_Classify_Point( CTinHalfEdge *d, CTinVertex *pt );
-	IN_OUT_CIRCLE _In_Circle( CTinVertex *pt0, CTinVertex *pt1, CTinVertex *pt2, CTinVertex *p );
-	CTinHalfEdge* _Del_Get_Lower_Supportant( CTinDelaunay& left, CTinDelaunay& right );
-	CTinHalfEdge* _Del_Valid_Link( CTinHalfEdge *b );
-	CTinHalfEdge* _Del_Valid_Left( CTinHalfEdge* b );
-	CTinHalfEdge* _Del_Valid_Right( CTinHalfEdge *b );
-	void _Del_Remove_Halfedge( CTinHalfEdge *d );
-	void _Del_Remove_Single_Halfedge( CTinHalfEdge *d );
-	void _Halfedge_Free( CTinHalfEdge* d );
-	void _Build_Halfedge_Face( CTinDelaunay *del, CTinHalfEdge *d );
+	LEFT_RIGHT  _Classify_Point_Seg( ITinVertex *s, ITinVertex *e, ITinVertex *pt );
+	LEFT_RIGHT  _Del_Classify_Point( ITinHalfEdge *d, ITinVertex *pt );
+	IN_OUT_CIRCLE _In_Circle( ITinVertex *pt0, ITinVertex *pt1, ITinVertex *pt2, ITinVertex *p );
+	ITinHalfEdge* _Del_Get_Lower_Supportant( CTinDelaunay& left, CTinDelaunay& right );
+	ITinHalfEdge* _Del_Valid_Link( ITinHalfEdge *b );
+	ITinHalfEdge* _Del_Valid_Left( ITinHalfEdge* b );
+	ITinHalfEdge* _Del_Valid_Right( ITinHalfEdge *b );
+	void _Del_Remove_Halfedge( ITinHalfEdge *d );
+	void _Del_Remove_Single_Halfedge( ITinHalfEdge *d );
+	void _Halfedge_Free( ITinHalfEdge* d );
+	void _Build_Halfedge_Face( CTinDelaunay *del, ITinHalfEdge *d );
 
 private:
 	VertexList 	m_VertexList;

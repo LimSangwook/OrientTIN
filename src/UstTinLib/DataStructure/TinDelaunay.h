@@ -2,7 +2,7 @@
 #define __TIN_DELAUNAY_H__
 #include <vector>
 
-class CTinHalfEdge;
+class ITinHalfEdge;
 class CTinFace;
 class CTinDelaunay
 {
@@ -12,11 +12,11 @@ public:
 	CTinDelaunay();
 	~CTinDelaunay();
 
-	CTinHalfEdge* GetRightMostEdge();
-	CTinHalfEdge* GetLeftMostEdge();
+	ITinHalfEdge* GetRightMostEdge();
+	ITinHalfEdge* GetLeftMostEdge();
 
-	void SetRightMostEdge(CTinHalfEdge* pEdge);
-	void SetLeftMostEdge(CTinHalfEdge* pEdge);
+	void SetRightMostEdge(ITinHalfEdge* pEdge);
+	void SetLeftMostEdge(ITinHalfEdge* pEdge);
 
 	int GetStartPointIdx();
 	void SetStartPointIdx(int idx);
@@ -33,8 +33,8 @@ public:
 
 private:
 
-	CTinHalfEdge*		m_pRightMost_Edge;
-	CTinHalfEdge*		m_pLeftMost_Edge;
+	ITinHalfEdge*		m_pRightMost_Edge;
+	ITinHalfEdge*		m_pLeftMost_Edge;
 
 	int					m_nNumFaces;
 	FaceList			m_FaceList;
