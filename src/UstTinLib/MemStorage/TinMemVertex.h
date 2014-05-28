@@ -25,6 +25,7 @@ public :
 	virtual ITinHalfEdge* GetHalfEdge();
 	virtual void SetHalfEdge(ITinHalfEdge* pHalfEdge);
 	int idx;
+
 private:
 	double m_X;
 	double m_Y;

@@ -7,7 +7,7 @@
 class CTinOrientDBHalfEdge : public ITinHalfEdge
 {
 public:
-	CTinOrientDBHalfEdge();
+	CTinOrientDBHalfEdge(RID strRID);
 	virtual ~CTinOrientDBHalfEdge();
 
 	virtual ITinVertex* GetVertex();
@@ -21,7 +21,15 @@ public:
 
 	virtual ITinHalfEdge* GetCWEdge();
 	virtual void SetCWEdge(ITinHalfEdge* pEdge);
-	RID GetRID(){return m_RID;};
+
+
+	RID GetRID()			{return m_RID;};
+	RID GetRIDVertex()	{return m_RIDVertex;};
+	RID GetRIDPair()		{return m_RIDPair;};
+	RID GetRIDCCW()		{return m_RIDCCW;};
+	RID GetRIDCW()		{return m_RIDCW;};
+
+
 private:
 	RID		m_RID;
 	RID		m_RIDVertex;

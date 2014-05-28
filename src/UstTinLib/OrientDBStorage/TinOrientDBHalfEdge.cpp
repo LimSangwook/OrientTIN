@@ -8,8 +8,13 @@ CTinOrientDBStorage* GetDB() {
 	return CTinOrientDBStorage::GetInstance();
 }
 
-CTinOrientDBHalfEdge::CTinOrientDBHalfEdge() : m_Modify(false)
+CTinOrientDBHalfEdge::CTinOrientDBHalfEdge(RID strRID) : m_Modify(false)
 {
+	m_RID = strRID;
+	m_RIDVertex = "0";
+	m_RIDPair = "0";
+	m_RIDCCW = "0";
+	m_RIDCW = "0";
 }
 
 CTinOrientDBHalfEdge::~CTinOrientDBHalfEdge()

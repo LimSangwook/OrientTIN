@@ -7,6 +7,7 @@
 #include "TinOrientDBVertex.h"
 #include "TinOrientDBHalfEdge.h"
 
+class CTinOrientDBHalfEdge;
 class CTinOrientDBStorage : ITinStorageManager
 {
 public:
@@ -42,7 +43,7 @@ public:
 
 	ITinHalfEdge* GetHalfEdge(RID EdgeRID);
 	void UpdateVertex(CTinOrientDBVertex* pVertex);
-	void UpdateHalfEdge(ITinHalfEdge* pEdge);
+	void UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
 
 	bool SetCleanNRamdomVertexs(int DataNum);
 	bool _CreateBlankClass();
