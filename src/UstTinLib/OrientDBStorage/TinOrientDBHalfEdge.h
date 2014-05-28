@@ -1,16 +1,14 @@
 #ifndef __TIN_HALFEDGE_H__
 #define __TIN_HALFEDGE_H__
 
-#include "TinMemVertex.h"
-#include "TinFace.h"
 #include "../Common.h"
 #include "../BaseStorage/ITinHalfEdge.h"
 
-class CTinMemHalfEdge : public ITinHalfEdge
+class CTinOrientDBHalfEdge : public ITinHalfEdge
 {
 public:
-	CTinMemHalfEdge();
-	virtual ~CTinMemHalfEdge();
+	CTinOrientDBHalfEdge();
+	virtual ~CTinOrientDBHalfEdge();
 
 	virtual ITinVertex* GetVertex();
 	virtual void SetVertex(ITinVertex* pVertex);
@@ -23,15 +21,14 @@ public:
 
 	virtual ITinHalfEdge* GetCWEdge();
 	virtual void SetCWEdge(ITinHalfEdge* pEdge);
-
-	CTinFace* GetFace();
-	void SetFace(CTinFace* pFace);
+	RID GetRID(){return m_RID;};
 private:
-	ITinVertex*		m_pVertex;
-	ITinHalfEdge*		m_pPair;
-	ITinHalfEdge*		m_pCCW;
-	ITinHalfEdge*		m_pCW;
-	CTinFace*			m_pFace;
+	RID		m_RID;
+	RID		m_RIDVertex;
+	RID		m_RIDPair;
+	RID		m_RIDCCW;
+	RID		m_RIDCW;
+	bool	m_Modify;
 };
 
 #endif //__TIN_HALFEDGE_H__

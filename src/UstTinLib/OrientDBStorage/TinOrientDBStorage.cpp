@@ -1,18 +1,27 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
 #include "TinOrientDBStorage.h"
+#include "TinOrientDBVertex.h"
 
 void orient_debug(const char *msg) {
 	fprintf(stderr, "program: %s", msg);
 }
-
+CTinOrientDBStorage* CTinOrientDBStorage::instance = NULL;
 CTinOrientDBStorage::CTinOrientDBStorage() :
 		m_DBPort("2424"), m_OrientDB(NULL), m_OrientCon(NULL)
 {
+	CTinOrientDBStorage::instance = this;
 }
 
 CTinOrientDBStorage::~CTinOrientDBStorage()
 {
 	if (m_OrientDB && m_OrientCon) {
+		struct timeval tv;
+		tv.tv_sec = 15;
+		tv.tv_usec = 0;
+		o_bin_dbclose(m_OrientDB, m_OrientCon, &tv, 0);
 		o_close(m_OrientDB, m_OrientCon);
 		m_OrientCon = NULL;
 	}
@@ -20,6 +29,16 @@ CTinOrientDBStorage::~CTinOrientDBStorage()
 		o_free(m_OrientDB);
 		m_OrientDB = NULL;
 	}
+}
+
+void CTinOrientDBStorage::UpdateVertex(CTinOrientDBVertex* pVertex)
+{
+
+}
+
+void CTinOrientDBStorage::UpdateHalfEdge(ITinHalfEdge* pEdge)
+{
+
 }
 
 CTinOrientDBStorage::ErrCode CTinOrientDBStorage::InitDB(
@@ -47,6 +66,10 @@ CTinOrientDBStorage::ErrCode CTinOrientDBStorage::InitDB(
 		return ERR_VERTEX_CLASS_NOT_FOUND;
 	}
 
+	_CreateEdgeClass();
+
+	_CreateBlankClass();
+
 	return RET_OK;
 }
 
@@ -58,7 +81,7 @@ bool CTinOrientDBStorage::_ConnectDBServer()
 
 	m_OrientDB = o_new();
 
-	o_debug_setlevel(m_OrientDB, ORIENT_DEBUG);
+	o_debug_setlevel(m_OrientDB, ORIENT_SILENT);
 	o_debug_sethook(m_OrientDB, (void*)&orient_debug);
 
 	rc = o_prepare_connection(m_OrientDB, ORIENT_PROTO_BINARY, m_Url.c_str(), m_DBPort.c_str());
@@ -136,15 +159,8 @@ bool CTinOrientDBStorage::_CheckVertexClass()
 	tv.tv_sec = 5;
 	tv.tv_usec = 0;
 
-	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, "SELECT FROM E", 20, "*:-1");
+	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, "SELECT FROM V", 20, "*:-1");
 	if (!odoc) {
-		return false;
-	}
-
-	fprintf(stdout, "COMMAND: got a document: %s\n", odoc_getraw(odoc, NULL));
-	if (odoc_getnumrecords(odoc) == 0)	{
-		// Vertex가 하나도 없음으로 Error
-		ODOC_FREE_DOCUMENT(odoc);
 		return false;
 	}
 
@@ -154,3 +170,198 @@ bool CTinOrientDBStorage::_CheckVertexClass()
 	return true;
 }
 
+bool CTinOrientDBStorage::_CreateEdgeClass()
+{
+	ODOC_OBJECT *odoc;
+	struct timeval tv;
+	tv.tv_sec = 5;
+	tv.tv_usec = 0;
+	String Query = "drop class "+ m_EdgeClassName;
+	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
+	ODOC_FREE_DOCUMENT(odoc);
+
+	Query = "create class " + m_EdgeClassName + " extends E";
+	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
+
+	if (!odoc) {
+		return false;
+	}
+
+	ODOC_FREE_DOCUMENT(odoc);
+	return true;
+}
+
+bool CTinOrientDBStorage::_CreateBlankClass()
+{
+	ODOC_OBJECT *odoc;
+	struct timeval tv;
+	tv.tv_sec = 5;
+	tv.tv_usec = 0;
+
+	String Query = "drop class USTBlankClass";
+	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
+	ODOC_FREE_DOCUMENT(odoc);
+
+	Query = "create class USTBlankClass extends V";
+	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
+	ODOC_FREE_DOCUMENT(odoc);
+
+	Query = "create vertex UstBlankClass set name = \'blank\'";
+	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, NULL);
+	if (!odoc) {
+		return false;
+	}
+	ODOC_FREE_DOCUMENT(odoc);
+
+	Query = "SELECT @rid FROM UstBlankClass";
+	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
+	if (!odoc) {
+		return -1;
+	}
+
+	String strRecrodCount = odoc_getraw(odoc, NULL);
+	m_BlankRID = strRecrodCount.substr(strRecrodCount.find(':') + 1, strRecrodCount.length() - (strRecrodCount.find(':') + 1));
+
+	return true;
+}
+bool CTinOrientDBStorage::SetCleanNRamdomVertexs(int DataNum)
+{
+	ODOC_OBJECT *odoc;
+	struct timeval tv;
+	tv.tv_sec = 5;
+	tv.tv_usec = 0;
+
+	/////////////////
+	// DROP CLASS
+	String Query = "drop class " + m_VertexClassName;
+	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
+	if (!odoc) {
+		return false;
+	}
+	ODOC_FREE_DOCUMENT(odoc);
+
+	/////////////////
+	// Create Class
+	Query = "create class " + m_VertexClassName + " extends V";
+	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
+	if (!odoc) {
+		return false;
+	}
+	ODOC_FREE_DOCUMENT(odoc);
+
+	/////////////////////
+	// SetRandomVertex
+	int sq =(int) sqrt((double)DataNum);
+	int idx = 0;
+	for (int i = 0 ; i < sq * 10 + 1 ; i += 10) {
+		for(int j = 0 ; j < sq * 10 + 1 ; j += 10){
+			idx++;
+			char buf[100];
+			::sprintf(buf, "%d", i);
+			String xPos = buf;
+			::sprintf(buf, "%d", j);
+			String yPos = buf;
+
+			String Query = "create vertex " + m_VertexClassName + " set x = " + xPos + ", y = " + yPos;
+			odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, NULL);
+			if (!odoc) {
+				return false;
+			}
+			ODOC_FREE_DOCUMENT(odoc);
+			if (idx == DataNum) break;
+		}
+		if (idx == DataNum) break;
+	}
+	return true;
+}
+
+ITinVertex* CTinOrientDBStorage::GetVertex(int idx)
+{
+	return NULL;
+}
+
+ITinVertex* CTinOrientDBStorage::GetVertex(RID vertexRID)
+{
+	return NULL;
+}
+
+ITinHalfEdge* CTinOrientDBStorage::GetHalfEdge(RID EdgeRID)
+{
+	return NULL;
+}
+
+int CTinOrientDBStorage::GetCountOfVertexs()
+{
+	ODOC_OBJECT *odoc;
+	struct timeval tv;
+	tv.tv_sec = 5;
+	tv.tv_usec = 0;
+
+	String Query = "SELECT Count(*) FROM " + m_VertexClassName;
+	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
+	if (!odoc) {
+		return -1;
+	}
+
+	String strRecrodCount = odoc_getraw(odoc, NULL);
+	strRecrodCount = strRecrodCount.substr(strRecrodCount.find(':') + 1, strRecrodCount.length() - 1 - (strRecrodCount.find(':') + 1));
+
+	int recordCount = ::atoi(strRecrodCount.c_str());
+
+	// free the returned document when you no longer need it
+	ODOC_FREE_DOCUMENT(odoc);
+
+	return recordCount;
+}
+
+ITinHalfEdge* CTinOrientDBStorage::CreateEdge()
+{
+	struct timeval tv;
+	tv.tv_sec = 5;
+	tv.tv_usec = 0;
+
+	int edges = GetCountOfEdges();
+
+	char buffer[100];
+	sprintf(buffer,"%d", edges);
+	String numberRecord = buffer;
+
+	String Query = "create edge " + m_EdgeClassName + " from " + m_BlankRID + " to " + m_BlankRID + " set ccw = " + numberRecord;
+	ODOC_OBJECT* odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, NULL);
+
+	Query = "SELECT @rid FROM " + m_EdgeClassName + " where ccw = " + numberRecord;
+	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
+	if (!odoc) {
+		return NULL;
+	}
+
+	String strRID= odoc_getraw(odoc, NULL);
+	strRID = strRID.substr(strRID.find(':') + 1, strRID.length() - (strRID.find(':') + 1));
+	CTinOrientDBVertex* pVertex = new CTinOrientDBVertex(strRID);
+	ODOC_FREE_DOCUMENT(odoc);
+	return pVertex;
+}
+
+int	CTinOrientDBStorage::GetCountOfEdges()
+{
+	ODOC_OBJECT *odoc;
+	struct timeval tv;
+	tv.tv_sec = 5;
+	tv.tv_usec = 0;
+
+	String Query = "SELECT Count(*) FROM " + m_EdgeClassName;
+	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
+	if (!odoc) {
+		return -1;
+	}
+
+	String strRecrodCount = odoc_getraw(odoc, NULL);
+	strRecrodCount = strRecrodCount.substr(strRecrodCount.find(':') + 1, strRecrodCount.length() - 1 - (strRecrodCount.find(':') + 1));
+
+	int recordCount = ::atoi(strRecrodCount.c_str());
+
+	// free the returned document when you no longer need it
+	ODOC_FREE_DOCUMENT(odoc);
+
+	return recordCount;
+}

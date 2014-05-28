@@ -4,9 +4,17 @@
 #include <liborient/liborient.h>
 #include "../Common.h"
 #include "../BaseStorage/ITinStorageManager.h"
+#include "TinOrientDBVertex.h"
+#include "TinOrientDBHalfEdge.h"
 
-class CTinOrientDBStorage
+class CTinOrientDBStorage : ITinStorageManager
 {
+public:
+	static CTinOrientDBStorage* instance;
+	static CTinOrientDBStorage* GetInstance() {
+		return instance;
+	}
+
 	//TinMaker에서 사용될 Error Code를 지정한다.
 	enum ErrCode{
 		RET_OK,						// ERROR 없음
@@ -17,14 +25,33 @@ class CTinOrientDBStorage
 		ERR_ETC						// 기타 ERROR
 	};
 public:
+	/////////////////////////////////////////
+	// ITinStorageManager Interface 구현
+	virtual ITinVertex* 		GetVertex(int idx);
+	virtual int 				GetCountOfVertexs();
+
+	virtual ITinHalfEdge* 	CreateEdge();
+	virtual int				GetCountOfEdges();
+
+	virtual ITinVertex* 		GetVertex(RID nRID);
+
+public:
 	CTinOrientDBStorage();
 	~CTinOrientDBStorage();
 	ErrCode InitDB(String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName);
 
+	ITinHalfEdge* GetHalfEdge(RID EdgeRID);
+	void UpdateVertex(CTinOrientDBVertex* pVertex);
+	void UpdateHalfEdge(ITinHalfEdge* pEdge);
+
+	bool SetCleanNRamdomVertexs(int DataNum);
+	bool _CreateBlankClass();
 private:
 	bool _ConnectDBServer();
 	bool _CheckDBName();
 	bool _CheckVertexClass();
+
+	bool _CreateEdgeClass();
 
 private:
 	////////////////////////////
@@ -43,6 +70,8 @@ private:
 	////////////////////////////
 	orientdb* m_OrientDB;
 	orientdb_con* m_OrientCon;
+
+	RID m_BlankRID;	// 임시로 쓰이는 RID
 };
 
 #endif //__UST_TIN_MAKER_H__
