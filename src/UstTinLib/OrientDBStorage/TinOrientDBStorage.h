@@ -1,10 +1,9 @@
 #ifndef __UST_TIN_MAKER_H__
 #define __UST_TIN_MAKER_H__
 
+#include "../Common.h"
 
-#include "Common.h"
-
-class CUstTinDB
+class CTinOrientDBStorage
 {
 	//TinMaker에서 사용될 Error Code를 지정한다.
 	enum ErrCode{
@@ -16,10 +15,9 @@ class CUstTinDB
 		ERR_ETC						// 기타 ERROR
 	};
 public:
-	CUstTinDB();
-	~CUstTinDB();
-	ErrCode InitFromOrientDB(String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName);
-	ErrCode MakeTin();
+	CTinOrientDBStorage();
+	~CTinOrientDBStorage();
+	ErrCode InitDB(String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName);
 
 private:
 	bool _ConnectDBServer();

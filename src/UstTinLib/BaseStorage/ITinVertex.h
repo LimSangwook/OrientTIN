@@ -1,3 +1,5 @@
+#ifndef __ITIN_VERTEX_H__
+#define __ITIN_VERTEX_H__
 
 class ITinHalfEdge;
 
@@ -16,3 +18,5 @@ public:
 	virtual ITinHalfEdge* GetHalfEdge() = 0;
 	virtual void SetHalfEdge(ITinHalfEdge* pHalfEdge) = 0;
 };
+
+#endif //__ITIN_VERTEX_H__

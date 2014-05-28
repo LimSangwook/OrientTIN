@@ -1,15 +1,34 @@
-#include <stdio.h>
-#include <liborient/liborient.h>
-#include "UstTinLib/UstTinDB.h"
+#include "UstTinLib/Include.h"
+#include <time.h>
 
-void my_debug(const char *msg) {
-	fprintf(stderr, "program: %s", msg);
-}
 int main() {
-	CUstTinDB tinDB;
+	clock_t StartClock = clock(), LoadingClock, TinClock;
+	///////////////////////////////////////
+	// TinEdgeMaker 생성
+	CTinEdgeMaker tinEdgeMaker;
 
-	tinDB.InitFromOrientDB("127.0.0.1", "USTTin", "root", "root", "V", "HalfEdge");
-	tinDB.MakeTin();
+	///////////////////////////////////////
+	// Memory를 사용하여 Edge를 만들 경우
+	CTinMemStorage  tinMemStorage;
+	tinMemStorage.SetRamdomVertexs(1000000);
+	tinEdgeMaker.SetTinStorage(&tinMemStorage);
+
+	///////////////////////////////////////
+	// OrientDB를 사용하여 edge를 만들 경
+//		CTinOrientDBStorage tinDbStorage;
+//		tinDbStorage.InitDB("127.0.0.1", "USTTin", "root", "root", "V", "HalfEdge");
+//		tinEdgeMaker.SetTinStorage(&tinDbStorage);
+
+	tinEdgeMaker.PrintVertexList();		// Vertex 갯수 출력
+
+	LoadingClock = clock();
+	std::cout << "Load Points Time : " << (double)(LoadingClock - StartClock)/CLOCKS_PER_SEC << " sec" << std::endl;
+
+	tinEdgeMaker.MakeDelaunayEdge();	// Edge 만들기
+
+	TinClock = clock();
+	tinEdgeMaker.PrintEdgeList();		// Edge 갯수 출력
+	std::cout << "Make Tin Time : " << (double)(TinClock - LoadingClock)/CLOCKS_PER_SEC << " sec" << std::endl;
 
 	return 0;
 }

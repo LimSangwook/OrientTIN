@@ -6,11 +6,12 @@
 #include "MemStorage/TinMemVertex.h"
 #include "MemStorage/TinMemHalfEdge.h"
 #include "BaseStorage/TinDelaunay.h"
+#include "BaseStorage/ITinStorageManager.h"
 
-class CTinDataManager
+class CTinEdgeMaker
 {
-typedef std::vector<ITinVertex*> VertexList;
-typedef std::set<ITinHalfEdge*> HalfEdgeList;
+
+
 typedef std::set<CTinDelaunay*> DelaunayList;
 
 
@@ -27,8 +28,8 @@ enum IN_OUT_CIRCLE{
 	OUT_SIDE
 };
 
-	CTinDataManager();
-	~CTinDataManager();
+	CTinEdgeMaker();
+	~CTinEdgeMaker();
 
 	ITinVertex* GetVertex(int idx);
 
@@ -45,6 +46,8 @@ enum IN_OUT_CIRCLE{
 	void PrintVertexList();
 	void PrintEdgeList();
 	void PrintFaceList();
+	void SetTinStorage(ITinStorageManager* pStorage);
+
 
 private:
 	// D&C Tin 알고리즘부분
@@ -65,9 +68,8 @@ private:
 	void _Build_Halfedge_Face( CTinDelaunay *del, ITinHalfEdge *d );
 
 private:
-	VertexList 	m_VertexList;
-	HalfEdgeList 	m_HalfEdgeList;
 	CTinDelaunay	m_delaunay;
+	ITinStorageManager* m_pTinStorage;
 };
 
 #endif //__TIN_DATAMANAGER_H__

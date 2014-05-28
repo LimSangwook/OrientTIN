@@ -2,7 +2,7 @@
 #define __TINVERTEX_H__
 
 #include "../Common.h"
-#include "../BaseStorage/ITinVector.h"
+#include "../BaseStorage/ITinVertex.h"
 
 class CTinHalfEdge;
 

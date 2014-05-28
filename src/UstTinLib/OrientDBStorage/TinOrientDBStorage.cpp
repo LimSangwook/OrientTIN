@@ -1,20 +1,17 @@
 #include <stdio.h>
 #include <liborient/liborient.h>
-#include "UstTinDB.h"
-#include "UstTinMaker.h"
-
-
+#include "TinOrientDBStorage.h"
 
 void orient_debug(const char *msg) {
 	fprintf(stderr, "program: %s", msg);
 }
 
-CUstTinDB::CUstTinDB() :
+CTinOrientDBStorage::CTinOrientDBStorage() :
 		m_DBPort("2424"), m_OrientDB(NULL), m_OrientCon(NULL)
 {
 }
 
-CUstTinDB::~CUstTinDB()
+CTinOrientDBStorage::~CTinOrientDBStorage()
 {
 	if (m_OrientDB && m_OrientCon) {
 		o_close(m_OrientDB, m_OrientCon);
@@ -26,7 +23,7 @@ CUstTinDB::~CUstTinDB()
 	}
 }
 
-CUstTinDB::ErrCode CUstTinDB::InitFromOrientDB(
+CTinOrientDBStorage::ErrCode CTinOrientDBStorage::InitDB(
 		String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName)
 {
 	m_Url 					= url;
@@ -54,7 +51,7 @@ CUstTinDB::ErrCode CUstTinDB::InitFromOrientDB(
 	return RET_OK;
 }
 
-bool CUstTinDB::_ConnectDBServer()
+bool CTinOrientDBStorage::_ConnectDBServer()
 {
 	int rc;
 	char str[O_ERR_MAXLEN];
@@ -110,7 +107,7 @@ bool CUstTinDB::_ConnectDBServer()
 	return true;
 }
 
-bool CUstTinDB::_CheckDBName()
+bool CTinOrientDBStorage::_CheckDBName()
 {
 	int rc;
 	struct timeval tv;
@@ -133,7 +130,7 @@ bool CUstTinDB::_CheckDBName()
 	return true;
 }
 
-bool CUstTinDB::_CheckVertexClass()
+bool CTinOrientDBStorage::_CheckVertexClass()
 {
 	ODOC_OBJECT *odoc;
 	struct timeval tv;
@@ -158,28 +155,3 @@ bool CUstTinDB::_CheckVertexClass()
 	return true;
 }
 
-CUstTinDB::ErrCode CUstTinDB::MakeTin()
-{
-	CTinDataManager tinDataMaanger;
-
-	ErrCode retVal = RET_OK;
-	clock_t StartClock, LoadingClock, TinClock;
-	StartClock = clock();
-
-	tinDataMaanger.SetRamdomVertexs(100000);
-	LoadingClock = clock();
-
-	tinDataMaanger.PrintVertexList();
-	std::cout << "Load Points Time : " << (double)(LoadingClock - StartClock)/CLOCKS_PER_SEC << " sec" << std::endl;
-
-	tinDataMaanger.MakeDelaunayEdge();
-	TinClock = clock();
-
-	tinDataMaanger.PrintEdgeList();
-	std::cout << "Make Tin Time : " << (double)(TinClock - LoadingClock)/CLOCKS_PER_SEC << " sec" << std::endl;
-
-	tinDataMaanger.MakeDelaunayFace();
-	tinDataMaanger.PrintFaceList();
-
-	return retVal;
-}

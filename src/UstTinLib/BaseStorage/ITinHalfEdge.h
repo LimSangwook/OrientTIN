@@ -1,3 +1,5 @@
+#ifndef __ITIN_HALF_EDGE_H__
+#define __ITIN_HALF_EDGE_H__
 
 class ITinVertex;
 
@@ -18,3 +20,5 @@ public:
 	virtual void SetCWEdge(ITinHalfEdge* pEdge) = 0;
 
 };
+
+#endif //__ITIN_HALF_EDGE_H__

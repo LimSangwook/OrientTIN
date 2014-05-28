@@ -1,94 +1,62 @@
 #include <math.h>
 #include <memory>
 #include <assert.h>
-#include "UstTinMaker.h"
+#include "UstTinEdgeMaker.h"
 #include <iostream>
-CTinDataManager::CTinDataManager()
+
+CTinEdgeMaker::CTinEdgeMaker() :
+m_pTinStorage(0)
 {
 }
-CTinDataManager::~CTinDataManager()
+
+CTinEdgeMaker::~CTinEdgeMaker()
 {
 }
-ITinVertex* CTinDataManager::GetVertex(int idx)
+
+void CTinEdgeMaker::SetTinStorage(ITinStorageManager* pStorage)
 {
- return m_VertexList.at(idx);
+	m_pTinStorage = pStorage;
+}
+ITinVertex* CTinEdgeMaker::GetVertex(int idx)
+{
+ return m_pTinStorage->GetVertex(idx);
 }
 
-int CTinDataManager::GetCountOfVertexs()
+int CTinEdgeMaker::GetCountOfVertexs()
 {
- return m_VertexList.size();
+ return m_pTinStorage->GetCountOfVertexs();
 }
 
-ITinVertex* CTinDataManager::CreateVertex()
+ITinHalfEdge* CTinEdgeMaker::CreateEdge()
 {
- CTinMemVertex* pVertex = new CTinMemVertex;
-  m_VertexList.push_back(pVertex);
- return pVertex;
-}
-ITinHalfEdge* CTinDataManager::CreateEdge()
-{
- CTinMemHalfEdge* pEdge = new CTinMemHalfEdge();
-
-
-
-
- m_HalfEdgeList.insert(pEdge);
- return pEdge;
+	assert(m_pTinStorage != NULL);
+	return m_pTinStorage->CreateEdge();
 }
 void PutVertexPoint(ITinVertex* pVertex)
 {
  std::cout << "(" << pVertex->GetX() << " , " <<pVertex->GetY() << ")";
 }
-void CTinDataManager::PrintVertexList()
+void CTinEdgeMaker::PrintVertexList()
 {
- std::cout << "VertexList size : " << m_VertexList.size() << "\n";
- VertexList::iterator iter = m_VertexList.begin();
-// for(int i = 0; iter != m_VertexList.end() ; iter++, i++) {
-//  std::cout << "Vertex ("<<i<<") : ";
-//  PutVertexPoint(*iter);
-//  std:: cout << "\n";
-// }
+ std::cout << "VertexList size : " << m_pTinStorage->GetCountOfVertexs() << "\n";
 }
-void CTinDataManager::PrintEdgeList()
+void CTinEdgeMaker::PrintEdgeList()
 {
- std::cout << "EdgeList size : " << m_HalfEdgeList.size() << "\n";
- HalfEdgeList::iterator iter = m_HalfEdgeList.begin();
-// for(int i = 0; iter != m_HalfEdgeList.end() ; iter++, i++) {
-//  std::cout << "Edge (" << i << ") : ";
-//  PutVertexPoint((*iter)->GetVertex());
-//  std::cout << " -> ";
-//  PutVertexPoint((*iter)->GetPairEdge()->GetVertex());
-//  std::cout << "\n";
-// }
+ std::cout << "EdgeList size : " << m_pTinStorage->GetCountOfEdges() << "\n";
+
 }
-void CTinDataManager::PrintFaceList()
+void CTinEdgeMaker::PrintFaceList()
 {
  std::cout << "FaceList size : " << m_delaunay.GetFaces().size() - 1 << "\n";
 }
-void CTinDataManager::SetRamdomVertexs(int DATA_NUM)
-{
- int sq =(int) sqrt((double)DATA_NUM);
- int idx = 0;
- for (int i = 0 ; i < sq * 10 + 1 ; i += 10) {
-  for(int j = 0 ; j < sq * 10 + 1 ; j += 10){
-   double  x = (double)i;
-   double y = (double)j;
-   ITinVertex* pVertex = CreateVertex();
-   pVertex->SetX(x);
-   pVertex->SetY(y);
-   idx++;
-   if (idx == DATA_NUM) break;
-  }
-  if (idx == DATA_NUM) break;
- }
-}
-void CTinDataManager::MakeDelaunayEdge()
+
+void CTinEdgeMaker::MakeDelaunayEdge()
 {
  m_delaunay.SetStartPointIdx(0);
  m_delaunay.SetEndPointIdx(GetCountOfVertexs() - 1);
  _DivideAndConquer(m_delaunay);
 }
-void CTinDataManager::MakeDelaunayFace()
+void CTinEdgeMaker::MakeDelaunayFace()
 {
 // int  i;
 // ITinHalfEdge *curr;
@@ -105,7 +73,7 @@ void CTinDataManager::MakeDelaunayFace()
 //  } while( curr != m_VertexList.at(i)->GetHalfEdge() );
 // }
 }
-//void CTinDataManager::_Build_Halfedge_Face( CTinDelaunay *del, ITinHalfEdge *d )
+//void CTinEdgeMaker::_Build_Halfedge_Face( CTinDelaunay *del, ITinHalfEdge *d )
 //{
 // ITinHalfEdge *curr;
 // /* test if the halfedge has already a pointing face */
@@ -123,7 +91,7 @@ void CTinDataManager::MakeDelaunayFace()
 // } while( curr != d );
 // del->SetNumberOfFaces(del->GetNumberOfFaces() + 1);
 //}
-void CTinDataManager::_DivideAndConquer(CTinDelaunay& delaunay)
+void CTinEdgeMaker::_DivideAndConquer(CTinDelaunay& delaunay)
 {
  CTinDelaunay left, right;
  int   i, n;
@@ -147,7 +115,7 @@ void CTinDataManager::_DivideAndConquer(CTinDelaunay& delaunay)
    if( n == 2 )
     _Del_Init_Seg(delaunay);
 }
-void CTinDataManager::_Del_Link( CTinDelaunay& result, CTinDelaunay& left, CTinDelaunay& right )
+void CTinEdgeMaker::_Del_Link( CTinDelaunay& result, CTinDelaunay& left, CTinDelaunay& right )
 {
  ITinVertex  *u, *v, *ml, *mr;
  ITinHalfEdge  *b;
@@ -176,7 +144,7 @@ void CTinDataManager::_Del_Link( CTinDelaunay& result, CTinDelaunay& left, CTinD
  result.SetStartPointIdx(left.GetStartPointIdx());
  result.SetEndPointIdx(right.GetEndPointIdx());
 }
-ITinHalfEdge* CTinDataManager::_Del_Valid_Link( ITinHalfEdge *b )
+ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Link( ITinHalfEdge *b )
 {
  ITinVertex *g, *g_p, *d, *d_p;
  ITinHalfEdge *gd, *dd, *new_gd, *new_dd;
@@ -241,7 +209,7 @@ ITinHalfEdge* CTinDataManager::_Del_Valid_Link( ITinHalfEdge *b )
  dd->SetCWEdge(new_dd);
  return new_gd;
 }
-ITinHalfEdge* CTinDataManager::_Del_Valid_Right( ITinHalfEdge *b )
+ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Right( ITinHalfEdge *b )
 {
  ITinVertex  *g, *d, *u, *v;
  ITinHalfEdge  *c, *dd, *du;
@@ -268,7 +236,7 @@ ITinHalfEdge* CTinDataManager::_Del_Valid_Right( ITinHalfEdge *b )
   du = dd;
  return du;
 }
-ITinHalfEdge* CTinDataManager::_Del_Valid_Left( ITinHalfEdge* b )
+ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Left( ITinHalfEdge* b )
 {
  ITinVertex  *g, *d, *u, *v;
  ITinHalfEdge  *c, *du, *dg;
@@ -296,14 +264,14 @@ ITinHalfEdge* CTinDataManager::_Del_Valid_Left( ITinHalfEdge* b )
   du  = dg;
  return du;
 }
-void CTinDataManager::_Del_Remove_Halfedge( ITinHalfEdge *d )
+void CTinEdgeMaker::_Del_Remove_Halfedge( ITinHalfEdge *d )
 {
  ITinHalfEdge *alpha;
  alpha = d->GetPairEdge();
  _Del_Remove_Single_Halfedge(d);
  _Del_Remove_Single_Halfedge(alpha);
 }
-void CTinDataManager::_Del_Remove_Single_Halfedge( ITinHalfEdge *d )
+void CTinEdgeMaker::_Del_Remove_Single_Halfedge( ITinHalfEdge *d )
 {
  ITinHalfEdge *sigma, *amgis, *alpha;
  sigma = d->GetCCWEdge();
@@ -325,13 +293,13 @@ void CTinDataManager::_Del_Remove_Single_Halfedge( ITinHalfEdge *d )
  /* finally free the halfedge */
  _Halfedge_Free(d);
 }
-void CTinDataManager::_Halfedge_Free( ITinHalfEdge* d )
+void CTinEdgeMaker::_Halfedge_Free( ITinHalfEdge* d )
 {
  assert( d != NULL );
  delete(d);
 }
 #define CCW(A,B,C) ((B->GetX()-A->GetX())*(C->GetY()-A->GetY())-(B->GetY()-A->GetY())*(C->GetX()-A->GetX()))
-CTinDataManager::IN_OUT_CIRCLE CTinDataManager::_In_Circle( ITinVertex *pt0, ITinVertex *pt1, ITinVertex *pt2, ITinVertex *p )
+CTinEdgeMaker::IN_OUT_CIRCLE CTinEdgeMaker::_In_Circle( ITinVertex *pt0, ITinVertex *pt1, ITinVertex *pt2, ITinVertex *p )
 {
  ITinVertex* A = pt0;
  ITinVertex* B = pt1;
@@ -369,7 +337,7 @@ CTinDataManager::IN_OUT_CIRCLE CTinDataManager::_In_Circle( ITinVertex *pt0, ITi
    return IN_SIDE;
  }
 }
-ITinHalfEdge* CTinDataManager::_Del_Get_Lower_Supportant( CTinDelaunay& left, CTinDelaunay& right )
+ITinHalfEdge* CTinEdgeMaker::_Del_Get_Lower_Supportant( CTinDelaunay& left, CTinDelaunay& right )
 {
  ITinVertex *pl, *pr;
  ITinHalfEdge *right_d, *left_d, *new_ld, *new_rd;
@@ -406,14 +374,14 @@ ITinHalfEdge* CTinDataManager::_Del_Get_Lower_Supportant( CTinDelaunay& left, CT
  right_d->SetCWEdge(new_rd);
  return new_ld;
 }
-CTinDataManager::LEFT_RIGHT CTinDataManager::_Del_Classify_Point( ITinHalfEdge *d, ITinVertex *pt )
+CTinEdgeMaker::LEFT_RIGHT CTinEdgeMaker::_Del_Classify_Point( ITinHalfEdge *d, ITinVertex *pt )
 {
  ITinVertex  *s, *e;
  s  = d->GetVertex();
  e  = d->GetPairEdge()->GetVertex();
  return _Classify_Point_Seg(s, e, pt);
 }
-void CTinDataManager::_Del_Init_Seg(CTinDelaunay& del)
+void CTinEdgeMaker::_Del_Init_Seg(CTinDelaunay& del)
 {
  ITinHalfEdge *d0, *d1;
  ITinVertex  *pt0, *pt1;
@@ -437,7 +405,7 @@ void CTinDataManager::_Del_Init_Seg(CTinDelaunay& del)
  del.SetRightMostEdge(d1);
  del.SetLeftMostEdge(d0);
 }
-void CTinDataManager::_Del_Init_Tri( CTinDelaunay& del)
+void CTinEdgeMaker::_Del_Init_Tri( CTinDelaunay& del)
 {
  int start = del.GetStartPointIdx();
  ITinHalfEdge *d0, *d1, *d2, *d3, *d4, *d5;
@@ -518,7 +486,7 @@ void CTinDataManager::_Del_Init_Tri( CTinDelaunay& del)
   del.SetLeftMostEdge(d0);
  }
 }
-CTinDataManager::LEFT_RIGHT CTinDataManager::_Classify_Point_Seg( ITinVertex *s, ITinVertex *e, ITinVertex *pt )
+CTinEdgeMaker::LEFT_RIGHT CTinEdgeMaker::_Classify_Point_Seg( ITinVertex *s, ITinVertex *e, ITinVertex *pt )
 {
  double  res;
  double se_x, se_y, spt_x, spt_y;
