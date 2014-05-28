@@ -1,7 +1,7 @@
 #include <math.h>
 #include <memory>
 #include <assert.h>
-#include "UstTinEdgeMaker.h"
+#include "TinEdgeMaker.h"
 #include <iostream>
 
 CTinEdgeMaker::CTinEdgeMaker() :
@@ -13,21 +13,21 @@ CTinEdgeMaker::~CTinEdgeMaker()
 {
 }
 
-void CTinEdgeMaker::SetTinStorage(ITinStorageManager* pStorage)
+void CTinEdgeMaker::AttachTinStorage(ITinStorageManager* pStorage)
 {
 	m_pTinStorage = pStorage;
 }
-ITinVertex* CTinEdgeMaker::GetVertex(int idx)
+ITinVertex* CTinEdgeMaker::_GetVertex(int idx)
 {
  return m_pTinStorage->GetVertex(idx);
 }
 
-int CTinEdgeMaker::GetCountOfVertexs()
+int CTinEdgeMaker::_GetCountOfVertexs()
 {
  return m_pTinStorage->GetCountOfVertexs();
 }
 
-ITinHalfEdge* CTinEdgeMaker::CreateEdge()
+ITinHalfEdge* CTinEdgeMaker::_CreateEdge()
 {
 	assert(m_pTinStorage != NULL);
 	return m_pTinStorage->CreateEdge();
@@ -52,9 +52,9 @@ void CTinEdgeMaker::PrintFaceList()
 
 void CTinEdgeMaker::MakeDelaunayEdge()
 {
- m_delaunay.SetStartPointIdx(0);
- m_delaunay.SetEndPointIdx(GetCountOfVertexs() - 1);
- _DivideAndConquer(m_delaunay);
+	m_delaunay.SetStartPointIdx(0);
+	m_delaunay.SetEndPointIdx(_GetCountOfVertexs() - 1);
+	_DivideAndConquer(m_delaunay);
 }
 void CTinEdgeMaker::MakeDelaunayFace()
 {
@@ -173,8 +173,8 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Link( ITinHalfEdge *b )
    }
   } else {
    //* create the 2 halfedges */
-   new_gd = CreateEdge();
-   new_dd = CreateEdge();
+   new_gd = _CreateEdge();
+   new_dd = _CreateEdge();
    //* setup new_gd and new_dd */
    new_gd->SetVertex(gd->GetVertex());
    new_gd->SetPairEdge(new_dd);
@@ -192,8 +192,8 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Link( ITinHalfEdge *b )
   }
  }
  /* create the 2 halfedges */
- new_gd = CreateEdge();
- new_dd = CreateEdge();
+ new_gd = _CreateEdge();
+ new_dd = _CreateEdge();
  /* setup new_gd and new_dd */
  new_gd->SetVertex(gd->GetVertex());
  new_gd->SetPairEdge(new_dd);
@@ -357,8 +357,8 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Get_Lower_Supportant( CTinDelaunay& left, CTin
   }
  } while( sl == ONRIGHT || sr == ONRIGHT );
  /* create the 2 halfedges */
- new_ld = CreateEdge();
- new_rd = CreateEdge();
+ new_ld = _CreateEdge();
+ new_rd = _CreateEdge();
  /* setup new_gd and new_dd */
  new_ld->SetVertex(left_d->GetVertex());
  new_ld->SetPairEdge(new_rd);
@@ -387,11 +387,11 @@ void CTinEdgeMaker::_Del_Init_Seg(CTinDelaunay& del)
  ITinVertex  *pt0, *pt1;
  int start =  del.GetStartPointIdx();
  /* setup pt0 and pt1 */
- pt0   = GetVertex(start);
- pt1   = GetVertex(start + 1);
+ pt0   = _GetVertex(start);
+ pt1   = _GetVertex(start + 1);
  /* allocate the halfedges and setup them */
- d0 = CreateEdge();
- d1 = CreateEdge();
+ d0 = _CreateEdge();
+ d1 = _CreateEdge();
  d0->SetVertex(pt0);
  d1->SetVertex(pt1);
  d0->SetCCWEdge(d0);
@@ -411,21 +411,21 @@ void CTinEdgeMaker::_Del_Init_Tri( CTinDelaunay& del)
  ITinHalfEdge *d0, *d1, *d2, *d3, *d4, *d5;
  ITinVertex  *pt0, *pt1, *pt2;
  /* setup the points */
- pt0     = GetVertex(start);
- pt1     = GetVertex(start + 1);
- pt2     = GetVertex(start + 2);
+ pt0     = _GetVertex(start);
+ pt1     = _GetVertex(start + 1);
+ pt2     = _GetVertex(start + 2);
  LEFT_RIGHT valLeftRight = _Classify_Point_Seg(pt0, pt2, pt1);
  ////////////////////////////////////
  // allocate the 6 halfedges
  ////////////////////////////////////
- d0 = CreateEdge();
- d1 = CreateEdge();
- d2 = CreateEdge();
- d3 = CreateEdge();
+ d0 = _CreateEdge();
+ d1 = _CreateEdge();
+ d2 = _CreateEdge();
+ d3 = _CreateEdge();
  // 원안에 있지 않으면 D4 D5까지 쓴다.
  if (valLeftRight != ONSEG) {
-  d4 = CreateEdge();
-  d5 = CreateEdge();
+  d4 = _CreateEdge();
+  d5 = _CreateEdge();
  }
  if( valLeftRight == ONLEFT ) /* first case */
  {

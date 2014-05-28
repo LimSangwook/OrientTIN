@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <liborient/liborient.h>
 #include "TinOrientDBStorage.h"
 
 void orient_debug(const char *msg) {

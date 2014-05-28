@@ -1,7 +1,9 @@
 #ifndef __UST_TIN_MAKER_H__
 #define __UST_TIN_MAKER_H__
 
+#include <liborient/liborient.h>
 #include "../Common.h"
+#include "../BaseStorage/ITinStorageManager.h"
 
 class CTinOrientDBStorage
 {

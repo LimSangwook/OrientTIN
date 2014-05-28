@@ -11,16 +11,15 @@ int main() {
 	// Memory를 사용하여 Edge를 만들 경우
 	CTinMemStorage  tinMemStorage;
 	tinMemStorage.SetRamdomVertexs(1000000);
-	tinEdgeMaker.SetTinStorage(&tinMemStorage);
+	tinEdgeMaker.AttachTinStorage(&tinMemStorage);
 
 	///////////////////////////////////////
-	// OrientDB를 사용하여 edge를 만들 경
-//		CTinOrientDBStorage tinDbStorage;
-//		tinDbStorage.InitDB("127.0.0.1", "USTTin", "root", "root", "V", "HalfEdge");
-//		tinEdgeMaker.SetTinStorage(&tinDbStorage);
+	// OrientDB를 사용하여 edge를 만들 경우
+	CTinOrientDBStorage tinDbStorage;
+	tinDbStorage.InitDB("127.0.0.1", "USTTin", "root", "root", "V", "HalfEdge");
+//	tinEdgeMaker.AttachTinStorage(&tinDbStorage);
 
 	tinEdgeMaker.PrintVertexList();		// Vertex 갯수 출력
-
 	LoadingClock = clock();
 	std::cout << "Load Points Time : " << (double)(LoadingClock - StartClock)/CLOCKS_PER_SEC << " sec" << std::endl;
 
