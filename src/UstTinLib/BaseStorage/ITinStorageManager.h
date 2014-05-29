@@ -13,6 +13,9 @@ public :
 
 	virtual ITinHalfEdge* 	CreateEdge() = 0;
 	virtual int				GetCountOfEdges() = 0;
+
+	virtual bool 				DeleteHalfEdge(ITinHalfEdge* pEdge) = 0;
+	virtual void				PrintEdgeList() = 0;
 };
 
 #endif //__ITIN_STORAGEMANAGER_H__

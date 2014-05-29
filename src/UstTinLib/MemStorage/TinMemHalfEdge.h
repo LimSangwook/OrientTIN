@@ -26,6 +26,8 @@ public:
 
 	CTinFace* GetFace();
 	void SetFace(CTinFace* pFace);
+
+	virtual bool equal(ITinHalfEdge* pOther);
 private:
 	ITinVertex*		m_pVertex;
 	ITinHalfEdge*		m_pPair;

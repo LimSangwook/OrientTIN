@@ -42,8 +42,8 @@ void CTinEdgeMaker::PrintVertexList()
 }
 void CTinEdgeMaker::PrintEdgeList()
 {
- std::cout << "EdgeList size : " << m_pTinStorage->GetCountOfEdges() << "\n";
-
+	std::cout << "EdgeList size : " << m_pTinStorage->GetCountOfEdges() << "\n";
+	//m_pTinStorage->PrintEdgeList();
 }
 void CTinEdgeMaker::PrintFaceList()
 {
@@ -93,27 +93,25 @@ void CTinEdgeMaker::MakeDelaunayFace()
 //}
 void CTinEdgeMaker::_DivideAndConquer(CTinDelaunay& delaunay)
 {
- CTinDelaunay left, right;
- int   i, n;
- int start = delaunay.GetStartPointIdx();
- int end =  delaunay.GetEndPointIdx();
- n = (end - start + 1);
- if( n > 3 )
- {
-  i  = (n / 2) + (n & 1);
-  left.SetStartPointIdx(start);
-  left.SetEndPointIdx(start + i - 1 );
-  right.SetStartPointIdx(start + i);
-  right.SetEndPointIdx(end);
-  _DivideAndConquer(left);
-  _DivideAndConquer(right);
-  _Del_Link(delaunay, left, right );
- } else
-  if( n == 3 )
-   _Del_Init_Tri(delaunay);
-  else
-   if( n == 2 )
-    _Del_Init_Seg(delaunay);
+	CTinDelaunay left, right;
+	int   i, n;
+	int start = delaunay.GetStartPointIdx();
+	int end =  delaunay.GetEndPointIdx();
+	n = (end - start + 1);
+	if( n > 3 )
+	{
+		i  = (n / 2) + (n & 1);
+		left.SetStartPointIdx(start);
+		left.SetEndPointIdx(start + i - 1 );
+		right.SetStartPointIdx(start + i);
+		right.SetEndPointIdx(end);
+		_DivideAndConquer(left);
+		_DivideAndConquer(right);
+		_Del_Link(delaunay, left, right );
+	} else	if( n == 3 )
+		_Del_Init_Tri(delaunay);
+	else if( n == 2 )
+		_Del_Init_Seg(delaunay);
 }
 void CTinEdgeMaker::_Del_Link( CTinDelaunay& result, CTinDelaunay& left, CTinDelaunay& right )
 {
@@ -146,68 +144,70 @@ void CTinEdgeMaker::_Del_Link( CTinDelaunay& result, CTinDelaunay& left, CTinDel
 }
 ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Link( ITinHalfEdge *b )
 {
- ITinVertex *g, *g_p, *d, *d_p;
- ITinHalfEdge *gd, *dd, *new_gd, *new_dd;
- int  a;
- g = b->GetVertex();
- gd = _Del_Valid_Left(b);
- g_p = gd->GetVertex();
+	ITinVertex *g, *g_p, *d, *d_p;
+	ITinHalfEdge *gd, *dd, *new_gd, *new_dd;
+	int  a;
+	g = b->GetVertex();
+	gd = _Del_Valid_Left(b);
+	g_p = gd->GetVertex();
 
- d = b->GetPairEdge()->GetVertex();
- dd = _Del_Valid_Right(b);
- d_p = dd->GetVertex();
- if( g->equal(g_p) == false && d->equal(d_p) == false )
- {
-  a = _In_Circle(g, d, g_p, d_p);
-  if( a != ONCIRCLE )
-  {
-   if( a == IN_SIDE )
-   {
-    g_p = g;
-    gd = b;
-   }
-   else
-   {
-    d_p = d;
-    dd = b->GetPairEdge();
-   }
-  } else {
-   //* create the 2 halfedges */
-   new_gd = _CreateEdge();
-   new_dd = _CreateEdge();
-   //* setup new_gd and new_dd */
-   new_gd->SetVertex(gd->GetVertex());
-   new_gd->SetPairEdge(new_dd);
-   new_gd->SetCWEdge(gd);
-   new_gd->SetCCWEdge(gd->GetCCWEdge());
-   gd->GetCCWEdge()->SetCWEdge(new_gd);
-   gd->SetCCWEdge(new_gd);
-   new_dd->SetVertex(b->GetPairEdge()->GetVertex());
-   new_dd->SetPairEdge(new_gd);
-   new_dd->SetCWEdge(b->GetPairEdge()->GetCWEdge());
-   b->GetPairEdge()->GetCWEdge()->SetCCWEdge(new_dd);
-   new_dd->SetCCWEdge(b->GetPairEdge());
-   b->GetPairEdge()->SetCWEdge(new_dd);
-   return new_gd;
-  }
- }
- /* create the 2 halfedges */
- new_gd = _CreateEdge();
- new_dd = _CreateEdge();
- /* setup new_gd and new_dd */
- new_gd->SetVertex(gd->GetVertex());
- new_gd->SetPairEdge(new_dd);
- new_gd->SetCWEdge(gd);
- new_gd->SetCCWEdge(gd->GetCCWEdge());
- gd->GetCCWEdge()->SetCWEdge(new_gd);
- gd->SetCCWEdge(new_gd);
- new_dd->SetVertex(dd->GetVertex());
- new_dd->SetPairEdge(new_gd);
- new_dd->SetCWEdge(dd->GetCWEdge());
- dd->GetCWEdge()->SetCCWEdge(new_dd);
- new_dd->SetCCWEdge(dd);
- dd->SetCWEdge(new_dd);
- return new_gd;
+	d = b->GetPairEdge()->GetVertex();
+	dd = _Del_Valid_Right(b);
+
+	d_p = dd->GetVertex();
+	if( g->equal(g_p) == false && d->equal(d_p) == false )
+	{
+		a = _In_Circle(g, d, g_p, d_p);
+		if( a != ONCIRCLE )
+		{
+			if( a == IN_SIDE )
+			{
+				g_p = g;
+				gd = b;
+			}
+			else
+			{
+				d_p = d;
+				dd = b->GetPairEdge();
+			}
+		} else {
+			//* create the 2 halfedges */
+			new_gd = _CreateEdge();
+			new_dd = _CreateEdge();
+			//* setup new_gd and new_dd */
+			new_gd->SetVertex(gd->GetVertex());
+			new_gd->SetPairEdge(new_dd);
+			new_gd->SetCWEdge(gd);
+			new_gd->SetCCWEdge(gd->GetCCWEdge());
+			gd->GetCCWEdge()->SetCWEdge(new_gd);
+			gd->SetCCWEdge(new_gd);
+			new_dd->SetVertex(b->GetPairEdge()->GetVertex());
+			new_dd->SetPairEdge(new_gd);
+			new_dd->SetCWEdge(b->GetPairEdge()->GetCWEdge());
+			b->GetPairEdge()->GetCWEdge()->SetCCWEdge(new_dd);
+			new_dd->SetCCWEdge(b->GetPairEdge());
+			b->GetPairEdge()->SetCWEdge(new_dd);
+			return new_gd;
+		}
+	}
+	/* create the 2 halfedges */
+	new_gd = _CreateEdge();
+	new_dd = _CreateEdge();
+	/* setup new_gd and new_dd */
+	new_gd->SetVertex(gd->GetVertex());
+	new_gd->SetPairEdge(new_dd);
+	new_gd->SetCWEdge(gd);
+	new_gd->SetCCWEdge(gd->GetCCWEdge());
+	gd->GetCCWEdge()->SetCWEdge(new_gd);
+	gd->SetCCWEdge(new_gd);
+	new_dd->SetVertex(dd->GetVertex());
+	new_dd->SetPairEdge(new_gd);
+	new_dd->SetCWEdge(dd->GetCWEdge());
+	dd->GetCWEdge()->SetCCWEdge(new_dd);
+	new_dd->SetCCWEdge(dd);
+	dd->SetCWEdge(new_dd);
+
+	return new_gd;
 }
 ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Right( ITinHalfEdge *b )
 {
@@ -223,7 +223,7 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Right( ITinHalfEdge *b )
  v = b->GetCWEdge()->GetPairEdge()->GetVertex();
  if( _Classify_Point_Seg(g, d, u) == ONLEFT )
  {
-  while( v != g && _In_Circle(g, d, u, v) == IN_SIDE )
+  while( v->equal(g) == false && _In_Circle(g, d, u, v) == IN_SIDE )
   {
    c = b->GetCWEdge();
    du = c->GetPairEdge();
@@ -251,7 +251,7 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Left( ITinHalfEdge* b )
  {
   /* 3 points aren't colinear */
   /* as long as the 4 points belong to the same circle, do the cleaning */
-  while( v != d && _In_Circle(g, d, u, v) == IN_SIDE )
+  while( v->equal(d) == false && _In_Circle(g, d, u, v) == IN_SIDE )
   {
    c = b->GetCCWEdge();
    du = b->GetCCWEdge()->GetPairEdge();
@@ -273,30 +273,34 @@ void CTinEdgeMaker::_Del_Remove_Halfedge( ITinHalfEdge *d )
 }
 void CTinEdgeMaker::_Del_Remove_Single_Halfedge( ITinHalfEdge *d )
 {
- ITinHalfEdge *sigma, *amgis, *alpha;
- sigma = d->GetCCWEdge();
- amgis = d->GetCWEdge();
- alpha = d->GetPairEdge();
- assert(sigma != NULL);
- assert(amgis != NULL);
- sigma->SetCWEdge(amgis);
- amgis->SetCCWEdge(sigma);
- /* check to see if we have already removed alpha */
- if( alpha )
-  alpha->SetPairEdge(NULL);
- /* check to see if the vertex points to this halfedge */
- if( d->GetVertex()->GetHalfEdge()== d )
-  d->GetVertex()->SetHalfEdge(sigma);
- if (sigma == d) {
-  d->GetVertex()->SetHalfEdge(NULL);
- }
- /* finally free the halfedge */
- _Halfedge_Free(d);
+	ITinHalfEdge *sigma, *amgis, *alpha;
+	sigma = d->GetCCWEdge();
+	amgis = d->GetCWEdge();
+	alpha = d->GetPairEdge();
+	assert(sigma != NULL);
+	assert(amgis != NULL);
+	sigma->SetCWEdge(amgis);
+	amgis->SetCCWEdge(sigma);
+
+	/* check to see if we have already removed alpha */
+	if( alpha ) {
+		alpha->SetPairEdge(NULL);
+	}
+
+	/* check to see if the vertex points to this halfedge */
+	if( d->GetVertex()->GetHalfEdge()->equal(d)) {
+		d->GetVertex()->SetHalfEdge(sigma);
+	}
+	if (sigma->equal(d)) {
+		d->GetVertex()->SetHalfEdge(NULL);
+	}
+	/* finally free the halfedge */
+	_Halfedge_Free(d);
 }
 void CTinEdgeMaker::_Halfedge_Free( ITinHalfEdge* d )
 {
- assert( d != NULL );
- delete(d);
+	assert( d != NULL );
+	m_pTinStorage->DeleteHalfEdge(d);
 }
 #define CCW(A,B,C) ((B->GetX()-A->GetX())*(C->GetY()-A->GetY())-(B->GetY()-A->GetY())*(C->GetX()-A->GetX()))
 CTinEdgeMaker::IN_OUT_CIRCLE CTinEdgeMaker::_In_Circle( ITinVertex *pt0, ITinVertex *pt1, ITinVertex *pt2, ITinVertex *p )

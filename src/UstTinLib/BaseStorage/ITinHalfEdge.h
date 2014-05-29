@@ -18,6 +18,7 @@ public:
 
 	virtual ITinHalfEdge* GetCWEdge() = 0;
 	virtual void SetCWEdge(ITinHalfEdge* pEdge) = 0;
+	virtual bool equal(ITinHalfEdge* pOther) = 0;
 
 };
 

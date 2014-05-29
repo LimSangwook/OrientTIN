@@ -22,6 +22,7 @@ public:
 	virtual ITinHalfEdge* GetCWEdge();
 	virtual void SetCWEdge(ITinHalfEdge* pEdge);
 
+	virtual bool equal(ITinHalfEdge* pOther);
 
 	RID GetRID()			{return m_RID;};
 	RID GetRIDVertex()	{return m_RIDVertex;};

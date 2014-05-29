@@ -33,6 +33,25 @@ ITinVertex* CTinMemStorage::CreateVertex()
 	return pVertex;
 }
 
+bool CTinMemStorage::DeleteHalfEdge(ITinHalfEdge* pEdge)
+{
+	m_HalfEdgeList.erase(pEdge);
+	delete pEdge;
+	return true;
+}
+
+void CTinMemStorage::PrintEdgeList()
+{
+	HalfEdgeList::iterator iter = m_HalfEdgeList.begin();
+	std::cout << "\n #### Edge List #### \n";
+	for (int idx = 0; iter != m_HalfEdgeList.end() ; iter ++, idx++) {
+		CTinMemVertex* pSVertex = (CTinMemVertex*)((*iter)->GetVertex());
+		CTinMemVertex* pEVertex = (CTinMemVertex*)((*iter)->GetPairEdge()->GetVertex());
+
+		std::cout << idx << " : " << pSVertex->idx << " -> " << pEVertex->idx << "\n";
+	}
+}
+
 void CTinMemStorage::SetRamdomVertexs(int DATA_NUM)
 {
 	int sq =(int) sqrt((double)DATA_NUM);
@@ -41,9 +60,10 @@ void CTinMemStorage::SetRamdomVertexs(int DATA_NUM)
 		for(int j = 0 ; j < sq * 10 + 1 ; j += 10){
 			double  x = (double)i;
 			double y = (double)j;
-			ITinVertex* pVertex = CreateVertex();
+			CTinMemVertex* pVertex = (CTinMemVertex*) CreateVertex();
 			pVertex->SetX(x);
 			pVertex->SetY(y);
+			pVertex->idx = idx;
 			idx++;
 			if (idx == DATA_NUM) break;
 		}

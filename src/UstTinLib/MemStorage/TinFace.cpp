@@ -10,12 +10,12 @@ CTinFace::~CTinFace()
 {
 }
 
-CTinHalfEdge* CTinFace::GetHalfEdge()
+ITinHalfEdge* CTinFace::GetHalfEdge()
 {
 	return m_HalfEdge;
 }
 
-void CTinFace::SetHalfEdge(CTinHalfEdge* pEdge)
+void CTinFace::SetHalfEdge(ITinHalfEdge* pEdge)
 {
 	m_HalfEdge = pEdge;
 }

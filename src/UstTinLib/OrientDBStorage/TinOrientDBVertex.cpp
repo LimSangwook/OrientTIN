@@ -44,6 +44,7 @@ void CTinOrientDBVertex::SetY(double y)
 	m_Y = y;
 	_Update();
 }
+
 bool CTinOrientDBVertex::equal(ITinVertex* pOther)
 {
 	CTinOrientDBVertex* pDBVertex = dynamic_cast<CTinOrientDBVertex*>(pOther);
@@ -51,11 +52,24 @@ bool CTinOrientDBVertex::equal(ITinVertex* pOther)
 		return false;
 	if (this->m_RID == pDBVertex->m_RID)
 		return true;
+	return false;
 }
+
+bool CTinOrientDBVertex::IsValid()
+{
+	if (this->m_RID.length() < 3) {
+		return false;
+	}
+	return true;
+}
+
 void CTinOrientDBVertex::SetHalfEdge(ITinHalfEdge* pEdge)
 {
 	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge);
-	assert(pDBEdge);
+	if (!pDBEdge) {
+		m_RIDHalfEdge = -1;
+		return;
+	}
 	m_RIDHalfEdge = pDBEdge->GetRID();
 	_Update();
 }

@@ -49,6 +49,15 @@ void CTinMemHalfEdge::SetCWEdge(ITinHalfEdge* pEdge)
 {
 	m_pCW = pEdge;
 }
+bool CTinMemHalfEdge::equal(ITinHalfEdge* pOther)
+{
+	CTinMemHalfEdge* pMemEdge = dynamic_cast<CTinMemHalfEdge*>(pOther);
+	if(pMemEdge) {
+		if (this == pOther)
+			return true;
+	}
+	return false;
+}
 
 CTinFace* CTinMemHalfEdge::GetFace()
 {
@@ -58,4 +67,5 @@ void CTinMemHalfEdge::SetFace(CTinFace* pFace)
 {
 	m_pFace = pFace;
 }
+
 

@@ -35,6 +35,8 @@ public:
 	virtual int				GetCountOfEdges();
 
 	virtual ITinVertex* 		GetVertex(RID nRID);
+	virtual bool 				DeleteHalfEdge(ITinHalfEdge* pEdge);
+	virtual void				PrintEdgeList();
 
 public:
 	CTinOrientDBStorage();
@@ -46,6 +48,7 @@ public:
 	void UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
 
 	bool SetCleanNRamdomVertexs(int DataNum);
+	RID 	GetBlankRID() { return m_BlankRID;};
 private:
 	bool _ConnectDBServer();
 	bool _CheckDBName();

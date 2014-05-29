@@ -486,3 +486,38 @@ int	CTinOrientDBStorage::GetCountOfEdges()
 
 	return recordCount;
 }
+
+bool CTinOrientDBStorage::DeleteHalfEdge(ITinHalfEdge* pEdge)
+{
+	ODOC_OBJECT *odoc;
+	struct timeval tv;
+	tv.tv_sec = 5;
+	tv.tv_usec = 0;
+	RID strRID = ((CTinOrientDBHalfEdge*)(pEdge))->GetRID();
+	String Query = "delete edge " + strRID;
+	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
+	if (!odoc) {
+		return false;
+	}
+	ODOC_FREE_DOCUMENT(odoc);
+	return true;
+}
+
+void CTinOrientDBStorage::PrintEdgeList()
+{
+	ODOC_OBJECT *odoc;
+	struct timeval tv;
+	tv.tv_sec = 5;
+	tv.tv_usec = 0;
+
+	String Query = "SELECT  FROM " + m_EdgeClassName + " limit 100";
+	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
+	if (!odoc) {
+		return ;
+	}
+
+	for (int i=0; i<odoc_getnumrecords(odoc); i++) {
+		fprintf(stdout, "Record number %i: %s\n", i, odoc_fetchrawrecord(odoc, NULL, i));
+	}
+}
+

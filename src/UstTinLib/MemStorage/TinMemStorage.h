@@ -19,6 +19,9 @@ public:
 	virtual ITinHalfEdge* 	CreateEdge();
 	virtual int				GetCountOfEdges();
 
+	virtual bool 				DeleteHalfEdge(ITinHalfEdge* pEdge);
+	virtual void				PrintEdgeList();
+
 	//////////////////////////////
 	ITinVertex* 	CreateVertex();
 	void 			SetRamdomVertexs(int DATA_NUM);
