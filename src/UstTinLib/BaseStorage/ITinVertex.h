@@ -17,6 +17,8 @@ public:
 	// 대표 HalfEdge
 	virtual ITinHalfEdge* GetHalfEdge() = 0;
 	virtual void SetHalfEdge(ITinHalfEdge* pHalfEdge) = 0;
+
+	virtual bool equal(ITinVertex* pOther) = 0;
 };
 
 #endif //__ITIN_VERTEX_H__

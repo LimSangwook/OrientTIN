@@ -24,6 +24,9 @@ public :
 	// 대표 HalfEdge
 	virtual ITinHalfEdge* GetHalfEdge();
 	virtual void SetHalfEdge(ITinHalfEdge* pHalfEdge);
+
+	virtual bool equal(ITinVertex* pOther);
+
 	int idx;
 
 private:

@@ -40,6 +40,16 @@ void CTinMemVertex::SetY(double y)
 	m_Y = y;
 }
 
+bool CTinMemVertex::equal(ITinVertex* pOther)
+{
+	if (!pOther)
+		return false;
+	if (((CTinMemVertex*)(pOther))->idx == idx)
+		return true;
+	return false;
+}
+
+
 void CTinMemVertex::SetHalfEdge(ITinHalfEdge* pHalfEdge)
 {
 	m_pHalfEdge = pHalfEdge;

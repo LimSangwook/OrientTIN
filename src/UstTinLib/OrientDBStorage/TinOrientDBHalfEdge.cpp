@@ -8,7 +8,7 @@ CTinOrientDBStorage* GetDB() {
 	return CTinOrientDBStorage::GetInstance();
 }
 
-CTinOrientDBHalfEdge::CTinOrientDBHalfEdge(RID strRID) : m_Modify(false)
+CTinOrientDBHalfEdge::CTinOrientDBHalfEdge(RID strRID)
 {
 	m_RID = strRID;
 	m_RIDVertex = "0";
@@ -19,9 +19,11 @@ CTinOrientDBHalfEdge::CTinOrientDBHalfEdge(RID strRID) : m_Modify(false)
 
 CTinOrientDBHalfEdge::~CTinOrientDBHalfEdge()
 {
-	if (m_Modify) {
-		GetDB()->UpdateHalfEdge(this);
-	}
+}
+
+void CTinOrientDBHalfEdge::_Update()
+{
+	CTinOrientDBStorage::GetInstance()->UpdateHalfEdge(this);
 }
 
 ITinVertex* CTinOrientDBHalfEdge::GetVertex()
@@ -49,7 +51,13 @@ void CTinOrientDBHalfEdge::SetVertex(ITinVertex* pVertex)
 	CTinOrientDBVertex* pDBVertex = dynamic_cast<CTinOrientDBVertex*>(pVertex);
 	assert(pDBVertex);
 	m_RIDVertex = pDBVertex->GetRID();
-	m_Modify = true;
+
+	CTinOrientDBHalfEdge* pPair = (CTinOrientDBHalfEdge*)GetDB()->GetHalfEdge(m_RIDPair);
+	if (pPair != NULL){
+		pPair->SetRIDEndVertex(m_RIDVertex);
+		//pPair->_Update();
+	}
+	_Update();
 }
 
 void CTinOrientDBHalfEdge::SetPairEdge(ITinHalfEdge* pEdge)
@@ -57,7 +65,9 @@ void CTinOrientDBHalfEdge::SetPairEdge(ITinHalfEdge* pEdge)
 	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge);
 	assert(pDBEdge);
 	m_RIDPair = pDBEdge->GetRID();
-	m_Modify = true;
+	m_RIDEndVertex = pDBEdge->GetRIDVertex();
+	((CTinOrientDBHalfEdge*) (pEdge))->SetRIDEndVertex(m_RIDVertex);
+	_Update();
 }
 
 void CTinOrientDBHalfEdge::SetCCWEdge(ITinHalfEdge* pEdge)
@@ -65,7 +75,7 @@ void CTinOrientDBHalfEdge::SetCCWEdge(ITinHalfEdge* pEdge)
 	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge);
 	assert(pDBEdge);
 	m_RIDCCW = pDBEdge->GetRID();
-	m_Modify = true;
+	_Update();
 }
 
 void CTinOrientDBHalfEdge::SetCWEdge(ITinHalfEdge* pEdge)
@@ -73,6 +83,6 @@ void CTinOrientDBHalfEdge::SetCWEdge(ITinHalfEdge* pEdge)
 	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge);
 	assert(pDBEdge);
 	m_RIDCW = pDBEdge->GetRID();
-	m_Modify = true;
+	_Update();
 }
 

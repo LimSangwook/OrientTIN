@@ -25,13 +25,18 @@ public :
 	virtual ITinHalfEdge* GetHalfEdge();
 	virtual void SetHalfEdge(ITinHalfEdge* pHalfEdge);
 
+	virtual bool equal(ITinVertex* pOther);
+
+
+	RID GetRIDHalfEdge() {return m_RIDHalfEdge;};
+	void SetRIDHalfEdge(RID RIDHalfEdge) {m_RIDHalfEdge = RIDHalfEdge;};
 	RID GetRID(){return m_RID;};
+private:
+	void _Update();
 private:
 	RID m_RID;
 	double m_X;
 	double m_Y;
 	RID m_RIDHalfEdge;
-	bool m_Modify;
-
 };
 #endif //__TIN_ORIENTDB_VERTEX_H__

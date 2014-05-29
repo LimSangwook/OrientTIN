@@ -46,13 +46,15 @@ public:
 	void UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
 
 	bool SetCleanNRamdomVertexs(int DataNum);
-	bool _CreateBlankClass();
 private:
 	bool _ConnectDBServer();
 	bool _CheckDBName();
 	bool _CheckVertexClass();
 
 	bool _CreateEdgeClass();
+	bool _CreateBlankClass();
+
+	String _GetProperty(String json, String propertyName);
 
 private:
 	////////////////////////////
