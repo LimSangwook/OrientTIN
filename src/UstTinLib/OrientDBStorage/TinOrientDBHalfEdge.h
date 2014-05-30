@@ -24,12 +24,13 @@ public:
 
 	virtual bool equal(ITinHalfEdge* pOther);
 
-	RID GetRID()			{return m_RID;};
-	RID GetRIDVertex()	{return m_RIDVertex;};
-	RID GetRIDEndVertex(){return m_RIDEndVertex;};
-	RID GetRIDPair()		{return m_RIDPair;};
-	RID GetRIDCCW()		{return m_RIDCCW;};
-	RID GetRIDCW()		{return m_RIDCW;};
+
+	RID GetRID()			{;return m_RID;};
+	RID GetRIDVertex()	{_CheckRIDS();return m_RIDVertex;};
+	RID GetRIDEndVertex(){_CheckRIDS();return m_RIDEndVertex;};
+	RID GetRIDPair()		{_CheckRIDS();return m_RIDPair;};
+	RID GetRIDCCW()		{_CheckRIDS();return m_RIDCCW;};
+	RID GetRIDCW()		{_CheckRIDS();return m_RIDCW;};
 
 	void SetRIDVertex(RID nRID)		{m_RIDVertex = nRID;_Update();};
 	void SetRIDEndVertex(RID nRID)	{m_RIDEndVertex = nRID;_Update();};
@@ -37,8 +38,11 @@ public:
 	void SetRIDCCW(RID nRID)			{m_RIDCCW = nRID;_Update();};
 	void SetRIDCW(RID nRID)			{m_RIDCW = nRID;_Update();};
 
+	void Copy(CTinOrientDBHalfEdge* pOther);
+	void ReLoad();
 
 private:
+	void _CheckRIDS();
 	void _Update();
 
 private:

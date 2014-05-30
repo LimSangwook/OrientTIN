@@ -47,6 +47,10 @@ public:
 	void UpdateVertex(CTinOrientDBVertex* pVertex);
 	void UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
 
+	void ReLoadVertex(CTinOrientDBVertex* pVertex);
+	void ReLoadHalfEdge(CTinOrientDBHalfEdge* pEdge);
+
+
 	bool SetCleanNRamdomVertexs(int DataNum);
 	RID 	GetBlankRID() { return m_BlankRID;};
 private:

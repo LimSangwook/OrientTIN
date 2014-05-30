@@ -26,7 +26,6 @@ public :
 	virtual void SetHalfEdge(ITinHalfEdge* pHalfEdge);
 
 	virtual bool equal(ITinVertex* pOther);
-	virtual bool IsValid(){ return true;};
 	int idx;
 
 private:

@@ -10,7 +10,7 @@ class CTinOrientDBStorage;
 class CTinOrientDBVertex : public ITinVertex
 {
 public :
-	CTinOrientDBVertex(RID strRID);
+	CTinOrientDBVertex(RID strRID, double X, double Y, RID strRIDHarfEdge);
 	virtual ~CTinOrientDBVertex();
 
 	// X좌표
@@ -26,14 +26,15 @@ public :
 	virtual void SetHalfEdge(ITinHalfEdge* pHalfEdge);
 
 	virtual bool equal(ITinVertex* pOther);
-	virtual bool IsValid();
-
 
 	RID GetRIDHalfEdge() {return m_RIDHalfEdge;};
-	void SetRIDHalfEdge(RID RIDHalfEdge) {m_RIDHalfEdge = RIDHalfEdge;};
+	void SetRIDHalfEdge(RID RIDHalfEdge) {m_RIDHalfEdge = RIDHalfEdge;_Update();};
 	RID GetRID(){return m_RID;};
+	void Copy(CTinOrientDBVertex* pOther);
+	void ReLoad();
 private:
 	void _Update();
+
 private:
 	RID m_RID;
 	double m_X;

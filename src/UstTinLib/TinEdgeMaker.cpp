@@ -172,6 +172,8 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Link( ITinHalfEdge *b )
 			}
 		} else {
 			//* create the 2 halfedges */
+
+			b = b->GetPairEdge()->GetPairEdge();
 			new_gd = _CreateEdge();
 			new_dd = _CreateEdge();
 			//* setup new_gd and new_dd */
@@ -273,25 +275,25 @@ void CTinEdgeMaker::_Del_Remove_Halfedge( ITinHalfEdge *d )
 }
 void CTinEdgeMaker::_Del_Remove_Single_Halfedge( ITinHalfEdge *d )
 {
-	ITinHalfEdge *sigma, *amgis, *alpha;
-	sigma = d->GetCCWEdge();
-	amgis = d->GetCWEdge();
-	alpha = d->GetPairEdge();
-	assert(sigma != NULL);
-	assert(amgis != NULL);
-	sigma->SetCWEdge(amgis);
-	amgis->SetCCWEdge(sigma);
+	ITinHalfEdge *ccwEdge, *cwEdge, *pairEdge;
+	ccwEdge = d->GetCCWEdge();
+	cwEdge = d->GetCWEdge();
+	pairEdge = d->GetPairEdge();
+	assert(ccwEdge != NULL);
+	assert(cwEdge != NULL);
+	ccwEdge->SetCWEdge(cwEdge);
+	cwEdge->SetCCWEdge(ccwEdge);
 
 	/* check to see if we have already removed alpha */
-	if( alpha ) {
-		alpha->SetPairEdge(NULL);
+	if( pairEdge ) {
+		pairEdge->SetPairEdge(NULL);
 	}
 
 	/* check to see if the vertex points to this halfedge */
 	if( d->GetVertex()->GetHalfEdge()->equal(d)) {
-		d->GetVertex()->SetHalfEdge(sigma);
+		d->GetVertex()->SetHalfEdge(d->GetCCWEdge());
 	}
-	if (sigma->equal(d)) {
+	if (ccwEdge->equal(d)) {
 		d->GetVertex()->SetHalfEdge(NULL);
 	}
 	/* finally free the halfedge */

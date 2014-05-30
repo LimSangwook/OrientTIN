@@ -321,10 +321,7 @@ ITinVertex* CTinOrientDBStorage::GetVertex(int idx)
 	String strRIDHalfEdge = _GetProperty(strRow,"halfedge");
 	String strRID = _GetProperty(strRow,"rid");
 
-	CTinOrientDBVertex* pVertex = new CTinOrientDBVertex(strRID);
-	pVertex->SetX(::atof(strX.c_str()));
-	pVertex->SetY(::atof(strY.c_str()));
-	pVertex->SetRIDHalfEdge(strRIDHalfEdge);
+	CTinOrientDBVertex* pVertex = new CTinOrientDBVertex(strRID, ::atof(strX.c_str()), ::atof(strY.c_str()), strRIDHalfEdge);
 
 	ODOC_FREE_DOCUMENT(odoc);
 	return pVertex;
@@ -361,6 +358,10 @@ ITinVertex* CTinOrientDBStorage::GetVertex(RID vertexRID)
 	tv.tv_sec = 5;
 	tv.tv_usec = 0;
 
+	if (vertexRID.find('#') == -1){
+		return NULL;
+	}
+
 	String Query = "SELECT FROM " + vertexRID;
 	ODOC_OBJECT* odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
 	if (!odoc) {
@@ -372,20 +373,36 @@ ITinVertex* CTinOrientDBStorage::GetVertex(RID vertexRID)
 	String strY = _GetProperty(strRow,"y");
 	String strRIDHalfEdge = _GetProperty(strRow,"halfedge");
 
-	CTinOrientDBVertex* pVertex = new CTinOrientDBVertex(vertexRID);
-	pVertex->SetX(::atof(strX.c_str()));
-	pVertex->SetY(::atof(strY.c_str()));
-	pVertex->SetRIDHalfEdge(strRIDHalfEdge);
+	CTinOrientDBVertex* pVertex = new CTinOrientDBVertex(vertexRID, ::atof(strX.c_str()), ::atof(strY.c_str()), strRIDHalfEdge);
 
 	ODOC_FREE_DOCUMENT(odoc);
 	return pVertex;
 }
+
+void CTinOrientDBStorage::ReLoadVertex(CTinOrientDBVertex* pVertex)
+{
+	CTinOrientDBVertex* pReVertex = (CTinOrientDBVertex*)GetVertex(pVertex->GetRID());
+	pVertex->Copy(pReVertex);
+	delete pReVertex;
+}
+
+void CTinOrientDBStorage::ReLoadHalfEdge(CTinOrientDBHalfEdge* pEdge)
+{
+	CTinOrientDBHalfEdge* pReEdge = (CTinOrientDBHalfEdge*)GetHalfEdge(pEdge->GetRID());
+	pEdge->Copy(pReEdge);
+	delete pReEdge;
+}
+
 
 ITinHalfEdge* CTinOrientDBStorage::GetHalfEdge(RID EdgeRID)
 {
 	struct timeval tv;
 	tv.tv_sec = 5;
 	tv.tv_usec = 0;
+
+	if (EdgeRID.find('#') == -1){
+		return NULL;
+	}
 
 	String Query = "SELECT FROM " + EdgeRID;
 	ODOC_OBJECT* odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
@@ -447,7 +464,7 @@ ITinHalfEdge* CTinOrientDBStorage::CreateEdge()
 	sprintf(buffer,"%d", edges);
 	String numberRecord = buffer;
 
-	String Query = "create edge " + m_EdgeClassName + " from " + m_BlankRID + " to " + m_BlankRID + " set ccw = " + numberRecord;
+	String Query = "create edge " + m_EdgeClassName + " from " + m_BlankRID + " to " + m_BlankRID + " set pair = -1, cw = -1, ccw = " + numberRecord;
 	ODOC_OBJECT* odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, NULL);
 
 	Query = "SELECT @rid FROM " + m_EdgeClassName + " where ccw = " + numberRecord;
@@ -458,6 +475,7 @@ ITinHalfEdge* CTinOrientDBStorage::CreateEdge()
 
 	String strRID= odoc_getraw(odoc, NULL);
 	strRID = strRID.substr(strRID.find(':') + 1, strRID.length() - (strRID.find(':') + 1));
+
 	CTinOrientDBHalfEdge* pHalfEdge = new CTinOrientDBHalfEdge(strRID);
 	ODOC_FREE_DOCUMENT(odoc);
 	return pHalfEdge;
@@ -520,4 +538,3 @@ void CTinOrientDBStorage::PrintEdgeList()
 		fprintf(stdout, "Record number %i: %s\n", i, odoc_fetchrawrecord(odoc, NULL, i));
 	}
 }
-

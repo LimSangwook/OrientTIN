@@ -43,12 +43,15 @@ bool CTinMemStorage::DeleteHalfEdge(ITinHalfEdge* pEdge)
 void CTinMemStorage::PrintEdgeList()
 {
 	HalfEdgeList::iterator iter = m_HalfEdgeList.begin();
-	std::cout << "\n #### Edge List #### \n";
+	std::cout << "\n #### Edge List #### ";
 	for (int idx = 0; iter != m_HalfEdgeList.end() ; iter ++, idx++) {
 		CTinMemVertex* pSVertex = (CTinMemVertex*)((*iter)->GetVertex());
 		CTinMemVertex* pEVertex = (CTinMemVertex*)((*iter)->GetPairEdge()->GetVertex());
 
-		std::cout << idx << " : " << pSVertex->idx << " -> " << pEVertex->idx << "\n";
+		std::cout << idx << " : " << pSVertex->idx << " -> " << pEVertex->idx;
+//		std::cout << " ccw : " << ((CTinMemVertex*)((*iter)->GetCCWEdge()->GetVertex()))->idx;
+//		std::cout << " cw : " << ((CTinMemVertex*)((*iter)->GetCWEdge()->GetVertex()))->idx;
+		std::cout << "\n";
 	}
 }
 
