@@ -28,7 +28,7 @@ public:
 public:
 	/////////////////////////////////////////
 	// ITinStorageManager Interface 구현
-	virtual ITinVertex* 		GetVertex(int idx);
+	virtual VertexPtr 		GetVertex(int idx);
 	virtual int 				GetCountOfVertexs();
 
 	virtual ITinHalfEdge* 	CreateEdge();

@@ -299,7 +299,7 @@ bool CTinOrientDBStorage::SetCleanNRamdomVertexs(int DataNum)
 	return true;
 }
 
-ITinVertex* CTinOrientDBStorage::GetVertex(int idx)
+VertexPtr CTinOrientDBStorage::GetVertex(int idx)
 {
 	struct timeval tv;
 	tv.tv_sec = 5;
@@ -312,7 +312,7 @@ ITinVertex* CTinOrientDBStorage::GetVertex(int idx)
 	String Query = "SELECT *, @rid FROM " + m_VertexClassName + " skip " + strSkip + " limit 1";
 	ODOC_OBJECT* odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
 	if (!odoc) {
-		return NULL;
+		return VertexPtr();
 	}
 
 	String strRow= odoc_getraw(odoc, NULL);
@@ -324,7 +324,7 @@ ITinVertex* CTinOrientDBStorage::GetVertex(int idx)
 	CTinOrientDBVertex* pVertex = new CTinOrientDBVertex(strRID, ::atof(strX.c_str()), ::atof(strY.c_str()), strRIDHalfEdge);
 
 	ODOC_FREE_DOCUMENT(odoc);
-	return pVertex;
+	return VertexPtr(pVertex);
 }
 
 String CTinOrientDBStorage::_GetProperty(String json, String propertyName)

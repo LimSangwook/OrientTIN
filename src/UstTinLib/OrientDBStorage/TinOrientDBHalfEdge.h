@@ -10,8 +10,8 @@ public:
 	CTinOrientDBHalfEdge(RID strRID);
 	virtual ~CTinOrientDBHalfEdge();
 
-	virtual ITinVertex* GetVertex();
-	virtual void SetVertex(ITinVertex* pVertex);
+	virtual VertexPtr GetVertex();
+	virtual void SetVertex(VertexPtr pVertex);
 
 	virtual ITinHalfEdge* GetPairEdge();
 	virtual void SetPairEdge(ITinHalfEdge* pEdge);

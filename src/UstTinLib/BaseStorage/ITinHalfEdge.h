@@ -1,14 +1,15 @@
 #ifndef __ITIN_HALF_EDGE_H__
 #define __ITIN_HALF_EDGE_H__
+#include<boost/shared_ptr.hpp>
 
 class ITinVertex;
-
+typedef boost::shared_ptr<ITinVertex> VertexPtr;
 class ITinHalfEdge
 {
 public:
 	virtual ~ITinHalfEdge(){};
-	virtual ITinVertex* GetVertex() = 0;
-	virtual void SetVertex(ITinVertex* pVertex) = 0;
+	virtual VertexPtr GetVertex() = 0;
+	virtual void SetVertex(VertexPtr pVertex) = 0;
 
 	virtual ITinHalfEdge* GetPairEdge() = 0;
 	virtual void SetPairEdge(ITinHalfEdge* pEdge) = 0;

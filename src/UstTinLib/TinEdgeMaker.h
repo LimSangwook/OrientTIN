@@ -37,7 +37,7 @@ public:
 
 
 private:
-	ITinVertex* 	_GetVertex(int idx);
+	VertexPtr 		_GetVertex(int idx);
 	ITinHalfEdge* _CreateEdge();
 	int 			_GetCountOfVertexs();
 

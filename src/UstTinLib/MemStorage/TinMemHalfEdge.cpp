@@ -1,7 +1,7 @@
 #include "TinMemHalfEdge.h"
 
 CTinMemHalfEdge::CTinMemHalfEdge() :
-m_pVertex(0), m_pPair(0), m_pCCW(0), m_pCW(0), m_pFace(0)
+m_pPair(0), m_pCCW(0), m_pCW(0), m_pFace(0)
 {
 
 }
@@ -10,7 +10,7 @@ CTinMemHalfEdge::~CTinMemHalfEdge()
 {
 }
 
-ITinVertex* CTinMemHalfEdge::GetVertex()
+VertexPtr CTinMemHalfEdge::GetVertex()
 {
 	return m_pVertex;
 }
@@ -30,7 +30,7 @@ ITinHalfEdge* CTinMemHalfEdge::GetCWEdge()
 	return m_pCW;
 }
 
-void CTinMemHalfEdge::SetVertex(ITinVertex* pVertex)
+void CTinMemHalfEdge::SetVertex(VertexPtr pVertex)
 {
 	m_pVertex = pVertex;
 }

@@ -16,7 +16,7 @@ int CTinMemStorage::GetCountOfVertexs()
 	return m_VertexList.size();
 }
 
-ITinVertex* CTinMemStorage::GetVertex(int idx)
+VertexPtr CTinMemStorage::GetVertex(int idx)
 {
 	return m_VertexList.at(idx);
 }
@@ -29,7 +29,7 @@ int	CTinMemStorage::GetCountOfEdges()
 ITinVertex* CTinMemStorage::CreateVertex()
 {
 	CTinMemVertex* pVertex = new CTinMemVertex;
-	m_VertexList.push_back(pVertex);
+	m_VertexList.push_back(VertexPtr(pVertex));
 	return pVertex;
 }
 
@@ -42,17 +42,17 @@ bool CTinMemStorage::DeleteHalfEdge(ITinHalfEdge* pEdge)
 
 void CTinMemStorage::PrintEdgeList()
 {
-	HalfEdgeList::iterator iter = m_HalfEdgeList.begin();
-	std::cout << "\n #### Edge List #### ";
-	for (int idx = 0; iter != m_HalfEdgeList.end() ; iter ++, idx++) {
-		CTinMemVertex* pSVertex = (CTinMemVertex*)((*iter)->GetVertex());
-		CTinMemVertex* pEVertex = (CTinMemVertex*)((*iter)->GetPairEdge()->GetVertex());
-
-		std::cout << idx << " : " << pSVertex->idx << " -> " << pEVertex->idx;
-//		std::cout << " ccw : " << ((CTinMemVertex*)((*iter)->GetCCWEdge()->GetVertex()))->idx;
-//		std::cout << " cw : " << ((CTinMemVertex*)((*iter)->GetCWEdge()->GetVertex()))->idx;
-		std::cout << "\n";
-	}
+//	HalfEdgeList::iterator iter = m_HalfEdgeList.begin();
+//	std::cout << "\n #### Edge List #### ";
+//	for (int idx = 0; iter != m_HalfEdgeList.end() ; iter ++, idx++) {
+//		CTinMemVertex* pSVertex = (CTinMemVertex*)((*iter)->GetVertex());
+//		CTinMemVertex* pEVertex = (CTinMemVertex*)((*iter)->GetPairEdge()->GetVertex());
+//
+//		std::cout << idx << " : " << pSVertex->idx << " -> " << pEVertex->idx;
+////		std::cout << " ccw : " << ((CTinMemVertex*)((*iter)->GetCCWEdge()->GetVertex()))->idx;
+////		std::cout << " cw : " << ((CTinMemVertex*)((*iter)->GetCWEdge()->GetVertex()))->idx;
+//		std::cout << "\n";
+//	}
 }
 
 void CTinMemStorage::SetRamdomVertexs(int DATA_NUM)

@@ -12,8 +12,8 @@ public:
 	CTinMemHalfEdge();
 	virtual ~CTinMemHalfEdge();
 
-	virtual ITinVertex* GetVertex();
-	virtual void SetVertex(ITinVertex* pVertex);
+	virtual VertexPtr GetVertex();
+	virtual void SetVertex(VertexPtr pVertex);
 
 	virtual ITinHalfEdge* GetPairEdge();
 	virtual void SetPairEdge(ITinHalfEdge* pEdge);
@@ -29,7 +29,7 @@ public:
 
 	virtual bool equal(ITinHalfEdge* pOther);
 private:
-	ITinVertex*		m_pVertex;
+	VertexPtr		m_pVertex;
 	ITinHalfEdge*		m_pPair;
 	ITinHalfEdge*		m_pCCW;
 	ITinHalfEdge*		m_pCW;

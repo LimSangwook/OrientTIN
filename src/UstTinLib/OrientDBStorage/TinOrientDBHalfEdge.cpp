@@ -26,10 +26,10 @@ void CTinOrientDBHalfEdge::_Update()
 	CTinOrientDBStorage::GetInstance()->UpdateHalfEdge(this);
 }
 
-ITinVertex* CTinOrientDBHalfEdge::GetVertex()
+VertexPtr CTinOrientDBHalfEdge::GetVertex()
 {
 	ReLoad();
-	return	GetDB()->GetVertex(m_RIDVertex);
+	return	VertexPtr(GetDB()->GetVertex(m_RIDVertex));
 }
 
 ITinHalfEdge* CTinOrientDBHalfEdge::GetPairEdge()
@@ -58,17 +58,12 @@ bool CTinOrientDBHalfEdge::equal(ITinHalfEdge* pOther)
 	return false;
 }
 
-void CTinOrientDBHalfEdge::SetVertex(ITinVertex* pVertex)
+void CTinOrientDBHalfEdge::SetVertex(VertexPtr pVertex)
 {
-	CTinOrientDBVertex* pDBVertex = dynamic_cast<CTinOrientDBVertex*>(pVertex);
+	CTinOrientDBVertex* pDBVertex = dynamic_cast<CTinOrientDBVertex*>(pVertex.get());
 	assert(pDBVertex);
 	m_RIDVertex = pDBVertex->GetRID();
 
-//	CTinOrientDBHalfEdge* pPair = (CTinOrientDBHalfEdge*)GetDB()->GetHalfEdge(m_RIDPair);
-//	if (pPair != NULL){
-//		pPair->SetRIDEndVertex(m_RIDVertex);
-//		//pPair->_Update();
-//	}
 	_Update();
 }
 void CTinOrientDBHalfEdge::_CheckRIDS()

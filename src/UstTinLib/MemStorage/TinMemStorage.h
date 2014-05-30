@@ -10,10 +10,10 @@ class CTinMemStorage : public ITinStorageManager
 public:
 	//////////////////////////////
 	// ITinStorageManager 구현
+	typedef std::vector<VertexPtr> VertexList;
 	typedef std::set<ITinHalfEdge*> HalfEdgeList;
-	typedef std::vector<ITinVertex*> VertexList;
 
-	virtual ITinVertex* 		GetVertex(int idx);
+	virtual VertexPtr 		GetVertex(int idx);
 	virtual int 				GetCountOfVertexs();
 
 	virtual ITinHalfEdge* 	CreateEdge();
@@ -27,6 +27,6 @@ public:
 	void 			SetRamdomVertexs(int DATA_NUM);
 
 private:
-	HalfEdgeList 	m_HalfEdgeList;
 	VertexList 	m_VertexList;
+	HalfEdgeList 	m_HalfEdgeList;
 };
