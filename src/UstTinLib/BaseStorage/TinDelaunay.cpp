@@ -1,7 +1,7 @@
 #include "TinDelaunay.h"
 
 CTinDelaunay::CTinDelaunay():
- m_pRightMost_Edge(0), m_pLeftMost_Edge(0), m_nNumFaces(0), m_StartPointIdx(-1), m_EndPointIdx(-1)
+ m_nNumFaces(0), m_StartPointIdx(-1), m_EndPointIdx(-1)
 {
 }
 
@@ -9,12 +9,12 @@ CTinDelaunay::~CTinDelaunay()
 {
 }
 
-void CTinDelaunay::SetRightMostEdge(ITinHalfEdge* pEdge)
+void CTinDelaunay::SetRightMostEdge(EdgePtr pEdge)
 {
 	m_pRightMost_Edge = pEdge;
 }
 
-void CTinDelaunay::SetLeftMostEdge(ITinHalfEdge* pEdge)
+void CTinDelaunay::SetLeftMostEdge(EdgePtr pEdge)
 {
 	m_pLeftMost_Edge = pEdge;
 }
@@ -39,12 +39,12 @@ void CTinDelaunay::SetEndPointIdx(int idx)
 	m_EndPointIdx = idx;
 }
 
-ITinHalfEdge* CTinDelaunay::GetRightMostEdge()
+EdgePtr& CTinDelaunay::GetRightMostEdge()
 {
 	return m_pRightMost_Edge;
 }
 
-ITinHalfEdge* CTinDelaunay::GetLeftMostEdge()
+EdgePtr& CTinDelaunay::GetLeftMostEdge()
 {
 	return m_pLeftMost_Edge;
 }

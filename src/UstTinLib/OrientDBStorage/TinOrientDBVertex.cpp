@@ -30,7 +30,7 @@ double CTinOrientDBVertex::GetY()
 	return m_Y;
 }
 
-ITinHalfEdge* CTinOrientDBVertex::GetHalfEdge()
+EdgePtr CTinOrientDBVertex::GetHalfEdge()
 {
 	ReLoad();
 	return CTinOrientDBStorage::GetInstance()->GetHalfEdge(m_RIDHalfEdge);
@@ -58,9 +58,9 @@ bool CTinOrientDBVertex::equal(ITinVertex* pOther)
 	return false;
 }
 
-void CTinOrientDBVertex::SetHalfEdge(ITinHalfEdge* pEdge)
+void CTinOrientDBVertex::SetHalfEdge(EdgePtr pEdge)
 {
-	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge);
+	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge.get());
 	if (!pDBEdge) {
 		m_RIDHalfEdge = -1;
 		return;

@@ -22,8 +22,8 @@ public :
 	virtual void SetY(double y);
 
 	// 대표 HalfEdge
-	virtual ITinHalfEdge* GetHalfEdge();
-	virtual void SetHalfEdge(ITinHalfEdge* pHalfEdge);
+	virtual EdgePtr GetHalfEdge();
+	virtual void SetHalfEdge(EdgePtr pHalfEdge);
 
 	virtual bool equal(ITinVertex* pOther);
 	int idx;
@@ -31,6 +31,6 @@ public :
 private:
 	double m_X;
 	double m_Y;
-	ITinHalfEdge* m_pHalfEdge;
+	EdgePtr m_pHalfEdge;
 };
 #endif //__TINVERTEX_H__

@@ -5,6 +5,7 @@
 class ITinHalfEdge;
 class ITinVertex;
 typedef boost::shared_ptr<ITinVertex> VertexPtr;
+typedef boost::shared_ptr<ITinHalfEdge> EdgePtr;
 
 class ITinStorageManager
 {
@@ -13,10 +14,10 @@ public :
 	virtual VertexPtr 		GetVertex(int idx) = 0;
 	virtual int 				GetCountOfVertexs() = 0;
 
-	virtual ITinHalfEdge* 	CreateEdge() = 0;
+	virtual EdgePtr 			CreateEdge() = 0;
 	virtual int				GetCountOfEdges() = 0;
 
-	virtual bool 				DeleteHalfEdge(ITinHalfEdge* pEdge) = 0;
+	virtual bool 				DeleteHalfEdge(EdgePtr pEdge) = 0;
 	virtual void				PrintEdgeList() = 0;
 };
 

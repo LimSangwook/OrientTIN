@@ -32,27 +32,27 @@ VertexPtr CTinOrientDBHalfEdge::GetVertex()
 	return	VertexPtr(GetDB()->GetVertex(m_RIDVertex));
 }
 
-ITinHalfEdge* CTinOrientDBHalfEdge::GetPairEdge()
+EdgePtr CTinOrientDBHalfEdge::GetPairEdge()
 {
 	ReLoad();
 	return GetDB()->GetHalfEdge(m_RIDPair);
 }
 
-ITinHalfEdge* CTinOrientDBHalfEdge::GetCCWEdge()
+EdgePtr CTinOrientDBHalfEdge::GetCCWEdge()
 {
 	ReLoad();
 	return GetDB()->GetHalfEdge(m_RIDCCW);
 }
 
-ITinHalfEdge* CTinOrientDBHalfEdge::GetCWEdge()
+EdgePtr CTinOrientDBHalfEdge::GetCWEdge()
 {
 	ReLoad();
 	return GetDB()->GetHalfEdge(m_RIDCW);
 }
 
-bool CTinOrientDBHalfEdge::equal(ITinHalfEdge* pOther)
+bool CTinOrientDBHalfEdge::equal(EdgePtr pOther)
 {
-	CTinOrientDBHalfEdge* pDBEdage = dynamic_cast<CTinOrientDBHalfEdge*>(pOther);
+	CTinOrientDBHalfEdge* pDBEdage = dynamic_cast<CTinOrientDBHalfEdge*>(pOther.get());
 	if (pDBEdage && pDBEdage->m_RID == this->m_RID)
 		return true;
 	return false;
@@ -74,25 +74,25 @@ void CTinOrientDBHalfEdge::_CheckRIDS()
 	if (m_RIDCCW.length() < 3) 	m_RIDCCW = "-1";
 	if (m_RIDCW.length() < 3) 	m_RIDCW = "-1";
 }
-void CTinOrientDBHalfEdge::SetPairEdge(ITinHalfEdge* pEdge)
+void CTinOrientDBHalfEdge::SetPairEdge(EdgePtr pEdge)
 {
 	ReLoad();
-	if (!pEdge){
+	if (!pEdge.get()){
 		m_RIDPair = GetDB()->GetBlankRID();
 		return;
 	}
-	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge);
+	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge.get());
 	assert(pDBEdge);
 	m_RIDPair = pDBEdge->GetRID();
 	m_RIDEndVertex = pDBEdge->GetRIDVertex();
-	((CTinOrientDBHalfEdge*) (pEdge))->SetRIDEndVertex(m_RIDVertex);
+	((CTinOrientDBHalfEdge*) (pEdge.get()))->SetRIDEndVertex(m_RIDVertex);
 	_Update();
 }
 
-void CTinOrientDBHalfEdge::SetCCWEdge(ITinHalfEdge* pEdge)
+void CTinOrientDBHalfEdge::SetCCWEdge(EdgePtr pEdge)
 {
 	ReLoad();
-	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge);
+	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge.get());
 	assert(pDBEdge);
 
 	m_RIDCCW = pDBEdge->GetRID();
@@ -102,10 +102,10 @@ void CTinOrientDBHalfEdge::SetCCWEdge(ITinHalfEdge* pEdge)
 	_Update();
 }
 
-void CTinOrientDBHalfEdge::SetCWEdge(ITinHalfEdge* pEdge)
+void CTinOrientDBHalfEdge::SetCWEdge(EdgePtr pEdge)
 {
 	ReLoad();
-	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge);
+	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge.get());
 	assert(pDBEdge);
 
 	m_RIDCW = pDBEdge->GetRID();
@@ -117,8 +117,9 @@ void CTinOrientDBHalfEdge::SetCWEdge(ITinHalfEdge* pEdge)
 	_Update();
 }
 
-void CTinOrientDBHalfEdge::Copy(CTinOrientDBHalfEdge* pOther)
+void CTinOrientDBHalfEdge::Copy(EdgePtr pEdge)
 {
+	CTinOrientDBHalfEdge* pOther = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge.get());
 	m_RID = pOther->m_RID;
 	m_RIDVertex = pOther->m_RIDVertex;
 	m_RIDEndVertex = pOther->m_RIDEndVertex;

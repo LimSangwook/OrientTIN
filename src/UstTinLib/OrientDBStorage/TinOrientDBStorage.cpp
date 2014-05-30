@@ -388,26 +388,25 @@ void CTinOrientDBStorage::ReLoadVertex(CTinOrientDBVertex* pVertex)
 
 void CTinOrientDBStorage::ReLoadHalfEdge(CTinOrientDBHalfEdge* pEdge)
 {
-	CTinOrientDBHalfEdge* pReEdge = (CTinOrientDBHalfEdge*)GetHalfEdge(pEdge->GetRID());
+	EdgePtr pReEdge = GetHalfEdge(pEdge->GetRID());
 	pEdge->Copy(pReEdge);
-	delete pReEdge;
 }
 
 
-ITinHalfEdge* CTinOrientDBStorage::GetHalfEdge(RID EdgeRID)
+EdgePtr CTinOrientDBStorage::GetHalfEdge(RID EdgeRID)
 {
 	struct timeval tv;
 	tv.tv_sec = 5;
 	tv.tv_usec = 0;
 
 	if (EdgeRID.find('#') == -1){
-		return NULL;
+		return EdgePtr((ITinHalfEdge*)NULL);
 	}
 
 	String Query = "SELECT FROM " + EdgeRID;
 	ODOC_OBJECT* odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
 	if (!odoc) {
-		return NULL;
+		return EdgePtr((ITinHalfEdge*)NULL);
 	}
 
 	String strRow = odoc_getraw(odoc, NULL);
@@ -425,7 +424,7 @@ ITinHalfEdge* CTinOrientDBStorage::GetHalfEdge(RID EdgeRID)
 	pHalfEdge->SetRIDCW(strRIDCW);
 
 	ODOC_FREE_DOCUMENT(odoc);
-	return pHalfEdge;
+	return EdgePtr(pHalfEdge);
 }
 
 int CTinOrientDBStorage::GetCountOfVertexs()
@@ -452,7 +451,7 @@ int CTinOrientDBStorage::GetCountOfVertexs()
 	return recordCount;
 }
 
-ITinHalfEdge* CTinOrientDBStorage::CreateEdge()
+EdgePtr CTinOrientDBStorage::CreateEdge()
 {
 	struct timeval tv;
 	tv.tv_sec = 5;
@@ -470,7 +469,7 @@ ITinHalfEdge* CTinOrientDBStorage::CreateEdge()
 	Query = "SELECT @rid FROM " + m_EdgeClassName + " where ccw = " + numberRecord;
 	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
 	if (!odoc) {
-		return NULL;
+		return EdgePtr((ITinHalfEdge*)NULL);
 	}
 
 	String strRID= odoc_getraw(odoc, NULL);
@@ -478,7 +477,7 @@ ITinHalfEdge* CTinOrientDBStorage::CreateEdge()
 
 	CTinOrientDBHalfEdge* pHalfEdge = new CTinOrientDBHalfEdge(strRID);
 	ODOC_FREE_DOCUMENT(odoc);
-	return pHalfEdge;
+	return EdgePtr(pHalfEdge);
 }
 
 int	CTinOrientDBStorage::GetCountOfEdges()
@@ -505,13 +504,13 @@ int	CTinOrientDBStorage::GetCountOfEdges()
 	return recordCount;
 }
 
-bool CTinOrientDBStorage::DeleteHalfEdge(ITinHalfEdge* pEdge)
+bool CTinOrientDBStorage::DeleteHalfEdge(EdgePtr pEdge)
 {
 	ODOC_OBJECT *odoc;
 	struct timeval tv;
 	tv.tv_sec = 5;
 	tv.tv_usec = 0;
-	RID strRID = ((CTinOrientDBHalfEdge*)(pEdge))->GetRID();
+	RID strRID = ((CTinOrientDBHalfEdge*)(pEdge).get())->GetRID();
 	String Query = "delete edge " + strRID;
 	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
 	if (!odoc) {

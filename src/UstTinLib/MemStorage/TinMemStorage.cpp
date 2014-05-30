@@ -4,11 +4,11 @@
 #include <math.h>
 
 
-ITinHalfEdge* CTinMemStorage::CreateEdge()
+EdgePtr CTinMemStorage::CreateEdge()
 {
-	 CTinMemHalfEdge* pEdge = new CTinMemHalfEdge();
-	 m_HalfEdgeList.insert(pEdge);
-	 return pEdge;
+	EdgePtr edgePtr = EdgePtr(new CTinMemHalfEdge());
+	 m_HalfEdgeList.insert(edgePtr.get());
+	 return edgePtr;
 }
 
 int CTinMemStorage::GetCountOfVertexs()
@@ -33,10 +33,9 @@ ITinVertex* CTinMemStorage::CreateVertex()
 	return pVertex;
 }
 
-bool CTinMemStorage::DeleteHalfEdge(ITinHalfEdge* pEdge)
+bool CTinMemStorage::DeleteHalfEdge(EdgePtr pEdge)
 {
-	m_HalfEdgeList.erase(pEdge);
-	delete pEdge;
+	m_HalfEdgeList.erase(pEdge.get());
 	return true;
 }
 

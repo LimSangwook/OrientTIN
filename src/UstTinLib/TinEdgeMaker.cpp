@@ -27,7 +27,7 @@ int CTinEdgeMaker::_GetCountOfVertexs()
  return m_pTinStorage->GetCountOfVertexs();
 }
 
-ITinHalfEdge* CTinEdgeMaker::_CreateEdge()
+EdgePtr CTinEdgeMaker::_CreateEdge()
 {
 	assert(m_pTinStorage != NULL);
 	return m_pTinStorage->CreateEdge();
@@ -116,15 +116,15 @@ void CTinEdgeMaker::_DivideAndConquer(CTinDelaunay& delaunay)
 void CTinEdgeMaker::_Del_Link( CTinDelaunay& result, CTinDelaunay& left, CTinDelaunay& right )
 {
 	VertexPtr  u, v, ml, mr;
-	ITinHalfEdge  *b;
+	EdgePtr  b;
 	/* save the most right point and the most left point */
 	ml  = left.GetLeftMostEdge()->GetVertex();
 	mr  = right.GetRightMostEdge()->GetVertex();
-	b  = _Del_Get_Lower_Supportant(left, right);
+	b  = EdgePtr(_Del_Get_Lower_Supportant(left, right));
 	u  = b->GetCCWEdge()->GetPairEdge()->GetVertex();
 	v  = b->GetPairEdge()->GetCWEdge()->GetPairEdge()->GetVertex();
-	while( _Del_Classify_Point(b, u.get()) == ONLEFT ||
-		_Del_Classify_Point(b, v.get()) == ONLEFT )
+	while( _Del_Classify_Point(b, u) == ONLEFT ||
+		_Del_Classify_Point(b, v) == ONLEFT )
 	{
 		b = _Del_Valid_Link(b);
 		u = b->GetCCWEdge()->GetPairEdge()->GetVertex();
@@ -134,12 +134,12 @@ void CTinEdgeMaker::_Del_Link( CTinDelaunay& result, CTinDelaunay& left, CTinDel
 	left.SetLeftMostEdge(ml->GetHalfEdge());
 	/* TODO: this part is not needed, and can be optimized */
 	VertexPtr right_v = right.GetRightMostEdge()->GetCWEdge()->GetPairEdge()->GetVertex();
-	while( _Del_Classify_Point( right.GetRightMostEdge(), right_v.get() ) == ONRIGHT ) {
+	while( _Del_Classify_Point( right.GetRightMostEdge(), right_v ) == ONRIGHT ) {
 		right.SetRightMostEdge(right.GetRightMostEdge()->GetCWEdge());
 		right_v = right.GetRightMostEdge()->GetCWEdge()->GetPairEdge()->GetVertex();
 	}
 	VertexPtr left_v = left.GetLeftMostEdge()->GetCWEdge()->GetPairEdge()->GetVertex();
-	while( _Del_Classify_Point( left.GetLeftMostEdge(), left_v.get() ) == ONRIGHT ){
+	while( _Del_Classify_Point(left.GetLeftMostEdge(), left_v ) == ONRIGHT ){
 		left.SetLeftMostEdge(left.GetLeftMostEdge()->GetCWEdge());
 		left_v = left.GetLeftMostEdge()->GetCWEdge()->GetPairEdge()->GetVertex();
 	}
@@ -148,10 +148,10 @@ void CTinEdgeMaker::_Del_Link( CTinDelaunay& result, CTinDelaunay& left, CTinDel
 	result.SetStartPointIdx(left.GetStartPointIdx());
 	result.SetEndPointIdx(right.GetEndPointIdx());
 }
-ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Link( ITinHalfEdge *b )
+EdgePtr CTinEdgeMaker::_Del_Valid_Link(EdgePtr b )
 {
 	VertexPtr g, g_p, d, d_p;
-	ITinHalfEdge *gd, *dd, *new_gd, *new_dd;
+	EdgePtr gd, dd;
 	int  a;
 	g = b->GetVertex();
 	gd = _Del_Valid_Left(b);
@@ -163,7 +163,7 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Link( ITinHalfEdge *b )
 	d_p = dd->GetVertex();
 	if( g->equal(g_p.get()) == false && d->equal(d_p.get()) == false )
 	{
-		a = _In_Circle(g.get(), d.get(), g_p.get(), d_p.get());
+		a = _In_Circle(g, d, g_p, d_p);
 		if( a != ONCIRCLE )
 		{
 			if( a == IN_SIDE )
@@ -179,9 +179,8 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Link( ITinHalfEdge *b )
 		} else {
 			//* create the 2 halfedges */
 
-			b = b->GetPairEdge()->GetPairEdge();
-			new_gd = _CreateEdge();
-			new_dd = _CreateEdge();
+			EdgePtr new_gd = _CreateEdge();
+			EdgePtr new_dd = _CreateEdge();
 			//* setup new_gd and new_dd */
 			new_gd->SetVertex(gd->GetVertex());
 			new_gd->SetPairEdge(new_dd);
@@ -199,8 +198,8 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Link( ITinHalfEdge *b )
 		}
 	}
 	/* create the 2 halfedges */
-	new_gd = _CreateEdge();
-	new_dd = _CreateEdge();
+	EdgePtr  new_gd = _CreateEdge();
+	EdgePtr  new_dd = _CreateEdge();
 	/* setup new_gd and new_dd */
 	new_gd->SetVertex(gd->GetVertex());
 	new_gd->SetPairEdge(new_dd);
@@ -217,10 +216,10 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Link( ITinHalfEdge *b )
 
 	return new_gd;
 }
-ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Right( ITinHalfEdge *b )
+EdgePtr CTinEdgeMaker::_Del_Valid_Right( EdgePtr b )
 {
 	VertexPtr  g, d, u, v;
-	ITinHalfEdge  *c, *dd, *du;
+	EdgePtr  c, dd, du;
 	b = b->GetPairEdge();
 	d = b->GetVertex();
 	dd = b;
@@ -230,9 +229,9 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Right( ITinHalfEdge *b )
 	du = b->GetPairEdge();
 	v = b->GetCWEdge()->GetPairEdge()->GetVertex();
 
-	if( _Classify_Point_Seg(g.get(), d.get(), u.get()) == ONLEFT )
+	if( _Classify_Point_Seg(g, d, u) == ONLEFT )
 	{
-		while( v->equal(g.get()) == false && _In_Circle(g.get(), d.get(), u.get(), v.get()) == IN_SIDE )
+		while( v->equal(g.get()) == false && _In_Circle(g, d, u, v) == IN_SIDE )
 		{
 			c = b->GetCWEdge();
 			du = c->GetPairEdge();
@@ -245,10 +244,10 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Right( ITinHalfEdge *b )
 		du = dd;
 	return du;
 }
-ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Left( ITinHalfEdge* b )
+EdgePtr CTinEdgeMaker::_Del_Valid_Left( EdgePtr b )
 {
 	VertexPtr  g, d, u, v;
-	ITinHalfEdge  *c, *du, *dg;
+	EdgePtr  c, du, dg;
 	g = b->GetVertex();    /* base halfedge point */
 	dg = b;
 	d = b->GetPairEdge()->GetVertex();   /* alpha(halfedge) point */
@@ -256,11 +255,11 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Left( ITinHalfEdge* b )
 	u = b->GetPairEdge()->GetVertex();   /* sigma(alpha(halfedge)) point */
 	du = b->GetPairEdge();
 	v = b->GetCCWEdge()->GetPairEdge()->GetVertex(); /* alpha(sigma(sigma(halfedge)) point */
-	if( _Classify_Point_Seg(g.get(), d.get(), u.get()) == ONLEFT )
+	if( _Classify_Point_Seg(g, d, u) == ONLEFT )
 	{
 		/* 3 points aren't colinear */
 		/* as long as the 4 points belong to the same circle, do the cleaning */
-		while( v->equal(d.get()) == false && _In_Circle(g.get(), d.get(), u.get(), v.get()) == IN_SIDE )
+		while( v->equal(d.get()) == false && _In_Circle(g, d, u, v) == IN_SIDE )
 		{
 			c = b->GetCCWEdge();
 			du = b->GetCCWEdge()->GetPairEdge();
@@ -273,16 +272,16 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Valid_Left( ITinHalfEdge* b )
 		du  = dg;
 	return du;
 }
-void CTinEdgeMaker::_Del_Remove_Halfedge( ITinHalfEdge *d )
+void CTinEdgeMaker::_Del_Remove_Halfedge( EdgePtr d )
 {
-	ITinHalfEdge *alpha;
+	EdgePtr alpha;
 	alpha = d->GetPairEdge();
 	_Del_Remove_Single_Halfedge(d);
 	_Del_Remove_Single_Halfedge(alpha);
 }
-void CTinEdgeMaker::_Del_Remove_Single_Halfedge( ITinHalfEdge *d )
+void CTinEdgeMaker::_Del_Remove_Single_Halfedge( EdgePtr d )
 {
-	ITinHalfEdge *ccwEdge, *cwEdge, *pairEdge;
+	EdgePtr ccwEdge, cwEdge, pairEdge;
 	ccwEdge = d->GetCCWEdge();
 	cwEdge = d->GetCWEdge();
 	pairEdge = d->GetPairEdge();
@@ -293,31 +292,31 @@ void CTinEdgeMaker::_Del_Remove_Single_Halfedge( ITinHalfEdge *d )
 
 	/* check to see if we have already removed alpha */
 	if( pairEdge ) {
-		pairEdge->SetPairEdge(NULL);
+		pairEdge->SetPairEdge(EdgePtr((ITinHalfEdge*)NULL));
 	}
 
 	/* check to see if the vertex points to this halfedge */
-	if( d->GetVertex()->GetHalfEdge()->equal(d)) {
+	if( d->GetVertex()->GetHalfEdge()->equal(EdgePtr(d))) {
 		d->GetVertex()->SetHalfEdge(d->GetCCWEdge());
 	}
-	if (ccwEdge->equal(d)) {
-		d->GetVertex()->SetHalfEdge(NULL);
+	if (ccwEdge->equal(EdgePtr(d))) {
+		d->GetVertex()->SetHalfEdge(EdgePtr((ITinHalfEdge*)NULL));
 	}
 	/* finally free the halfedge */
 	_Halfedge_Free(d);
 }
-void CTinEdgeMaker::_Halfedge_Free( ITinHalfEdge* d )
+void CTinEdgeMaker::_Halfedge_Free( EdgePtr d )
 {
 	assert( d != NULL );
 	m_pTinStorage->DeleteHalfEdge(d);
 }
 #define CCW(A,B,C) ((B->GetX()-A->GetX())*(C->GetY()-A->GetY())-(B->GetY()-A->GetY())*(C->GetX()-A->GetX()))
-CTinEdgeMaker::IN_OUT_CIRCLE CTinEdgeMaker::_In_Circle( ITinVertex *pt0, ITinVertex *pt1, ITinVertex *pt2, ITinVertex *p )
+CTinEdgeMaker::IN_OUT_CIRCLE CTinEdgeMaker::_In_Circle( VertexPtr& pt0, VertexPtr& pt1, VertexPtr& pt2, VertexPtr& p )
 {
- ITinVertex* A = pt0;
- ITinVertex* B = pt1;
- ITinVertex* C = pt2;
- ITinVertex* D = p;
+	VertexPtr A = pt0;
+	VertexPtr B = pt1;
+	VertexPtr C = pt2;
+	VertexPtr D = p;
  double ccw = CCW(A, B, C);
  double adx = A->GetX() - D->GetX();
  double ady = A->GetY() - D->GetY();
@@ -350,10 +349,10 @@ CTinEdgeMaker::IN_OUT_CIRCLE CTinEdgeMaker::_In_Circle( ITinVertex *pt0, ITinVer
    return IN_SIDE;
  }
 }
-ITinHalfEdge* CTinEdgeMaker::_Del_Get_Lower_Supportant( CTinDelaunay& left, CTinDelaunay& right )
+EdgePtr CTinEdgeMaker::_Del_Get_Lower_Supportant( CTinDelaunay& left, CTinDelaunay& right )
 {
 	VertexPtr pl, pr;
-	ITinHalfEdge *right_d, *left_d, *new_ld, *new_rd;
+	EdgePtr right_d, left_d;
 	int  sl, sr;
 
 	left_d = left.GetRightMostEdge();
@@ -364,21 +363,22 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Get_Lower_Supportant( CTinDelaunay& left, CTin
 		pr  = right_d->GetPairEdge()->GetVertex();
 		VertexPtr left_d_v = left_d->GetVertex();
 		VertexPtr right_d_v = right_d->GetVertex();
-		if( (sl = _Classify_Point_Seg(left_d_v.get(), right_d_v.get(), pl.get())) == ONRIGHT )
+		if( (sl = _Classify_Point_Seg(left_d_v, right_d_v, pl)) == ONRIGHT )
 		{
 			left_d = left_d->GetCWEdge()->GetPairEdge();
 		}
 		left_d_v = left_d->GetVertex();
 		right_d_v = right_d->GetVertex();
-		if( (sr = _Classify_Point_Seg(left_d->GetVertex().get(), right_d->GetVertex().get(), pr.get())) == ONRIGHT )
+
+		if( (sr = _Classify_Point_Seg(left_d_v, right_d_v, pr)) == ONRIGHT )
 		{
 			right_d = right_d->GetPairEdge()->GetCCWEdge();
 		}
 	} while( sl == ONRIGHT || sr == ONRIGHT );
 
 	/* create the 2 halfedges */
-	new_ld = _CreateEdge();
-	new_rd = _CreateEdge();
+	EdgePtr new_ld = _CreateEdge();
+	EdgePtr new_rd = _CreateEdge();
 
 	/* setup new_gd and new_dd */
 	new_ld->SetVertex(left_d->GetVertex());
@@ -395,16 +395,16 @@ ITinHalfEdge* CTinEdgeMaker::_Del_Get_Lower_Supportant( CTinDelaunay& left, CTin
 	right_d->SetCWEdge(new_rd);
 	return new_ld;
 }
-CTinEdgeMaker::LEFT_RIGHT CTinEdgeMaker::_Del_Classify_Point( ITinHalfEdge *d, ITinVertex *pt )
+CTinEdgeMaker::LEFT_RIGHT CTinEdgeMaker::_Del_Classify_Point(EdgePtr& d, VertexPtr& pt)
 {
 	VertexPtr  s, e;
 	s  = d->GetVertex();
 	e  = d->GetPairEdge()->GetVertex();
-	return _Classify_Point_Seg(s.get(), e.get(), pt);
+	return _Classify_Point_Seg(s, e, pt);
 }
 void CTinEdgeMaker::_Del_Init_Seg(CTinDelaunay& del)
 {
-	ITinHalfEdge *d0, *d1;
+	EdgePtr d0, d1;
 	VertexPtr  pt0, pt1;
 	int start =  del.GetStartPointIdx();
 	/* setup pt0 and pt1 */
@@ -429,13 +429,13 @@ void CTinEdgeMaker::_Del_Init_Seg(CTinDelaunay& del)
 void CTinEdgeMaker::_Del_Init_Tri( CTinDelaunay& del)
 {
 	int start = del.GetStartPointIdx();
-	ITinHalfEdge *d0, *d1, *d2, *d3, *d4, *d5;
+	EdgePtr d0, d1, d2, d3, d4, d5;
 	VertexPtr  pt0, pt1, pt2;
 	/* setup the points */
 	pt0     = _GetVertex(start);
 	pt1     = _GetVertex(start + 1);
 	pt2     = _GetVertex(start + 2);
-	LEFT_RIGHT valLeftRight = _Classify_Point_Seg(pt0.get(), pt2.get(), pt1.get());
+	LEFT_RIGHT valLeftRight = _Classify_Point_Seg(pt0, pt2, pt1);
 	////////////////////////////////////
 	// allocate the 6 halfedges
 	////////////////////////////////////
@@ -507,7 +507,7 @@ void CTinEdgeMaker::_Del_Init_Tri( CTinDelaunay& del)
 		del.SetLeftMostEdge(d0);
 	}
 }
-CTinEdgeMaker::LEFT_RIGHT CTinEdgeMaker::_Classify_Point_Seg( ITinVertex *s, ITinVertex *e, ITinVertex *pt )
+CTinEdgeMaker::LEFT_RIGHT CTinEdgeMaker::_Classify_Point_Seg(VertexPtr& s, VertexPtr& e, VertexPtr& pt )
 {
  double  res;
  double se_x, se_y, spt_x, spt_y;

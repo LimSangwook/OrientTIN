@@ -1,9 +1,13 @@
 #ifndef __TIN_DELAUNAY_H__
 #define __TIN_DELAUNAY_H__
 #include <vector>
+#include <boost/shared_ptr.hpp>
+
 
 class ITinHalfEdge;
 class CTinFace;
+
+typedef boost::shared_ptr<ITinHalfEdge> EdgePtr;
 class CTinDelaunay
 {
 
@@ -12,11 +16,11 @@ public:
 	CTinDelaunay();
 	~CTinDelaunay();
 
-	ITinHalfEdge* GetRightMostEdge();
-	ITinHalfEdge* GetLeftMostEdge();
+	EdgePtr& GetRightMostEdge();
+	EdgePtr& GetLeftMostEdge();
 
-	void SetRightMostEdge(ITinHalfEdge* pEdge);
-	void SetLeftMostEdge(ITinHalfEdge* pEdge);
+	void SetRightMostEdge(EdgePtr pEdge);
+	void SetLeftMostEdge(EdgePtr pEdge);
 
 	int GetStartPointIdx();
 	void SetStartPointIdx(int idx);
@@ -33,8 +37,8 @@ public:
 
 private:
 
-	ITinHalfEdge*		m_pRightMost_Edge;
-	ITinHalfEdge*		m_pLeftMost_Edge;
+	EdgePtr		m_pRightMost_Edge;
+	EdgePtr		m_pLeftMost_Edge;
 
 	int					m_nNumFaces;
 	FaceList			m_FaceList;

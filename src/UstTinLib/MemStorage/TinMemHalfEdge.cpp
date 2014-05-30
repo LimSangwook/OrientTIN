@@ -1,9 +1,8 @@
 #include "TinMemHalfEdge.h"
 
 CTinMemHalfEdge::CTinMemHalfEdge() :
-m_pPair(0), m_pCCW(0), m_pCW(0), m_pFace(0)
+m_pFace(0)
 {
-
 }
 
 CTinMemHalfEdge::~CTinMemHalfEdge()
@@ -15,17 +14,17 @@ VertexPtr CTinMemHalfEdge::GetVertex()
 	return m_pVertex;
 }
 
-ITinHalfEdge* CTinMemHalfEdge::GetPairEdge()
+EdgePtr CTinMemHalfEdge::GetPairEdge()
 {
 	return m_pPair;
 }
 
-ITinHalfEdge* CTinMemHalfEdge::GetCCWEdge()
+EdgePtr CTinMemHalfEdge::GetCCWEdge()
 {
 	return m_pCCW;
 }
 
-ITinHalfEdge* CTinMemHalfEdge::GetCWEdge()
+EdgePtr CTinMemHalfEdge::GetCWEdge()
 {
 	return m_pCW;
 }
@@ -35,25 +34,25 @@ void CTinMemHalfEdge::SetVertex(VertexPtr pVertex)
 	m_pVertex = pVertex;
 }
 
-void CTinMemHalfEdge::SetPairEdge(ITinHalfEdge* pEdge)
+void CTinMemHalfEdge::SetPairEdge(EdgePtr pEdge)
 {
 	m_pPair = pEdge;
 }
 
-void CTinMemHalfEdge::SetCCWEdge(ITinHalfEdge* pEdge)
+void CTinMemHalfEdge::SetCCWEdge(EdgePtr pEdge)
 {
 	m_pCCW = pEdge;
 }
 
-void CTinMemHalfEdge::SetCWEdge(ITinHalfEdge* pEdge)
+void CTinMemHalfEdge::SetCWEdge(EdgePtr pEdge)
 {
 	m_pCW = pEdge;
 }
-bool CTinMemHalfEdge::equal(ITinHalfEdge* pOther)
+bool CTinMemHalfEdge::equal(EdgePtr pOther)
 {
-	CTinMemHalfEdge* pMemEdge = dynamic_cast<CTinMemHalfEdge*>(pOther);
+	CTinMemHalfEdge* pMemEdge = dynamic_cast<CTinMemHalfEdge*>(pOther.get());
 	if(pMemEdge) {
-		if (this == pOther)
+		if (this == pOther.get())
 			return true;
 	}
 	return false;

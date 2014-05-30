@@ -16,10 +16,10 @@ public:
 	virtual VertexPtr 		GetVertex(int idx);
 	virtual int 				GetCountOfVertexs();
 
-	virtual ITinHalfEdge* 	CreateEdge();
+	virtual EdgePtr		 	CreateEdge();
 	virtual int				GetCountOfEdges();
 
-	virtual bool 				DeleteHalfEdge(ITinHalfEdge* pEdge);
+	virtual bool 				DeleteHalfEdge(EdgePtr pEdge);
 	virtual void				PrintEdgeList();
 
 	//////////////////////////////

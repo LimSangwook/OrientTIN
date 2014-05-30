@@ -31,11 +31,11 @@ public:
 	virtual VertexPtr 		GetVertex(int idx);
 	virtual int 				GetCountOfVertexs();
 
-	virtual ITinHalfEdge* 	CreateEdge();
+	virtual EdgePtr 			CreateEdge();
 	virtual int				GetCountOfEdges();
 
 	virtual ITinVertex* 		GetVertex(RID nRID);
-	virtual bool 				DeleteHalfEdge(ITinHalfEdge* pEdge);
+	virtual bool 				DeleteHalfEdge(EdgePtr pEdge);
 	virtual void				PrintEdgeList();
 
 public:
@@ -43,7 +43,7 @@ public:
 	~CTinOrientDBStorage();
 	ErrCode InitDB(String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName);
 
-	ITinHalfEdge* GetHalfEdge(RID EdgeRID);
+	EdgePtr GetHalfEdge(RID EdgeRID);
 	void UpdateVertex(CTinOrientDBVertex* pVertex);
 	void UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
 

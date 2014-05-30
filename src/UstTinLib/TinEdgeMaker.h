@@ -11,19 +11,19 @@
 class CTinEdgeMaker
 {
 typedef std::set<CTinDelaunay*> DelaunayList;
-	enum LEFT_RIGHT{
-		ONSEG,
-		ONRIGHT,
-		ONLEFT
-	};
-
-	enum IN_OUT_CIRCLE{
-		ONCIRCLE,
-		IN_SIDE,
-		OUT_SIDE
-	};
 
 public:
+enum LEFT_RIGHT{
+	ONSEG,
+	ONRIGHT,
+	ONLEFT
+};
+
+enum IN_OUT_CIRCLE{
+	ONCIRCLE,
+	IN_SIDE,
+	OUT_SIDE
+};
 	CTinEdgeMaker();
 	~CTinEdgeMaker();
 
@@ -38,7 +38,7 @@ public:
 
 private:
 	VertexPtr 		_GetVertex(int idx);
-	ITinHalfEdge* _CreateEdge();
+	EdgePtr _CreateEdge();
 	int 			_GetCountOfVertexs();
 
 	////////////////////////////////////////////////
@@ -46,20 +46,20 @@ private:
 	////////////////////////////////////////////////
 
 	void 			_DivideAndConquer(CTinDelaunay& delaunay);
-	void 			_Del_Link( CTinDelaunay& result, CTinDelaunay& left, CTinDelaunay& right );
-	void 			_Del_Init_Seg( CTinDelaunay& del);
-	void 			_Del_Init_Tri( CTinDelaunay& del);
-	LEFT_RIGHT  	_Classify_Point_Seg( ITinVertex *s, ITinVertex *e, ITinVertex *pt );
-	LEFT_RIGHT  	_Del_Classify_Point( ITinHalfEdge *d, ITinVertex *pt );
-	IN_OUT_CIRCLE _In_Circle( ITinVertex *pt0, ITinVertex *pt1, ITinVertex *pt2, ITinVertex *p );
-	ITinHalfEdge* _Del_Get_Lower_Supportant( CTinDelaunay& left, CTinDelaunay& right );
-	ITinHalfEdge* _Del_Valid_Link( ITinHalfEdge *b );
-	ITinHalfEdge* _Del_Valid_Left( ITinHalfEdge* b );
-	ITinHalfEdge* _Del_Valid_Right( ITinHalfEdge *b );
-	void 			_Del_Remove_Halfedge( ITinHalfEdge *d );
-	void 			_Del_Remove_Single_Halfedge( ITinHalfEdge *d );
-	void 			_Halfedge_Free( ITinHalfEdge* d );
-	void 			_Build_Halfedge_Face( CTinDelaunay *del, ITinHalfEdge *d );
+	void 			_Del_Link(CTinDelaunay& result, CTinDelaunay& left, CTinDelaunay& right );
+	void 			_Del_Init_Seg(CTinDelaunay& del);
+	void 			_Del_Init_Tri(CTinDelaunay& del);
+	LEFT_RIGHT  	_Classify_Point_Seg(VertexPtr& s, VertexPtr& e, VertexPtr& pt);
+	LEFT_RIGHT  	_Del_Classify_Point(EdgePtr& d, VertexPtr& pt);
+	IN_OUT_CIRCLE _In_Circle(VertexPtr& pt0, VertexPtr& pt1, VertexPtr& pt2, VertexPtr& p);
+	EdgePtr 		_Del_Get_Lower_Supportant( CTinDelaunay& left, CTinDelaunay& right);
+	EdgePtr 		_Del_Valid_Link(EdgePtr b);
+	EdgePtr 		_Del_Valid_Left(EdgePtr b);
+	EdgePtr 		_Del_Valid_Right(EdgePtr b);
+	void 			_Del_Remove_Halfedge(EdgePtr d);
+	void 			_Del_Remove_Single_Halfedge(EdgePtr d);
+	void 			_Halfedge_Free(EdgePtr d);
+	void 			_Build_Halfedge_Face(CTinDelaunay *del, ITinHalfEdge *d );
 
 private:
 	CTinDelaunay	m_delaunay;

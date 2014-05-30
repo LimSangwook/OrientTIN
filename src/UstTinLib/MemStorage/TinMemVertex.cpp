@@ -2,12 +2,12 @@
 #include "TinMemHalfEdge.h"
 
 CTinMemVertex::CTinMemVertex() :
-idx(-1), m_X(0), m_Y(0), m_pHalfEdge(0)
+idx(-1), m_X(0), m_Y(0)
 {
 }
 
 CTinMemVertex::CTinMemVertex(double x, double y) :
-idx(-1), m_X(x), m_Y(y), m_pHalfEdge(0)
+idx(-1), m_X(x), m_Y(y)
 {
 }
 
@@ -25,7 +25,7 @@ double CTinMemVertex::GetY()
 	return m_Y;
 }
 
-ITinHalfEdge* CTinMemVertex::GetHalfEdge()
+EdgePtr CTinMemVertex::GetHalfEdge()
 {
 	return m_pHalfEdge;
 }
@@ -50,7 +50,7 @@ bool CTinMemVertex::equal(ITinVertex* pOther)
 }
 
 
-void CTinMemVertex::SetHalfEdge(ITinHalfEdge* pHalfEdge)
+void CTinMemVertex::SetHalfEdge(EdgePtr pHalfEdge)
 {
 	m_pHalfEdge = pHalfEdge;
 }

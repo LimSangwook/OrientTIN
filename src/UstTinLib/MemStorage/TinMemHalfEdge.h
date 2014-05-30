@@ -15,24 +15,24 @@ public:
 	virtual VertexPtr GetVertex();
 	virtual void SetVertex(VertexPtr pVertex);
 
-	virtual ITinHalfEdge* GetPairEdge();
-	virtual void SetPairEdge(ITinHalfEdge* pEdge);
+	virtual EdgePtr GetPairEdge();
+	virtual void SetPairEdge(EdgePtr pEdge);
 
-	virtual ITinHalfEdge* GetCCWEdge();
-	virtual void SetCCWEdge(ITinHalfEdge* pEdge);
+	virtual EdgePtr GetCCWEdge();
+	virtual void SetCCWEdge(EdgePtr pEdge);
 
-	virtual ITinHalfEdge* GetCWEdge();
-	virtual void SetCWEdge(ITinHalfEdge* pEdge);
+	virtual EdgePtr GetCWEdge();
+	virtual void SetCWEdge(EdgePtr pEdge);
 
 	CTinFace* GetFace();
 	void SetFace(CTinFace* pFace);
 
-	virtual bool equal(ITinHalfEdge* pOther);
+	virtual bool equal(EdgePtr pOther);
 private:
 	VertexPtr		m_pVertex;
-	ITinHalfEdge*		m_pPair;
-	ITinHalfEdge*		m_pCCW;
-	ITinHalfEdge*		m_pCW;
+	EdgePtr		m_pPair;
+	EdgePtr 		m_pCCW;
+	EdgePtr		m_pCW;
 	CTinFace*			m_pFace;
 };
 

@@ -1,8 +1,10 @@
 #ifndef __ITIN_VERTEX_H__
 #define __ITIN_VERTEX_H__
 
-class ITinHalfEdge;
+#include<boost/shared_ptr.hpp>
 
+class ITinHalfEdge;
+typedef boost::shared_ptr<ITinHalfEdge> EdgePtr;
 class ITinVertex
 {
 public:
@@ -15,8 +17,8 @@ public:
 	virtual void SetY(double y) = 0;
 
 	// 대표 HalfEdge
-	virtual ITinHalfEdge* GetHalfEdge() = 0;
-	virtual void SetHalfEdge(ITinHalfEdge* pHalfEdge) = 0;
+	virtual EdgePtr GetHalfEdge() = 0;
+	virtual void SetHalfEdge(EdgePtr pHalfEdge) = 0;
 
 	virtual bool equal(ITinVertex* pOther) = 0;
 };
