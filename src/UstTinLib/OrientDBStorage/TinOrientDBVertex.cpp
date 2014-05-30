@@ -48,9 +48,9 @@ void CTinOrientDBVertex::SetY(double y)
 	_Update();
 }
 
-bool CTinOrientDBVertex::equal(ITinVertex* pOther)
+bool CTinOrientDBVertex::equal(boost::shared_ptr<ITinVertex> pOther)
 {
-	CTinOrientDBVertex* pDBVertex = dynamic_cast<CTinOrientDBVertex*>(pOther);
+	CTinOrientDBVertex* pDBVertex = dynamic_cast<CTinOrientDBVertex*>(pOther.get());
 	if (!pDBVertex)
 		return false;
 	if (this->m_RID == pDBVertex->m_RID)

@@ -161,7 +161,7 @@ EdgePtr CTinEdgeMaker::_Del_Valid_Link(EdgePtr b )
 	dd = _Del_Valid_Right(b);
 
 	d_p = dd->GetVertex();
-	if( g->equal(g_p.get()) == false && d->equal(d_p.get()) == false )
+	if( g->equal(g_p) == false && d->equal(d_p) == false )
 	{
 		a = _In_Circle(g, d, g_p, d_p);
 		if( a != ONCIRCLE )
@@ -231,7 +231,7 @@ EdgePtr CTinEdgeMaker::_Del_Valid_Right( EdgePtr b )
 
 	if( _Classify_Point_Seg(g, d, u) == ONLEFT )
 	{
-		while( v->equal(g.get()) == false && _In_Circle(g, d, u, v) == IN_SIDE )
+		while( v->equal(g) == false && _In_Circle(g, d, u, v) == IN_SIDE )
 		{
 			c = b->GetCWEdge();
 			du = c->GetPairEdge();
@@ -259,7 +259,7 @@ EdgePtr CTinEdgeMaker::_Del_Valid_Left( EdgePtr b )
 	{
 		/* 3 points aren't colinear */
 		/* as long as the 4 points belong to the same circle, do the cleaning */
-		while( v->equal(d.get()) == false && _In_Circle(g, d, u, v) == IN_SIDE )
+		while( v->equal(d) == false && _In_Circle(g, d, u, v) == IN_SIDE )
 		{
 			c = b->GetCCWEdge();
 			du = b->GetCCWEdge()->GetPairEdge();

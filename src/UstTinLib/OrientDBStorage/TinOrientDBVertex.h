@@ -25,7 +25,7 @@ public :
 	virtual EdgePtr GetHalfEdge();
 	virtual void SetHalfEdge(EdgePtr pHalfEdge);
 
-	virtual bool equal(ITinVertex* pOther);
+	virtual bool equal(boost::shared_ptr<ITinVertex> pOther);
 
 	RID GetRIDHalfEdge() {return m_RIDHalfEdge;};
 	void SetRIDHalfEdge(RID RIDHalfEdge) {m_RIDHalfEdge = RIDHalfEdge;_Update();};

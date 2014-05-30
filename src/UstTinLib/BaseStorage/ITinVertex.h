@@ -20,7 +20,7 @@ public:
 	virtual EdgePtr GetHalfEdge() = 0;
 	virtual void SetHalfEdge(EdgePtr pHalfEdge) = 0;
 
-	virtual bool equal(ITinVertex* pOther) = 0;
+	virtual bool equal(boost::shared_ptr<ITinVertex> pOther) = 0;
 };
 
 #endif //__ITIN_VERTEX_H__

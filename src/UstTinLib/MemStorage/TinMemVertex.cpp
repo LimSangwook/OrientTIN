@@ -40,11 +40,11 @@ void CTinMemVertex::SetY(double y)
 	m_Y = y;
 }
 
-bool CTinMemVertex::equal(ITinVertex* pOther)
+bool CTinMemVertex::equal(boost::shared_ptr<ITinVertex> pOther)
 {
-	if (!pOther)
+	if (!pOther.get())
 		return false;
-	if (((CTinMemVertex*)(pOther))->idx == idx)
+	if (((CTinMemVertex*)(pOther.get()))->idx == idx)
 		return true;
 	return false;
 }

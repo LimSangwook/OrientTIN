@@ -11,8 +11,6 @@
 class CTinEdgeMaker
 {
 typedef std::set<CTinDelaunay*> DelaunayList;
-
-public:
 enum LEFT_RIGHT{
 	ONSEG,
 	ONRIGHT,
@@ -24,6 +22,8 @@ enum IN_OUT_CIRCLE{
 	IN_SIDE,
 	OUT_SIDE
 };
+
+public:
 	CTinEdgeMaker();
 	~CTinEdgeMaker();
 
