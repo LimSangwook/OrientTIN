@@ -1,5 +1,5 @@
-#ifndef __TIN_HALFEDGE_H__
-#define __TIN_HALFEDGE_H__
+#ifndef __TIN_ORIENT_HALFEDGE_H__
+#define __TIN_ORIENT_HALFEDGE_H__
 
 #include "../Common.h"
 #include "../BaseStorage/ITinHalfEdge.h"
@@ -55,4 +55,4 @@ private:
 	RID		m_RIDCW;
 };
 
-#endif //__TIN_HALFEDGE_H__
+#endif //__TIN_ORIENT_HALFEDGE_H__
