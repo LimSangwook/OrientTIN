@@ -74,13 +74,11 @@ void CTinOrientDBHalfEdge::_CheckRIDS()
 	if (m_RIDCCW.length() < 3) 	m_RIDCCW = "-1";
 	if (m_RIDCW.length() < 3) 	m_RIDCW = "-1";
 }
+
 void CTinOrientDBHalfEdge::SetPairEdge(EdgePtr pEdge)
 {
 	ReLoad();
-	if (!pEdge.get()){
-		m_RIDPair = GetDB()->GetBlankRID();
-		return;
-	}
+
 	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge.get());
 	assert(pDBEdge);
 	m_RIDPair = pDBEdge->GetRID();

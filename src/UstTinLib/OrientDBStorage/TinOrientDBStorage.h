@@ -6,6 +6,7 @@
 #include "../BaseStorage/ITinStorageManager.h"
 #include "TinOrientDBVertex.h"
 #include "TinOrientDBHalfEdge.h"
+#include "/usr/lib/jvm/java-7-openjdk-amd64/include/jni.h"
 
 class CTinOrientDBHalfEdge;
 class CTinOrientDBStorage : ITinStorageManager
@@ -19,10 +20,7 @@ public:
 	//TinMaker에서 사용될 Error Code를 지정한다.
 	enum ErrCode{
 		RET_OK,						// ERROR 없음
-		ERR_DB_URL,					// DB URL로 DB를 찾을수 없음
-		ERR_ID_PW,						// DB ID/PW 로 접속할 수 없음.
-		ERR_DB_NAME,					// DB Name 오류
-		ERR_VERTEX_CLASS_NOT_FOUND,	// DB 내 VertexClass를 찾을 수 없음.
+		ERR_DB_INIT,
 		ERR_ETC						// 기타 ERROR
 	};
 public:
@@ -52,36 +50,37 @@ public:
 
 
 	bool SetCleanNRamdomVertexs(int DataNum);
-	RID 	GetBlankRID() { return m_BlankRID;};
+
 private:
 	bool _ConnectDBServer();
-	bool _CheckDBName();
-	bool _CheckVertexClass();
-
 	bool _CreateEdgeClass();
 	bool _CreateBlankClass();
 
 	String _GetProperty(String json, String propertyName);
 
+	bool _InitJNI();
+	bool _GetJNIMethodID();
+	JNIEnv* _Create_VM(JavaVM ** jvm);
+
 private:
 	////////////////////////////
-	// DB 기본정보
+	// JNI 호출 관련
 	////////////////////////////
-	String m_Url;					// DB Server URL
-	String	m_DBPort;				// DB Server Port
-	String m_Id;					// DB Server 접속 ID
-	String m_Pw;					// DB Server 접속 PW
-	String m_DbName;				// DB Name
-	String m_VertexClassName;	// HalfEdge로 구성될 Vertex들
-	String m_EdgeClassName;		// 최종 산출물인 HalfEdge Class의 Name
-
-	////////////////////////////
-	// Orient DB 접속관련 변수
-	////////////////////////////
-	orientdb* m_OrientDB;
-	orientdb_con* m_OrientCon;
-
-	RID m_BlankRID;	// 임시로 쓰이는 RID
+	JNIEnv* 	m_JNIEnv;
+	JavaVM* 	m_JNIJvm;
+	jclass  	m_JNIOrientLibClass;
+	jobject	m_JNIOrientLibObject;
+	// Function
+	jmethodID 	m_JNIFuncInit;
+	jmethodID 	m_JNIFuncInitDB;
+	jmethodID 	m_JNIFuncCreateEdge;
+	jmethodID 	m_JNIFuncGetVertex;
+	jmethodID 	m_JNIFuncGetVertexFromIdx;
+	jmethodID 	m_JNIFuncGetCountOfVertexs;
+	jmethodID 	m_JNIFuncGetCountOfEdges;
+	jmethodID 	m_JNIFuncUpdateEdge;
+	jmethodID 	m_JNIFuncUpdateVertex;
+	jmethodID 	m_JNIFuncDeleteEdge;
 };
 
 #endif //__UST_TIN_MAKER_H__
