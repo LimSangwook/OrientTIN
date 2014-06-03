@@ -292,7 +292,7 @@ void CTinEdgeMaker::_Del_Remove_Single_Halfedge( EdgePtr d )
 
 	/* check to see if we have already removed alpha */
 	if( pairEdge ) {
-		pairEdge->SetPairEdge(EdgePtr((ITinHalfEdge*)NULL));
+//		pairEdge->SetPairEdge(EdgePtr((ITinHalfEdge*)NULL));
 	}
 
 	/* check to see if the vertex points to this halfedge */

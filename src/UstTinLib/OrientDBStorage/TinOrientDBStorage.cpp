@@ -4,7 +4,7 @@
 #include <math.h>
 #include "TinOrientDBStorage.h"
 #include "TinOrientDBVertex.h"
-#include "TinOrientDBHalfEdge.h"
+//#include "TinOrientDBHalfEdge.h"
 
 
 void orient_debug(const char *msg) {
@@ -30,17 +30,44 @@ CTinOrientDBStorage::CTinOrientDBStorage()
 	m_JNIFuncUpdateEdge = NULL;
 	m_JNIFuncUpdateVertex = NULL;
 	m_JNIFuncDeleteEdge = NULL;
+	m_JNIFuncGetEdge = NULL;
+	m_JNIFuncSetRandomVertex = NULL;
+}
+
+CTinOrientDBStorage::ErrCode CTinOrientDBStorage::InitDB(
+		String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName)
+{
+	if (!_InitJNI()) {
+		return ERR_DB_INIT;
+	}
+	String port = "2424";
+
+	jstring a = m_JNIEnv->NewStringUTF(url.c_str());
+	jstring b = m_JNIEnv->NewStringUTF(dbName.c_str());
+	jstring c = m_JNIEnv->NewStringUTF(port.c_str());
+	jstring d = m_JNIEnv->NewStringUTF(id.c_str());
+	jstring e = m_JNIEnv->NewStringUTF(pw.c_str());
+	jstring f = m_JNIEnv->NewStringUTF(vertexClassName.c_str());
+	jstring g = m_JNIEnv->NewStringUTF(edgeClassName.c_str());
+
+	jboolean ret = m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncInitDB, a, b, c, d, e, f, g);
+
+	if (!ret){
+		return ERR_DB_INIT;
+	}
+
+	return RET_OK;
 }
 
 JNIEnv* CTinOrientDBStorage::_Create_VM(JavaVM ** jvm)
 {
     JNIEnv *env;
     JavaVMInitArgs vm_args;
-    JavaVMOption options;
-    options.optionString = (char*)"-Djava.class.path=/home/iswook/workspace2/OrientLib/bin/"; //Path to the java source code
+    JavaVMOption options[1];
+    options[0].optionString = (char*)"-Djava.class.path=/home/iswook/workspace2/OrientLib/bin:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-graphdb-1.7-rc2.jar:/usr/lib/jvm/java-6-oracle/jre/lib/charsets.jar:/usr/lib/jvm/java-6-oracle/jre/lib/jce.jar:/usr/lib/jvm/java-6-oracle/jre/lib/jsse.jar:/usr/lib/jvm/java-6-oracle/jre/lib/resources.jar:/usr/lib/jvm/java-6-oracle/jre/lib/rt.jar:/usr/lib/jvm/java-6-oracle/jre/lib/ext/dnsns.jar:/usr/lib/jvm/java-6-oracle/jre/lib/ext/localedata.jar:/usr/lib/jvm/java-6-oracle/jre/lib/ext/sunjce_provider.jar:/usr/lib/jvm/java-6-oracle/jre/lib/ext/sunpkcs11.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/blueprints-core-2.5.0-20140320.105052-37.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/gremlin-groovy-2.5.0-20140125.153413-8.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/gremlin-java-2.5.0-20140125.153323-8.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/mail-1.4.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/colt-1.2.0.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/concurrent-1.3.4.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/concurrentlinkedhashmap-lru-1.4.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orient-commons-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-client-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-core-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-distributed-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-enterprise-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-nativeos-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-object-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-server-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-tools-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/activation-1.1.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/antlr-2.7.7.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/asm-3.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/asm-analysis-3.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/asm-commons-3.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/asm-tree-3.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/asm-util-3.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/commons-beanutils-1.7.0.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/commons-beanutils-core-1.8.0.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/commons-collections-3.2.1.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/commons-configuration-1.6.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/commons-digester-1.8.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/commons-lang-2.4.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/commons-logging-1.0.4.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/groovy-1.8.9.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/hazelcast-3.1.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/hibernate-jpa-2.0-api-1.0.0.Final.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jackson-annotations-2.2.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jackson-core-2.2.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jackson-databind-2.2.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jackson-datatype-json-org-2.2.3.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jansi-1.5.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/javassist-3.16.1-GA.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jettison-1.3.3.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jline-0.9.94.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jna-4.0.0.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jna-platform-4.0.0.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/json-20090211.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/pipes-2.5.0-20140125.162807-6.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/snappy-0.3.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/stax-api-1.0.1.jar";
     vm_args.version = JNI_VERSION_1_6; //JDK version. This indicates version 1.6
     vm_args.nOptions = 1;
-    vm_args.options = &options;
+    vm_args.options = options;
     vm_args.ignoreUnrecognized = 0;
 
     int ret = JNI_CreateJavaVM(jvm, (void**)&env, &vm_args);
@@ -73,333 +100,83 @@ bool CTinOrientDBStorage::_GetJNIMethodID()
 {
 	m_JNIFuncInit 				= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "<init>", "()V");
 	m_JNIFuncInitDB 				= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "InitDB", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
-	m_JNIFuncCreateEdge 			= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "<init>", "()V");
-	m_JNIFuncGetVertex 			= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "<init>", "()V");
-	m_JNIFuncGetVertexFromIdx 	= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "<init>", "()V");
+	m_JNIFuncCreateEdge 			= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "CreateEdge", "()Ljava/lang/String;");
+	m_JNIFuncGetVertex 			= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "GetVertex", "(Ljava/lang/String;)Ljava/lang/String;");
+	m_JNIFuncGetVertexFromIdx 	= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "GetVertexFromIndex", "(I)Ljava/lang/String;");
 	m_JNIFuncGetCountOfVertexs 	= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "GetCountOfVertexs", "()I");
-	m_JNIFuncGetCountOfEdges 	= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "<init>", "()V");
-	m_JNIFuncUpdateEdge 			= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "<init>", "()V");
-	m_JNIFuncUpdateVertex 		= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "<init>", "()V");
-	m_JNIFuncDeleteEdge 			= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "<init>", "()V");
-	return m_JNIFuncInitDB && m_JNIFuncCreateEdge && m_JNIFuncGetVertex && m_JNIFuncGetVertexFromIdx && m_JNIFuncGetCountOfVertexs &&
-			m_JNIFuncGetCountOfEdges && m_JNIFuncUpdateEdge && m_JNIFuncUpdateVertex && m_JNIFuncDeleteEdge;
+	m_JNIFuncGetCountOfEdges 	= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "GetCountOfEdges", "()I");
+	m_JNIFuncUpdateEdge 			= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "UpdateEdge", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
+	m_JNIFuncUpdateVertex 		= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "UpdateVertex", "(Ljava/lang/String;DDLjava/lang/String;)Z");
+	m_JNIFuncDeleteEdge 			= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "DeleteHalfEdge", "(Ljava/lang/String;)Z");
+	m_JNIFuncSetRandomVertex		= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "SetRandomVertex", "(I)Z");
+	m_JNIFuncGetEdge				= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "GetEdge", "(Ljava/lang/String;)Ljava/lang/String;");
+
+	return m_JNIFuncInitDB && 				m_JNIFuncCreateEdge &&			m_JNIFuncGetVertex &&
+			m_JNIFuncGetVertexFromIdx && 	m_JNIFuncGetCountOfVertexs &&	m_JNIFuncGetCountOfEdges &&
+			m_JNIFuncUpdateEdge && 			m_JNIFuncUpdateVertex && 		m_JNIFuncDeleteEdge &&
+			m_JNIFuncSetRandomVertex &&		m_JNIFuncInit	&&					m_JNIFuncGetEdge;
 }
 
 CTinOrientDBStorage::~CTinOrientDBStorage()
 {
-//	if (m_OrientDB && m_OrientCon) {
-//		struct timeval tv;
-//		tv.tv_sec = 15;
-//		tv.tv_usec = 0;
-//		o_bin_dbclose(m_OrientDB, m_OrientCon, &tv, 0);
-//		o_close(m_OrientDB, m_OrientCon);
-//		m_OrientCon = NULL;
-//	}
-//	if (m_OrientDB) {
-//		o_free(m_OrientDB);
-//		m_OrientDB = NULL;
-//	}
 }
 
 void CTinOrientDBStorage::UpdateVertex(CTinOrientDBVertex* pVertex)
 {
-//	ODOC_OBJECT *odoc;
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//
-//	String Query = "update "+ m_VertexClassName + " ";
-//	Query += "set halfedge = " + pVertex->GetRIDHalfEdge() + " ";
-//	Query += " where @rid = " + pVertex->GetRID();
-//
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
-//	ODOC_FREE_DOCUMENT(odoc);
+	jstring jStrRID = m_JNIEnv->NewStringUTF(pVertex->GetRID().c_str());
+	jstring jStrHalfEdge = m_JNIEnv->NewStringUTF(pVertex->GetRIDHalfEdge().c_str());
+	m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncUpdateVertex, jStrRID, pVertex->GetX(), pVertex->GetY(), jStrHalfEdge);
 }
 
 void CTinOrientDBStorage::UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge)
 {
-//	ODOC_OBJECT *odoc;
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//
-//	String Query = "update "+ m_EdgeClassName + " ";
-//	Query += "set out = " + pEdge->GetRIDVertex() + " ";
-//	Query += ", in = " + pEdge->GetRIDEndVertex() + " ";
-//	Query += ", pair = " + pEdge->GetRIDPair() + " ";
-//	Query += ", ccw = " + pEdge->GetRIDCCW() + " ";
-//	Query += ", cw = " + pEdge->GetRIDCW() + " ";
-//	Query += " where @rid = " + pEdge->GetRID();
-//
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
-//	ODOC_FREE_DOCUMENT(odoc);
+	jstring jStrRID = m_JNIEnv->NewStringUTF(pEdge->GetRID().c_str());
+	jstring jStrOut = m_JNIEnv->NewStringUTF(pEdge->GetRIDVertex().c_str());
+	jstring jStrIn = m_JNIEnv->NewStringUTF(pEdge->GetRIDEndVertex().c_str());
+	jstring jStrPair = m_JNIEnv->NewStringUTF(pEdge->GetRIDPair().c_str());
+	jstring jStrCCW = m_JNIEnv->NewStringUTF(pEdge->GetRIDCCW().c_str());
+	jstring jStrCW = m_JNIEnv->NewStringUTF(pEdge->GetRIDCW().c_str());
+	m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncUpdateEdge, jStrRID, jStrOut, jStrIn, jStrPair, jStrCCW, jStrCW);
 }
 
-CTinOrientDBStorage::ErrCode CTinOrientDBStorage::InitDB(
-		String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName)
-{
-	if (!_InitJNI()) {
-		return ERR_DB_INIT;
-	}
-	String port = "2424";
-
-	jstring a = m_JNIEnv->NewStringUTF(url.c_str());
-	jstring b = m_JNIEnv->NewStringUTF(dbName.c_str());
-	jstring c = m_JNIEnv->NewStringUTF(port.c_str());
-	jstring d = m_JNIEnv->NewStringUTF(id.c_str());
-	jstring e = m_JNIEnv->NewStringUTF(pw.c_str());
-	jstring f = m_JNIEnv->NewStringUTF(vertexClassName.c_str());
-	jstring g = m_JNIEnv->NewStringUTF(edgeClassName.c_str());
-
-	jboolean ret = m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncInitDB, a, b, c, d, e, f, g);
-
-	if (!ret){
-		return ERR_DB_INIT;
-	}
-
-
-	return RET_OK;
-}
-
-bool CTinOrientDBStorage::_ConnectDBServer()
-{
-
-//	int rc;
-//	char str[O_ERR_MAXLEN];
-//	struct timeval tv;
-//
-//
-//
-//
-//	m_OrientDB = o_new();
-//
-//	o_debug_setlevel(m_OrientDB, ORIENT_SILENT);
-//	o_debug_sethook(m_OrientDB, (void*)&orient_debug);
-//
-//	rc = o_prepare_connection(m_OrientDB, ORIENT_PROTO_BINARY, m_Url.c_str(), m_DBPort.c_str());
-//	if (rc != O_OK) {
-//		o_strerr(rc, str, O_ERR_MAXLEN);
-//		fprintf(stderr, "Error preparing connections (%i): %s\n", rc, str);
-//		o_free(m_OrientDB);
-//		m_OrientDB = NULL;
-//		return false;
-//	}
-//
-//	// this user will be used to execute administrative commands to orientdb
-//	rc = o_prepare_user(m_OrientDB, ORIENT_ADMIN, m_Id.c_str(), m_Pw.c_str());
-//	if (rc != O_OK) {
-//		o_free(m_OrientDB);
-//		m_OrientDB = NULL;
-//		return false;
-//	}
-//	// this user will be used on database open to execute commands to the db
-//	rc = o_prepare_user(m_OrientDB, ORIENT_USER, m_Id.c_str(), m_Pw.c_str());
-//	if (rc != O_OK) {
-//		o_free(m_OrientDB);
-//		m_OrientDB = NULL;
-//		return false;
-//	}
-//	// set a connection timeout of 5 seconds
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//	// try to create the connection with orientdb. NULL if a problem is encountered
-//	m_OrientCon = o_connect(m_OrientDB, &tv, 0);
-//	if (!m_OrientCon) {
-//		o_free(m_OrientDB);
-//		m_OrientDB = NULL;
-//		return false;
-//	}
-//
-//	rc = o_bin_connect(m_OrientDB, m_OrientCon, &tv, 0);
-//	if (rc != O_OK) {
-//			o_close(m_OrientDB, m_OrientCon);
-//			m_OrientCon = NULL;
-//			o_free(m_OrientDB);
-//			m_OrientDB = NULL;
-//			return false;
-//		}
-	return true;
-}
-
-//bool CTinOrientDBStorage::_CheckDBName()
-//{
-//	int rc;
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//	rc = o_bin_dbexists(m_OrientDB, m_OrientCon, &tv, 0, m_DbName.c_str());
-//	if (rc != 1) {
-//		return false;
-//	}
-//
-//	rc = o_bin_dbopen(m_OrientDB, m_OrientCon, &tv, 0, m_DbName.c_str());
-//	if (rc != O_OK) {
-//		o_close(m_OrientDB, m_OrientCon);
-//		m_OrientCon = NULL;
-//		o_free(m_OrientDB);
-//		m_OrientDB = NULL;
-//		return false;
-//	}
-////
-////	return true;
-////}
-//
-//bool CTinOrientDBStorage::_CheckVertexClass()
-//{
-//	ODOC_OBJECT *odoc;
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, "SELECT FROM V", 20, "*:-1");
-//	if (!odoc) {
-//		return false;
-//	}
-//
-//	// free the returned document when you no longer need it
-//	ODOC_FREE_DOCUMENT(odoc);
-//
-//	return true;
-//}
-
-bool CTinOrientDBStorage::_CreateEdgeClass()
-{
-//	ODOC_OBJECT *odoc;
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//	String Query = "drop class "+ m_EdgeClassName;
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
-//	ODOC_FREE_DOCUMENT(odoc);
-//
-//	Query = "create class " + m_EdgeClassName + " extends E";
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
-//
-//	if (!odoc) {
-//		return false;
-//	}
-//
-//	ODOC_FREE_DOCUMENT(odoc);
-	return true;
-}
-
-bool CTinOrientDBStorage::_CreateBlankClass()
-{
-//	ODOC_OBJECT *odoc;
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//
-//	String Query = "drop class USTBlankClass";
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
-//	ODOC_FREE_DOCUMENT(odoc);
-//
-//	Query = "create class USTBlankClass extends V";
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
-//	ODOC_FREE_DOCUMENT(odoc);
-//
-//	Query = "create vertex UstBlankClass set name = \'blank\'";
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, NULL);
-//	if (!odoc) {
-//		return false;
-//	}
-//	ODOC_FREE_DOCUMENT(odoc);
-//
-//	Query = "SELECT @rid FROM UstBlankClass";
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
-//	if (!odoc) {
-//		return -1;
-//	}
-//
-//	String strRecrodCount = odoc_getraw(odoc, NULL);
-//	m_BlankRID = strRecrodCount.substr(strRecrodCount.find(':') + 1, strRecrodCount.length() - (strRecrodCount.find(':') + 1));
-
-	return true;
-}
 bool CTinOrientDBStorage::SetCleanNRamdomVertexs(int DataNum)
 {
-//	ODOC_OBJECT *odoc;
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//
-//	/////////////////
-//	// DROP CLASS
-//	String Query = "drop class " + m_VertexClassName;
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
-//	if (!odoc) {
-//		return false;
-//	}
-//	ODOC_FREE_DOCUMENT(odoc);
-//
-//	/////////////////
-//	// Create Class
-//	Query = "create class " + m_VertexClassName + " extends V";
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
-//	if (!odoc) {
-//		return false;
-//	}
-//	ODOC_FREE_DOCUMENT(odoc);
-//
-//	/////////////////////
-//	// SetRandomVertex
-//	int sq =(int) sqrt((double)DataNum);
-//	int idx = 0;
-//	for (int i = 0 ; i < sq * 10 + 1 ; i += 10) {
-//		for(int j = 0 ; j < sq * 10 + 1 ; j += 10){
-//			idx++;
-//			char buf[100];
-//			::sprintf(buf, "%d", i);
-//			String xPos = buf;
-//			::sprintf(buf, "%d", j);
-//			String yPos = buf;
-//
-//			String Query = "create vertex " + m_VertexClassName + " set x = " + xPos + ", y = " + yPos;
-//			odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, NULL);
-//			if (!odoc) {
-//				return false;
-//			}
-//			ODOC_FREE_DOCUMENT(odoc);
-//			if (idx == DataNum) break;
-//		}
-//		if (idx == DataNum) break;
-//	}
+	jboolean ret = m_JNIEnv->CallIntMethod(m_JNIOrientLibObject, m_JNIFuncSetRandomVertex, DataNum);
+
+	if (!ret){
+		return false;
+	}
+
 	return true;
 }
 
+VertexPtr CTinOrientDBStorage::_GetStringToVertex(String& str)
+{
+	String vertexRID = _GetProperty(str, "rid");
+	String X = _GetProperty(str, "x");
+	String Y = _GetProperty(str, "y");
+	String HalfEdgeRID = _GetProperty(str, "halfedge");
+
+	if (HalfEdgeRID == "null")
+		HalfEdgeRID = "";
+
+	CTinOrientDBVertex* pV = new CTinOrientDBVertex(vertexRID, atof(X.c_str()), atof(Y.c_str()), HalfEdgeRID);
+
+	return VertexPtr(pV);
+}
 VertexPtr CTinOrientDBStorage::GetVertex(int idx)
 {
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//
-//	char buffer[100];
-//	sprintf(buffer,"%d",idx);
-//	String strSkip = buffer;
-//
-//	String Query = "SELECT *, @rid FROM " + m_VertexClassName + " skip " + strSkip + " limit 1";
-//	ODOC_OBJECT* odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
-//	if (!odoc) {
-//		return VertexPtr();
-//	}
-//
-//	String strRow= odoc_getraw(odoc, NULL);
-//	String strX = _GetProperty(strRow,"x");
-//	String strY = _GetProperty(strRow,"y");
-//	String strRIDHalfEdge = _GetProperty(strRow,"halfedge");
-//	String strRID = _GetProperty(strRow,"rid");
-//
-//	CTinOrientDBVertex* pVertex = new CTinOrientDBVertex(strRID, ::atof(strX.c_str()), ::atof(strY.c_str()), strRIDHalfEdge);
-//
-//	ODOC_FREE_DOCUMENT(odoc);
+	jstring jStrVertex =  (jstring)m_JNIEnv->CallObjectMethod(m_JNIOrientLibObject, m_JNIFuncGetVertexFromIdx, idx);
+	jboolean bInIsCopy;
+	const char* strCln = m_JNIEnv->GetStringUTFChars(jStrVertex, &bInIsCopy);
+	String strV = strCln;
+	m_JNIEnv->ReleaseStringUTFChars(jStrVertex, strCln);
 
-
-	return VertexPtr((CTinOrientDBVertex*)(NULL));
+	return _GetStringToVertex(strV);
 }
 
 String CTinOrientDBStorage::_GetProperty(String json, String propertyName)
 {
-
 	//',' + propertyName + ":" 일수 있고
 	//'@' + propertyName + ":" 일수 있다
 
@@ -420,41 +197,29 @@ String CTinOrientDBStorage::_GetProperty(String json, String propertyName)
 	} else {
 		endPostion++;
 	}
-	return json.substr(startPostion, endPostion);
+
+	String retStr = json.substr(startPostion, endPostion);
+	if (retStr =="null")	{
+		retStr == "0";
+	}
+	return retStr;
 }
-ITinVertex* CTinOrientDBStorage::GetVertex(RID vertexRID)
+VertexPtr CTinOrientDBStorage::GetVertex(RID vertexRID)
 {
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//
-//	if (vertexRID.find('#') == -1){
-//		return NULL;
-//	}
-//
-//	String Query = "SELECT FROM " + vertexRID;
-//	ODOC_OBJECT* odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
-//	if (!odoc) {
-//		return NULL;
-//	}
-//
-//	String strRow= odoc_getraw(odoc, NULL);
-//	String strX = _GetProperty(strRow,"x");
-//	String strY = _GetProperty(strRow,"y");
-//	String strRIDHalfEdge = _GetProperty(strRow,"halfedge");
-//
-//	CTinOrientDBVertex* pVertex = new CTinOrientDBVertex(vertexRID, ::atof(strX.c_str()), ::atof(strY.c_str()), strRIDHalfEdge);
-//
-//	ODOC_FREE_DOCUMENT(odoc);
-//	return pVertex;
-	return NULL;
+	jstring a = m_JNIEnv->NewStringUTF(vertexRID.c_str());
+	jstring jStrVertex =  (jstring)m_JNIEnv->CallObjectMethod(m_JNIOrientLibObject, m_JNIFuncGetVertex, a);
+	jboolean bInIsCopy;
+	const char* strCln = m_JNIEnv->GetStringUTFChars(jStrVertex, &bInIsCopy);
+	String strV = strCln;
+	m_JNIEnv->ReleaseStringUTFChars(jStrVertex, strCln);
+
+	return _GetStringToVertex(strV);
 }
 
 void CTinOrientDBStorage::ReLoadVertex(CTinOrientDBVertex* pVertex)
 {
-	CTinOrientDBVertex* pReVertex = (CTinOrientDBVertex*)GetVertex(pVertex->GetRID());
-	pVertex->Copy(pReVertex);
-	delete pReVertex;
+	VertexPtr preVertex = GetVertex(pVertex->GetRID());
+	pVertex->Copy((CTinOrientDBVertex*)(preVertex.get()));
 }
 
 void CTinOrientDBStorage::ReLoadHalfEdge(CTinOrientDBHalfEdge* pEdge)
@@ -466,152 +231,67 @@ void CTinOrientDBStorage::ReLoadHalfEdge(CTinOrientDBHalfEdge* pEdge)
 
 EdgePtr CTinOrientDBStorage::GetHalfEdge(RID EdgeRID)
 {
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//
-//	if (EdgeRID.find('#') == -1){
-//		return EdgePtr((ITinHalfEdge*)NULL);
-//	}
-//
-//	String Query = "SELECT FROM " + EdgeRID;
-//	ODOC_OBJECT* odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
-//	if (!odoc) {
-//		return EdgePtr((ITinHalfEdge*)NULL);
-//	}
-//
-//	String strRow = odoc_getraw(odoc, NULL);
-//	String	strRIDVertex = _GetProperty(strRow,"out");
-//	String	strRIDEndVertex = _GetProperty(strRow,"in");
-//	String	strRIDPair = _GetProperty(strRow,"pair");
-//	String	strRIDCCW = _GetProperty(strRow,"ccw");
-//	String	strRIDCW = _GetProperty(strRow,"cw");
-//
-//	CTinOrientDBHalfEdge* pHalfEdge = new CTinOrientDBHalfEdge(EdgeRID);
-//	pHalfEdge->SetRIDVertex(strRIDVertex);
-//	pHalfEdge->SetRIDEndVertex(strRIDEndVertex);
-//	pHalfEdge->SetRIDPair(strRIDPair);
-//	pHalfEdge->SetRIDCCW(strRIDCCW);
-//	pHalfEdge->SetRIDCW(strRIDCW);
-//
-//	ODOC_FREE_DOCUMENT(odoc);
-//	return EdgePtr(pHalfEdge);
-	return EdgePtr((ITinHalfEdge*)NULL);
+	jstring a = m_JNIEnv->NewStringUTF(EdgeRID.c_str());
+	jstring jStrVertex =  (jstring)m_JNIEnv->CallObjectMethod(m_JNIOrientLibObject, m_JNIFuncGetEdge, a);
+	jboolean bInIsCopy;
+	const char* strCln = m_JNIEnv->GetStringUTFChars(jStrVertex, &bInIsCopy);
+	String strE = strCln;
+	m_JNIEnv->ReleaseStringUTFChars(jStrVertex, strCln);
+
+	String strEdgeRID = _GetProperty(strE, "rid");
+	String strIn = _GetProperty(strE, "in");
+	String strOut = _GetProperty(strE, "out");
+	String strPair = _GetProperty(strE, "pair");
+	String strCCW = _GetProperty(strE, "ccw");
+	String strCW = _GetProperty(strE, "cw");
+
+	CTinOrientDBHalfEdge* pV = new CTinOrientDBHalfEdge(strEdgeRID);
+	pV->SetRIDVertex(strOut);
+	pV->SetRIDEndVertex(strIn);
+	pV->SetRIDPair(strPair);
+	pV->SetRIDCCW(strCCW);
+	pV->SetRIDCW(strCW);
+
+	return EdgePtr(pV);
+
 }
 
 int CTinOrientDBStorage::GetCountOfVertexs()
 {
-//	ODOC_OBJECT *odoc;
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//
-//	String Query = "SELECT Count(*) FROM " + m_VertexClassName;
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
-//	if (!odoc) {
-//		return -1;
-//	}
-//
-//	String strRecrodCount = odoc_getraw(odoc, NULL);
-//	strRecrodCount = strRecrodCount.substr(strRecrodCount.find(':') + 1, strRecrodCount.length() - 1 - (strRecrodCount.find(':') + 1));
-//
-//	int recordCount = ::atoi(strRecrodCount.c_str());
-//
-//	// free the returned document when you no longer need it
-//	ODOC_FREE_DOCUMENT(odoc);
-//
-//	return recordCount;
+	int ret = m_JNIEnv->CallIntMethod(m_JNIOrientLibObject, m_JNIFuncGetCountOfVertexs, NULL);
 
-	return 0;
+	return ret;
 }
 
 EdgePtr CTinOrientDBStorage::CreateEdge()
 {
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//
-//	int edges = GetCountOfEdges();
-//
-//	char buffer[100];
-//	sprintf(buffer,"%d", edges);
-//	String numberRecord = buffer;
-//
-//	String Query = "create edge " + m_EdgeClassName + " from " + m_BlankRID + " to " + m_BlankRID + " set pair = -1, cw = -1, ccw = " + numberRecord;
-//	ODOC_OBJECT* odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, NULL);
-//
-//	Query = "SELECT @rid FROM " + m_EdgeClassName + " where ccw = " + numberRecord;
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
-//	if (!odoc) {
-//		return EdgePtr((ITinHalfEdge*)NULL);
-//	}
-//
-//	String strRID= odoc_getraw(odoc, NULL);
-//	strRID = strRID.substr(strRID.find(':') + 1, strRID.length() - (strRID.find(':') + 1));
-//
-//	CTinOrientDBHalfEdge* pHalfEdge = new CTinOrientDBHalfEdge(strRID);
-//	ODOC_FREE_DOCUMENT(odoc);
-//	return EdgePtr(pHalfEdge);
+	jstring jStrEdgetRID = (jstring)m_JNIEnv->CallObjectMethod(m_JNIOrientLibObject, m_JNIFuncCreateEdge, NULL);
+	jboolean bInIsCopy;
+	const char* strEdgeRID = m_JNIEnv->GetStringUTFChars(jStrEdgetRID, &bInIsCopy);
+	String str = strEdgeRID;
 
-	return EdgePtr((ITinHalfEdge*)NULL);
+	CTinOrientDBHalfEdge* pHalfEdge = new CTinOrientDBHalfEdge(str);
+	return EdgePtr(pHalfEdge);
 }
 
 int	CTinOrientDBStorage::GetCountOfEdges()
 {
-//	ODOC_OBJECT *odoc;
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//
-//	String Query = "SELECT Count(*) FROM " + m_EdgeClassName;
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
-//	if (!odoc) {
-//		return -1;
-//	}
-//
-//	String strRecrodCount = odoc_getraw(odoc, NULL);
-//	strRecrodCount = strRecrodCount.substr(strRecrodCount.find(':') + 1, strRecrodCount.length() - 1 - (strRecrodCount.find(':') + 1));
-//
-//	int recordCount = ::atoi(strRecrodCount.c_str());
-//
-//	// free the returned document when you no longer need it
-//	ODOC_FREE_DOCUMENT(odoc);
-//
-//	return recordCount;
+	int ret = m_JNIEnv->CallIntMethod(m_JNIOrientLibObject, m_JNIFuncGetCountOfEdges, NULL);
 
-	return 0;
+	return ret;
 }
 
 bool CTinOrientDBStorage::DeleteHalfEdge(EdgePtr pEdge)
 {
-//	ODOC_OBJECT *odoc;
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//	RID strRID = ((CTinOrientDBHalfEdge*)(pEdge).get())->GetRID();
-//	String Query = "delete edge " + strRID;
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYCMD, Query.c_str(), 20, "*:-1");
-//	if (!odoc) {
-//		return false;
-//	}
-//	ODOC_FREE_DOCUMENT(odoc);
-	return true;
+	std::cout << "### Edge Count " << GetCountOfEdges() << "\n";
+	String RIDEdge = ((CTinOrientDBHalfEdge*)(pEdge.get()))->GetRID();
+	jstring jStrRIDEdge = m_JNIEnv->NewStringUTF(RIDEdge.c_str());
+	int ret = m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncDeleteEdge, jStrRIDEdge);
+	std::cout << "### Edge Count " << GetCountOfEdges() << "\n";
+
+	return ret;
 }
 
 void CTinOrientDBStorage::PrintEdgeList()
 {
-//	ODOC_OBJECT *odoc;
-//	struct timeval tv;
-//	tv.tv_sec = 5;
-//	tv.tv_usec = 0;
-//
-//	String Query = "SELECT  FROM " + m_EdgeClassName + " limit 100";
-//	odoc = o_bin_command(m_OrientDB, m_OrientCon, &tv, 0, O_CMD_QUERYSYNC, Query.c_str(), 20, "*:-1");
-//	if (!odoc) {
-//		return ;
-//	}
-//
-//	for (int i=0; i<odoc_getnumrecords(odoc); i++) {
-//		fprintf(stdout, "Record number %i: %s\n", i, odoc_fetchrawrecord(odoc, NULL, i));
-//	}
 }

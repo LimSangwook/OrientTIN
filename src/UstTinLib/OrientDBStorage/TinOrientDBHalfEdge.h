@@ -25,6 +25,7 @@ public:
 	virtual bool equal(EdgePtr pOther);
 
 
+
 	RID GetRID()			{;return m_RID;};
 	RID GetRIDVertex()	{_CheckRIDS();return m_RIDVertex;};
 	RID GetRIDEndVertex(){_CheckRIDS();return m_RIDEndVertex;};

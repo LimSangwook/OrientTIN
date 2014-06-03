@@ -32,7 +32,7 @@ public:
 	virtual EdgePtr 			CreateEdge();
 	virtual int				GetCountOfEdges();
 
-	virtual ITinVertex* 		GetVertex(RID nRID);
+	virtual VertexPtr 		GetVertex(RID nRID);
 	virtual bool 				DeleteHalfEdge(EdgePtr pEdge);
 	virtual void				PrintEdgeList();
 
@@ -52,15 +52,14 @@ public:
 	bool SetCleanNRamdomVertexs(int DataNum);
 
 private:
-	bool _ConnectDBServer();
-	bool _CreateEdgeClass();
-	bool _CreateBlankClass();
-
 	String _GetProperty(String json, String propertyName);
 
+	//////////////////////////
+	// JNI 관련 함수
 	bool _InitJNI();
 	bool _GetJNIMethodID();
 	JNIEnv* _Create_VM(JavaVM ** jvm);
+	VertexPtr _GetStringToVertex(String& str);
 
 private:
 	////////////////////////////
@@ -76,11 +75,14 @@ private:
 	jmethodID 	m_JNIFuncCreateEdge;
 	jmethodID 	m_JNIFuncGetVertex;
 	jmethodID 	m_JNIFuncGetVertexFromIdx;
+	jmethodID 	m_JNIFuncGetEdge;
+
 	jmethodID 	m_JNIFuncGetCountOfVertexs;
 	jmethodID 	m_JNIFuncGetCountOfEdges;
 	jmethodID 	m_JNIFuncUpdateEdge;
 	jmethodID 	m_JNIFuncUpdateVertex;
 	jmethodID 	m_JNIFuncDeleteEdge;
+	jmethodID 	m_JNIFuncSetRandomVertex;
 };
 
 #endif //__UST_TIN_MAKER_H__
