@@ -43,7 +43,7 @@ void CTinEdgeMaker::PrintVertexList()
 void CTinEdgeMaker::PrintEdgeList()
 {
 	std::cout << "EdgeList size : " << m_pTinStorage->GetCountOfEdges() << "\n";
-	//m_pTinStorage->PrintEdgeList();
+	m_pTinStorage->PrintEdgeList();
 }
 void CTinEdgeMaker::PrintFaceList()
 {

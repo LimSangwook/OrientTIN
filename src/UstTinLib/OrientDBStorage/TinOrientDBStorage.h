@@ -7,6 +7,7 @@
 #include "TinOrientDBVertex.h"
 #include "TinOrientDBHalfEdge.h"
 #include "/usr/lib/jvm/java-7-openjdk-amd64/include/jni.h"
+#include <map>
 
 class CTinOrientDBHalfEdge;
 class CTinOrientDBStorage : ITinStorageManager
@@ -48,8 +49,11 @@ public:
 	void ReLoadVertex(CTinOrientDBVertex* pVertex);
 	void ReLoadHalfEdge(CTinOrientDBHalfEdge* pEdge);
 
-
 	bool SetCleanNRamdomVertexs(int DataNum);
+
+private:
+	void _UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
+	void _FlushEdgeCache();
 
 private:
 	String _GetProperty(String json, String propertyName);
@@ -62,6 +66,8 @@ private:
 	VertexPtr _GetStringToVertex(String& str);
 
 private:
+	std::map<RID,EdgePtr> m_EdgeCache;
+
 	////////////////////////////
 	// JNI 호출 관련
 	////////////////////////////
@@ -83,6 +89,8 @@ private:
 	jmethodID 	m_JNIFuncUpdateVertex;
 	jmethodID 	m_JNIFuncDeleteEdge;
 	jmethodID 	m_JNIFuncSetRandomVertex;
+
+	int m_RemoveEdgeCount;
 };
 
 #endif //__UST_TIN_MAKER_H__
