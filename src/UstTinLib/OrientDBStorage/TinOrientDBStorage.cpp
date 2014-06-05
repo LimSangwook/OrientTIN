@@ -3,8 +3,6 @@
 #include <string.h>
 #include <math.h>
 #include "TinOrientDBStorage.h"
-#include "TinOrientDBVertex.h"
-//#include "TinOrientDBHalfEdge.h"
 
 
 void orient_debug(const char *msg) {
@@ -14,6 +12,8 @@ CTinOrientDBStorage* CTinOrientDBStorage::instance = NULL;
 
 CTinOrientDBStorage::CTinOrientDBStorage()
 {
+	m_MaXVertexCache = 100;
+	m_MaXEdgeCache = 1;
 	m_RemoveEdgeCount=0;
 	CTinOrientDBStorage::instance = this;
 	m_JNIEnv = NULL;
@@ -122,6 +122,7 @@ CTinOrientDBStorage::~CTinOrientDBStorage()
 {
 	// 캐시된 넘들을 FlushAll 해준다.
 	_FlushEdgeCache();
+	_FlushVertexCache();
 }
 
 void CTinOrientDBStorage::_FlushEdgeCache()
@@ -129,15 +130,37 @@ void CTinOrientDBStorage::_FlushEdgeCache()
 	std::map<RID,EdgePtr>::iterator iter =  m_EdgeCache.begin();
 	for (;iter != m_EdgeCache.end() ; iter++) {
 		_UpdateHalfEdge((CTinOrientDBHalfEdge*)(iter->second).get());
+		iter->first;
 	}
-	m_EdgeCache.clear();
+	//m_EdgeCache.clear();
 }
 
-void CTinOrientDBStorage::UpdateVertex(CTinOrientDBVertex* pVertex)
+void CTinOrientDBStorage::_FlushVertexCache()
+{
+	std::map<RID,VertexPtr>::iterator iter =  m_VertexCache.begin();
+	for (;iter != m_VertexCache.end() ; iter++) {
+		_UpdateVertex((CTinOrientDBVertex*)(iter->second).get());
+	}
+	m_VertexCache.clear();
+}
+
+void CTinOrientDBStorage::_UpdateVertex(CTinOrientDBVertex* pVertex)
 {
 	jstring jStrRID = m_JNIEnv->NewStringUTF(pVertex->GetRID().c_str());
 	jstring jStrHalfEdge = m_JNIEnv->NewStringUTF(pVertex->GetRIDHalfEdge().c_str());
 	m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncUpdateVertex, jStrRID, pVertex->GetX(), pVertex->GetY(), jStrHalfEdge);
+}
+
+void CTinOrientDBStorage::UpdateVertex(CTinOrientDBVertex* pVertex)
+{
+	std::map<RID,VertexPtr>::iterator iter = m_VertexCache.find(pVertex->GetRID());
+
+	if (iter != m_VertexCache.end()) {
+		VertexPtr vPtr = iter->second;
+		((CTinOrientDBVertex*)(vPtr.get()))->SetRIDHalfEdge(pVertex->GetRIDHalfEdge());
+		return;
+	}
+	_UpdateVertex(pVertex);
 }
 void CTinOrientDBStorage::_UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge)
 {
@@ -151,15 +174,19 @@ void CTinOrientDBStorage::_UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge)
 }
 void CTinOrientDBStorage::UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge)
 {
-	EdgePtr edgePtr = m_EdgeCache[pEdge->GetRID()];
-	if (edgePtr.get()) {
-		if (edgePtr.get() == pEdge){
+	std::map<RID,EdgePtr>::iterator iter = m_EdgeCache.find(pEdge->GetRID());
+	if (iter != m_EdgeCache.end()) {
+		if (pEdge == iter->second.get()) {
 			// 캐시와 동일하기 때문에 나중에 일괄 업데이트 한다.
 			return;
 		}
-		((CTinOrientDBHalfEdge*)(edgePtr.get()))->Copy(EdgePtr(pEdge));
+		m_EdgeCache.erase(iter);
+
+		m_EdgeCache[pEdge->GetRID()] = EdgePtr(pEdge);
+		//((CTinOrientDBHalfEdge*)(iter->second.get()))->Copy(EdgePtr(pEdge));
 		return;
 	}
+
 	_UpdateHalfEdge(pEdge);
 }
 
@@ -190,13 +217,29 @@ VertexPtr CTinOrientDBStorage::_GetStringToVertex(String& str)
 }
 VertexPtr CTinOrientDBStorage::GetVertex(int idx)
 {
+	if (m_VertexCache.size() >= m_MaXVertexCache) {
+		_FlushVertexCache();
+	}
+
+	char buf[100];
+	sprintf(buf, "%d", idx);
+	String rid = buf;
+	std::map<RID,VertexPtr>::iterator iter = m_VertexCache.find(rid);
+
+	if (iter != m_VertexCache.end()) {
+		return iter->second;
+	}
+
 	jstring jStrVertex =  (jstring)m_JNIEnv->CallObjectMethod(m_JNIOrientLibObject, m_JNIFuncGetVertexFromIdx, idx);
 	jboolean bInIsCopy;
 	const char* strCln = m_JNIEnv->GetStringUTFChars(jStrVertex, &bInIsCopy);
 	String strV = strCln;
 	m_JNIEnv->ReleaseStringUTFChars(jStrVertex, strCln);
 
-	return _GetStringToVertex(strV);
+	VertexPtr vPtr = _GetStringToVertex(strV);
+	m_VertexCache[rid] = vPtr;
+
+	return vPtr;
 }
 
 String CTinOrientDBStorage::_GetProperty(String json, String propertyName)
@@ -230,14 +273,28 @@ String CTinOrientDBStorage::_GetProperty(String json, String propertyName)
 }
 VertexPtr CTinOrientDBStorage::GetVertex(RID vertexRID)
 {
+	if (m_VertexCache.size() >= m_MaXVertexCache) {
+		_FlushVertexCache();
+	}
+
+	int start = vertexRID.find(":") + 1;
+	RID rid = vertexRID.substr(start, vertexRID.length() - start );
+	std::map<RID,VertexPtr>::iterator iter = m_VertexCache.find(rid);
+
+	if (iter != m_VertexCache.end()) {
+		return iter->second;
+	}
+
 	jstring a = m_JNIEnv->NewStringUTF(vertexRID.c_str());
 	jstring jStrVertex =  (jstring)m_JNIEnv->CallObjectMethod(m_JNIOrientLibObject, m_JNIFuncGetVertex, a);
 	jboolean bInIsCopy;
 	const char* strCln = m_JNIEnv->GetStringUTFChars(jStrVertex, &bInIsCopy);
 	String strV = strCln;
 	m_JNIEnv->ReleaseStringUTFChars(jStrVertex, strCln);
+	VertexPtr vPtr = _GetStringToVertex(strV);
+	m_VertexCache[rid] = vPtr;
 
-	return _GetStringToVertex(strV);
+	return vPtr;
 }
 
 void CTinOrientDBStorage::ReLoadVertex(CTinOrientDBVertex* pVertex)
@@ -255,11 +312,11 @@ void CTinOrientDBStorage::ReLoadHalfEdge(CTinOrientDBHalfEdge* pEdge)
 
 EdgePtr CTinOrientDBStorage::GetHalfEdge(RID EdgeRID)
 {
-	EdgePtr edgePtr = m_EdgeCache[EdgeRID];
-	if (edgePtr.get()) {
-		return edgePtr;
-	}
+	std::map<RID,EdgePtr>::iterator iter = m_EdgeCache.find(EdgeRID);
 
+	if (iter != m_EdgeCache.end()) {
+		return iter->second;
+	}
 
 	jstring a = m_JNIEnv->NewStringUTF(EdgeRID.c_str());
 	jstring jStrVertex =  (jstring)m_JNIEnv->CallObjectMethod(m_JNIOrientLibObject, m_JNIFuncGetEdge, a);
@@ -282,8 +339,10 @@ EdgePtr CTinOrientDBStorage::GetHalfEdge(RID EdgeRID)
 	pV->SetRIDCCW(strCCW);
 	pV->SetRIDCW(strCW);
 
-	return EdgePtr(pV);
+	EdgePtr edgePtr = EdgePtr(pV);
+	m_EdgeCache[strEdgeRID] = edgePtr;
 
+	return edgePtr;
 }
 
 int CTinOrientDBStorage::GetCountOfVertexs()
@@ -295,6 +354,10 @@ int CTinOrientDBStorage::GetCountOfVertexs()
 
 EdgePtr CTinOrientDBStorage::CreateEdge()
 {
+	int nEdgeCacheCnt = m_EdgeCache.size();
+	if (nEdgeCacheCnt >= m_MaXEdgeCache) {
+		_FlushEdgeCache();
+	}
 	jstring jStrEdgetRID = (jstring)m_JNIEnv->CallObjectMethod(m_JNIOrientLibObject, m_JNIFuncCreateEdge, NULL);
 	jboolean bInIsCopy;
 	const char* strEdgeRID = m_JNIEnv->GetStringUTFChars(jStrEdgetRID, &bInIsCopy);
@@ -302,11 +365,9 @@ EdgePtr CTinOrientDBStorage::CreateEdge()
 
 	CTinOrientDBHalfEdge* pHalfEdge = new CTinOrientDBHalfEdge(str);
 	EdgePtr edgePtr = EdgePtr(pHalfEdge);
+
 	m_EdgeCache[strEdgeRID] = edgePtr;
-	int nEdgeCnt = m_EdgeCache.size();
-	if ((nEdgeCnt % 100) == 0) {
-		std::cout<< "Create Edge : " << nEdgeCnt << "\n"	;
-	}
+
 	return edgePtr;
 }
 
@@ -323,6 +384,11 @@ bool CTinOrientDBStorage::DeleteHalfEdge(EdgePtr pEdge)
 	jstring jStrRIDEdge = m_JNIEnv->NewStringUTF(RIDEdge.c_str());
 	int ret = m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncDeleteEdge, jStrRIDEdge);
 	m_RemoveEdgeCount++;
+
+	std::map<RID,EdgePtr>::iterator iter = m_EdgeCache.find(RIDEdge);
+	if (iter != m_EdgeCache.end()){
+		m_EdgeCache.erase(RIDEdge);
+	}
 	return ret;
 }
 

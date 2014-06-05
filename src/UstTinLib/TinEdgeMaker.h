@@ -33,18 +33,18 @@ public:
 	void PrintVertexList();
 	void PrintEdgeList();
 	void PrintFaceList();
+
 	void AttachTinStorage(ITinStorageManager* pStorage);
 
 
 private:
 	VertexPtr 		_GetVertex(int idx);
-	EdgePtr _CreateEdge();
+	EdgePtr 		_CreateEdge();
 	int 			_GetCountOfVertexs();
 
 	////////////////////////////////////////////////
 	// Divide and Conquer 알고리즘부분
 	////////////////////////////////////////////////
-
 	void 			_DivideAndConquer(CTinDelaunay& delaunay);
 	void 			_Del_Link(CTinDelaunay& result, CTinDelaunay& left, CTinDelaunay& right );
 	void 			_Del_Init_Seg(CTinDelaunay& del);

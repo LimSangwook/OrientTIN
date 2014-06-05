@@ -284,16 +284,10 @@ void CTinEdgeMaker::_Del_Remove_Single_Halfedge( EdgePtr d )
 	EdgePtr ccwEdge, cwEdge, pairEdge;
 	ccwEdge = d->GetCCWEdge();
 	cwEdge = d->GetCWEdge();
-	pairEdge = d->GetPairEdge();
 	assert(ccwEdge != NULL);
 	assert(cwEdge != NULL);
 	ccwEdge->SetCWEdge(cwEdge);
 	cwEdge->SetCCWEdge(ccwEdge);
-
-	/* check to see if we have already removed alpha */
-	if( pairEdge ) {
-//		pairEdge->SetPairEdge(EdgePtr((ITinHalfEdge*)NULL));
-	}
 
 	/* check to see if the vertex points to this halfedge */
 	if( d->GetVertex()->GetHalfEdge()->equal(EdgePtr(d))) {

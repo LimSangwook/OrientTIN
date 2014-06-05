@@ -20,13 +20,13 @@ void CTinOrientDBVertex::_Update()
 
 double CTinOrientDBVertex::GetX()
 {
-	ReLoad();
+//	ReLoad();
 	return m_X;
 }
 
 double CTinOrientDBVertex::GetY()
 {
-	ReLoad();
+//	ReLoad();
 	return m_Y;
 }
 

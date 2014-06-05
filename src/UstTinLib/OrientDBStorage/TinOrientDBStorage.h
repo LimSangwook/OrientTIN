@@ -27,46 +27,53 @@ public:
 public:
 	/////////////////////////////////////////
 	// ITinStorageManager Interface 구현
+	/////////////////////////////////////////
 	virtual VertexPtr 		GetVertex(int idx);
 	virtual int 				GetCountOfVertexs();
 
 	virtual EdgePtr 			CreateEdge();
 	virtual int				GetCountOfEdges();
 
-	virtual VertexPtr 		GetVertex(RID nRID);
 	virtual bool 				DeleteHalfEdge(EdgePtr pEdge);
 	virtual void				PrintEdgeList();
 
 public:
 	CTinOrientDBStorage();
 	~CTinOrientDBStorage();
-	ErrCode InitDB(String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName);
 
-	EdgePtr GetHalfEdge(RID EdgeRID);
-	void UpdateVertex(CTinOrientDBVertex* pVertex);
-	void UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
+	VertexPtr 		GetVertex(RID nRID);
+	EdgePtr 		GetHalfEdge(RID EdgeRID);
 
-	void ReLoadVertex(CTinOrientDBVertex* pVertex);
-	void ReLoadHalfEdge(CTinOrientDBHalfEdge* pEdge);
+	void 			UpdateVertex(CTinOrientDBVertex* pVertex);
+	void 			UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
 
-	bool SetCleanNRamdomVertexs(int DataNum);
+	void 			ReLoadVertex(CTinOrientDBVertex* pVertex);
+	void 			ReLoadHalfEdge(CTinOrientDBHalfEdge* pEdge);
 
-private:
-	void _UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
-	void _FlushEdgeCache();
+	ErrCode 		InitDB(String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName);
+	bool 			SetCleanNRamdomVertexs(int DataNum);
 
 private:
-	String _GetProperty(String json, String propertyName);
+	void 			_UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
+	void 			_UpdateVertex(CTinOrientDBVertex* pVertex);
+	void 			_FlushEdgeCache();
+	void 			_FlushVertexCache();
+	String 		_GetProperty(String json, String propertyName);
 
 	//////////////////////////
 	// JNI 관련 함수
-	bool _InitJNI();
-	bool _GetJNIMethodID();
-	JNIEnv* _Create_VM(JavaVM ** jvm);
-	VertexPtr _GetStringToVertex(String& str);
+	//////////////////////////
+	bool 			_InitJNI();
+	bool 			_GetJNIMethodID();
+	JNIEnv* 		_Create_VM(JavaVM ** jvm);
+	VertexPtr 		_GetStringToVertex(String& str);
 
 private:
-	std::map<RID,EdgePtr> m_EdgeCache;
+	std::map<RID,EdgePtr> 	m_EdgeCache;
+	std::map<RID,VertexPtr> 	m_VertexCache;
+	int 						m_RemoveEdgeCount;
+	int							m_MaXVertexCache;
+	int							m_MaXEdgeCache;
 
 	////////////////////////////
 	// JNI 호출 관련
@@ -90,7 +97,6 @@ private:
 	jmethodID 	m_JNIFuncDeleteEdge;
 	jmethodID 	m_JNIFuncSetRandomVertex;
 
-	int m_RemoveEdgeCount;
 };
 
 #endif //__UST_TIN_MAKER_H__

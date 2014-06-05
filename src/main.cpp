@@ -10,7 +10,7 @@ int main() {
 	///////////////////////////////////////
 	// Memory를 사용하여 Edge를 만들 경우
 //	CTinMemStorage  tinMemStorage;
-//	tinMemStorage.SetRamdomVertexs(100);
+//	tinMemStorage.SetRamdomVertexs(10000);
 //	StartClock = clock();
 //	tinEdgeMaker.AttachTinStorage(&tinMemStorage);
 
@@ -19,7 +19,7 @@ int main() {
 	CTinOrientDBStorage tinDbStorage;
 	tinDbStorage.InitDB("127.0.0.1", "tintest", "admin", "admin", "TestVertex", "HalfEdge");
 	StartClock = clock();
-	tinDbStorage.SetCleanNRamdomVertexs(100);
+	tinDbStorage.SetCleanNRamdomVertexs(6);
 	tinEdgeMaker.AttachTinStorage((ITinStorageManager*)&tinDbStorage);
 
 	tinEdgeMaker.PrintVertexList();		// Vertex 갯수 출력
