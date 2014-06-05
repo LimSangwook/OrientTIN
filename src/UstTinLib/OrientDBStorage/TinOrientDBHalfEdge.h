@@ -7,7 +7,7 @@
 class CTinOrientDBHalfEdge : public ITinHalfEdge
 {
 public:
-	CTinOrientDBHalfEdge(RID strRID);
+	CTinOrientDBHalfEdge(RID strRID, RID strRIDVertex = "none", RID strRIDEndVertex = "none", RID strRIDPair = "none", RID strRIDCCW = "none", RID strRIDCw = "none");
 	virtual ~CTinOrientDBHalfEdge();
 
 	virtual VertexPtr GetVertex();

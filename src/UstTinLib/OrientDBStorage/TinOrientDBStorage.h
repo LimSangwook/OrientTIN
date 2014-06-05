@@ -56,7 +56,7 @@ public:
 private:
 	void 			_UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
 	void 			_UpdateVertex(CTinOrientDBVertex* pVertex);
-	void 			_FlushEdgeCache();
+	void 			_FlushEdgeCache(bool AllFlush = false);
 	void 			_FlushVertexCache();
 	String 		_GetProperty(String json, String propertyName);
 
@@ -72,8 +72,10 @@ private:
 	std::map<RID,EdgePtr> 	m_EdgeCache;
 	std::map<RID,VertexPtr> 	m_VertexCache;
 	int 						m_RemoveEdgeCount;
+	int 						m_CreateEdgeCount;
 	int							m_MaXVertexCache;
 	int							m_MaXEdgeCache;
+	bool						m_bPrintLog;
 
 	////////////////////////////
 	// JNI 호출 관련
