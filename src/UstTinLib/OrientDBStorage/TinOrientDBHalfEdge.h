@@ -54,6 +54,9 @@ private:
 	RID		m_RIDPair;
 	RID		m_RIDCCW;
 	RID		m_RIDCW;
+	CTinOrientDBHalfEdge*	m_pPair;
+	CTinOrientDBHalfEdge*	m_pCCW;
+	CTinOrientDBHalfEdge*	m_pCW;
 };
 
 #endif //__TIN_ORIENT_HALFEDGE_H__
