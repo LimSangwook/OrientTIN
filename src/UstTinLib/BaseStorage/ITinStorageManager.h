@@ -5,7 +5,7 @@
 class ITinHalfEdge;
 class ITinVertex;
 typedef boost::shared_ptr<ITinVertex> VertexPtr;
-typedef boost::shared_ptr<ITinHalfEdge> EdgePtr;
+typedef ITinHalfEdge* EdgePtr;
 
 class ITinStorageManager
 {

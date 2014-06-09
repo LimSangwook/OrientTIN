@@ -4,7 +4,7 @@
 #include<boost/shared_ptr.hpp>
 
 class ITinHalfEdge;
-typedef boost::shared_ptr<ITinHalfEdge> EdgePtr;
+typedef ITinHalfEdge* EdgePtr;
 class ITinVertex
 {
 public:

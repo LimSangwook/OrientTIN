@@ -60,7 +60,7 @@ bool CTinOrientDBVertex::equal(boost::shared_ptr<ITinVertex> pOther)
 
 void CTinOrientDBVertex::SetHalfEdge(EdgePtr pEdge)
 {
-	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge.get());
+	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge);
 	if (!pDBEdge) {
 		m_RIDHalfEdge = -1;
 		return;

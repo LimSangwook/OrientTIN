@@ -7,7 +7,7 @@
 class ITinHalfEdge;
 class CTinFace;
 
-typedef boost::shared_ptr<ITinHalfEdge> EdgePtr;
+typedef ITinHalfEdge* EdgePtr;
 class CTinDelaunay
 {
 

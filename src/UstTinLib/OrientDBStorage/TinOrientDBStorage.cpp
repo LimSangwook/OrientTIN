@@ -132,14 +132,14 @@ void CTinOrientDBStorage::_FlushEdgeCache(bool AllFlush)
 {
 	std::map<RID,EdgePtr>::iterator iter =  m_EdgeCache.begin();
 	for (;iter != m_EdgeCache.end() ; iter++) {
-		int nUseCount = iter->second.use_count();
-		if (nUseCount < 2 || AllFlush) {
+//		int nUseCount = iter->second.use_count();
+//		if (nUseCount < 2 || AllFlush) {
 //			if ("#11:11" == ((CTinOrientDBHalfEdge*)(iter->second.get()))->GetRID()) {
 //				std::cout<<"dsafasdfasdf \n";
 //			}
-			_UpdateHalfEdge((CTinOrientDBHalfEdge*)(iter->second).get());
+			_UpdateHalfEdge((CTinOrientDBHalfEdge*)(iter->second));
 			m_EdgeCache.erase(iter);
-		}
+//		}
 	}
 	//m_EdgeCache.clear();
 }
@@ -193,11 +193,11 @@ void CTinOrientDBStorage::UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge)
 {
 	std::map<RID,EdgePtr>::iterator iter = m_EdgeCache.find(pEdge->GetRID());
 	if (iter != m_EdgeCache.end()) {
-		if (pEdge == iter->second.get()) {
+		if (pEdge == iter->second) {
 			// 캐시와 동일하기 때문에 나중에 일괄 업데이트 한다.
 			return;
 		}
-		((CTinOrientDBHalfEdge*)(iter->second.get()))->Copy(EdgePtr(pEdge));
+		((CTinOrientDBHalfEdge*)(iter->second))->Copy(EdgePtr(pEdge));
 		return;
 	}
 	_UpdateHalfEdge(pEdge);
@@ -320,7 +320,7 @@ void CTinOrientDBStorage::ReLoadVertex(CTinOrientDBVertex* pVertex)
 void CTinOrientDBStorage::ReLoadHalfEdge(CTinOrientDBHalfEdge* pEdge)
 {
 	EdgePtr pReEdge = GetHalfEdge(pEdge->GetRID());
-	if (pReEdge.get() != pEdge) {
+	if (pReEdge != pEdge) {
 		pEdge->Copy(pReEdge);
 	}
 }
@@ -397,12 +397,12 @@ int	CTinOrientDBStorage::GetCountOfEdges()
 
 bool CTinOrientDBStorage::DeleteHalfEdge(EdgePtr pEdge)
 {
-	String RIDEdge = ((CTinOrientDBHalfEdge*)(pEdge.get()))->GetRID();
+	String RIDEdge = ((CTinOrientDBHalfEdge*)(pEdge))->GetRID();
 	jstring jStrRIDEdge = (jstring)m_JNIEnv->NewStringUTF(RIDEdge.c_str());
-	((CTinOrientDBHalfEdge*)(pEdge.get()))->SetRIDVertex("Deleted");
+	((CTinOrientDBHalfEdge*)(pEdge))->SetRIDVertex("Deleted");
 	bool blog = m_bPrintLog;
 	m_bPrintLog = false;
-	_UpdateHalfEdge((CTinOrientDBHalfEdge*)(pEdge.get()));
+	_UpdateHalfEdge((CTinOrientDBHalfEdge*)(pEdge));
 	m_bPrintLog = blog;
 
 	//int ret = m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncDeleteEdge, jStrRIDEdge);

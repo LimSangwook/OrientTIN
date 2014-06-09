@@ -7,8 +7,8 @@
 EdgePtr CTinMemStorage::CreateEdge()
 {
 	EdgePtr edgePtr = EdgePtr(new CTinMemHalfEdge());
-	 m_HalfEdgeList.insert(edgePtr.get());
-	 return edgePtr;
+	m_HalfEdgeList.insert(edgePtr);
+	return edgePtr;
 }
 
 int CTinMemStorage::GetCountOfVertexs()
@@ -35,7 +35,7 @@ ITinVertex* CTinMemStorage::CreateVertex()
 
 bool CTinMemStorage::DeleteHalfEdge(EdgePtr pEdge)
 {
-	m_HalfEdgeList.erase(pEdge.get());
+	m_HalfEdgeList.erase(pEdge);
 	return true;
 }
 

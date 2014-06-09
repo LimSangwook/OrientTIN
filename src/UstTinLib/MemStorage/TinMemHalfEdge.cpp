@@ -50,11 +50,8 @@ void CTinMemHalfEdge::SetCWEdge(EdgePtr pEdge)
 }
 bool CTinMemHalfEdge::equal(EdgePtr pOther)
 {
-	CTinMemHalfEdge* pMemEdge = dynamic_cast<CTinMemHalfEdge*>(pOther.get());
-	if(pMemEdge) {
-		if (this == pOther.get())
+	if (this == pOther)
 			return true;
-	}
 	return false;
 }
 

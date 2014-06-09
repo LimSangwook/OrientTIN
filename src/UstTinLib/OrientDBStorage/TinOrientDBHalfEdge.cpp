@@ -24,7 +24,7 @@ CTinOrientDBHalfEdge::~CTinOrientDBHalfEdge()
 
 void CTinOrientDBHalfEdge::_Update()
 {
-	CTinOrientDBStorage::GetInstance()->UpdateHalfEdge(this);
+//	CTinOrientDBStorage::GetInstance()->UpdateHalfEdge(this);
 }
 
 VertexPtr CTinOrientDBHalfEdge::GetVertex()
@@ -53,7 +53,7 @@ EdgePtr CTinOrientDBHalfEdge::GetCWEdge()
 
 bool CTinOrientDBHalfEdge::equal(EdgePtr pOther)
 {
-	CTinOrientDBHalfEdge* pDBEdage = dynamic_cast<CTinOrientDBHalfEdge*>(pOther.get());
+	CTinOrientDBHalfEdge* pDBEdage = dynamic_cast<CTinOrientDBHalfEdge*>(pOther);
 	if (pDBEdage && pDBEdage->m_RID == this->m_RID)
 		return true;
 	return false;
@@ -81,20 +81,20 @@ void CTinOrientDBHalfEdge::_CheckRIDS()
 
 void CTinOrientDBHalfEdge::SetPairEdge(EdgePtr pEdge)
 {
-	assert(pEdge.get());
+	assert(pEdge);
 	ReLoad();
-	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge.get());
+	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge);
 	assert(pDBEdge);
 	m_RIDPair = pDBEdge->GetRID();
 	m_RIDEndVertex = pDBEdge->GetRIDVertex();
-	((CTinOrientDBHalfEdge*)(pEdge.get()))->SetRIDEndVertex(m_RIDVertex);
+	pDBEdge->SetRIDEndVertex(m_RIDVertex);
 	_Update();
 }
 
 void CTinOrientDBHalfEdge::SetCCWEdge(EdgePtr pEdge)
 {
 	ReLoad();
-	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge.get());
+	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge);
 	assert(pDBEdge);
 
 	m_RIDCCW = pDBEdge->GetRID();
@@ -107,7 +107,7 @@ void CTinOrientDBHalfEdge::SetCCWEdge(EdgePtr pEdge)
 void CTinOrientDBHalfEdge::SetCWEdge(EdgePtr pEdge)
 {
 	ReLoad();
-	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge.get());
+	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge);
 	assert(pDBEdge);
 
 	m_RIDCW = pDBEdge->GetRID();
@@ -120,7 +120,7 @@ void CTinOrientDBHalfEdge::SetCWEdge(EdgePtr pEdge)
 
 void CTinOrientDBHalfEdge::Copy(EdgePtr pEdge)
 {
-	CTinOrientDBHalfEdge* pOther = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge.get());
+	CTinOrientDBHalfEdge* pOther = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge);
 	m_RID = pOther->m_RID;
 	m_RIDVertex = pOther->m_RIDVertex;
 	m_RIDEndVertex = pOther->m_RIDEndVertex;
@@ -131,5 +131,5 @@ void CTinOrientDBHalfEdge::Copy(EdgePtr pEdge)
 
 void CTinOrientDBHalfEdge::ReLoad()
 {
-	GetDB()->ReLoadHalfEdge(this);
+//	GetDB()->ReLoadHalfEdge(this);
 }
