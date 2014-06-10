@@ -55,6 +55,8 @@ void CTinEdgeMaker::MakeDelaunayEdge()
 	m_delaunay.SetStartPointIdx(0);
 	m_delaunay.SetEndPointIdx(_GetCountOfVertexs() - 1);
 	_DivideAndConquer(m_delaunay);
+	m_delaunay.SetLeftMostEdge(EdgePtr((ITinHalfEdge*)NULL));
+	m_delaunay.SetRightMostEdge(EdgePtr((ITinHalfEdge*)NULL));
 	m_pTinStorage->Close();
 }
 void CTinEdgeMaker::MakeDelaunayFace()
@@ -246,7 +248,7 @@ EdgePtr CTinEdgeMaker::_Del_Valid_Right( EdgePtr b )
 		du = dd;
 	return du;
 }
-EdgePtr CTinEdgeMaker::_Del_Valid_Left( EdgePtr b )
+EdgePtr CTinEdgeMaker::_Del_Valid_Left(EdgePtr b )
 {
 	VertexPtr  g, d, u, v;
 	EdgePtr  c, du, dg;
@@ -274,14 +276,14 @@ EdgePtr CTinEdgeMaker::_Del_Valid_Left( EdgePtr b )
 		du  = dg;
 	return du;
 }
-void CTinEdgeMaker::_Del_Remove_Halfedge( ITinHalfEdge* d )
+void CTinEdgeMaker::_Del_Remove_Halfedge( EdgePtr d )
 {
 	EdgePtr alpha;
 	alpha = d->GetPairEdge();
 	_Del_Remove_Single_Halfedge(d);
 	_Del_Remove_Single_Halfedge(alpha);
 }
-void CTinEdgeMaker::_Del_Remove_Single_Halfedge( EdgePtr d )
+void CTinEdgeMaker::_Del_Remove_Single_Halfedge(EdgePtr d)
 {
 	EdgePtr ccwEdge, cwEdge, pairEdge;
 	ccwEdge = d->GetCCWEdge();
@@ -301,7 +303,7 @@ void CTinEdgeMaker::_Del_Remove_Single_Halfedge( EdgePtr d )
 	/* finally free the halfedge */
 	_Halfedge_Free(d);
 }
-void CTinEdgeMaker::_Halfedge_Free( EdgePtr d )
+void CTinEdgeMaker::_Halfedge_Free(EdgePtr d )
 {
 	assert( d != NULL );
 	m_pTinStorage->DeleteHalfEdge(d);

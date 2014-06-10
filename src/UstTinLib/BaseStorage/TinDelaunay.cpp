@@ -1,4 +1,5 @@
-#include "TinDelaunay.h"
+//#include "TinDelaunay.h"
+#include "../Common.h"
 
 CTinDelaunay::CTinDelaunay():
  m_nNumFaces(0), m_StartPointIdx(-1), m_EndPointIdx(-1)

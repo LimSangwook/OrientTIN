@@ -3,7 +3,6 @@
 
 #include <liborient/liborient.h>
 #include "../Common.h"
-#include "../BaseStorage/ITinStorageManager.h"
 #include "TinOrientDBVertex.h"
 #include "TinOrientDBHalfEdge.h"
 #include "/usr/lib/jvm/java-7-openjdk-amd64/include/jni.h"
@@ -61,6 +60,7 @@ private:
 	void 			_FlushEdgeCache(bool AllFlush = false);
 	void 			_FlushVertexCache();
 	String 		_GetProperty(String json, String propertyName);
+	void 			_DeleteEdge(RID edgeRID);
 
 	//////////////////////////
 	// JNI 관련 함수
@@ -73,6 +73,7 @@ private:
 private:
 	std::map<RID,EdgePtr> 	m_EdgeCache;
 	std::map<RID,VertexPtr> 	m_VertexCache;
+	std::map<RID,RID> 		m_MemoryRIDList;
 	int 						m_nTotalRemoveEdgeCount;
 	int 						m_nTotalCreateEdgeCount;
 	int							m_MaXVertexCache;
@@ -82,8 +83,7 @@ private:
 	int							m_MaxEdgeID;
 	int							m_NowEdgeID;
 	String						m_EdgeClassID;
-	int							m_nCreatedEdge;
-	int							m_nRemovedEdge;
+	int							m_nCreatedMemoryEdge;
 
 	////////////////////////////
 	// JNI 호출 관련

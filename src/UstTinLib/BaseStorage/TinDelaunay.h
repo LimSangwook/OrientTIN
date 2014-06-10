@@ -3,11 +3,9 @@
 #include <vector>
 #include <boost/shared_ptr.hpp>
 
-
 class ITinHalfEdge;
 class CTinFace;
 
-typedef ITinHalfEdge* EdgePtr;
 class CTinDelaunay
 {
 

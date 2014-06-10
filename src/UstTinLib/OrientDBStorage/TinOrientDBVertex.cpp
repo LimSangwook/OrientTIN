@@ -13,11 +13,6 @@ CTinOrientDBVertex::~CTinOrientDBVertex()
 {
 }
 
-void CTinOrientDBVertex::_Update()
-{
-	CTinOrientDBStorage::GetInstance()->UpdateVertex(this);
-}
-
 double CTinOrientDBVertex::GetX()
 {
 //	ReLoad();
@@ -32,20 +27,17 @@ double CTinOrientDBVertex::GetY()
 
 EdgePtr CTinOrientDBVertex::GetHalfEdge()
 {
-	ReLoad();
 	return CTinOrientDBStorage::GetInstance()->GetHalfEdge(m_RIDHalfEdge);
 }
 
 void CTinOrientDBVertex::SetX(double x)
 {
 	m_X = x;
-	_Update();
 }
 
 void CTinOrientDBVertex::SetY(double y)
 {
 	m_Y = y;
-	_Update();
 }
 
 bool CTinOrientDBVertex::equal(boost::shared_ptr<ITinVertex> pOther)
@@ -60,25 +52,11 @@ bool CTinOrientDBVertex::equal(boost::shared_ptr<ITinVertex> pOther)
 
 void CTinOrientDBVertex::SetHalfEdge(EdgePtr pEdge)
 {
-	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge);
+	CTinOrientDBHalfEdge* pDBEdge = dynamic_cast<CTinOrientDBHalfEdge*>(pEdge.get());
 	if (!pDBEdge) {
 		m_RIDHalfEdge = -1;
 		return;
 	}
 	m_RIDHalfEdge = pDBEdge->GetRID();
-	_Update();
 }
 
-void CTinOrientDBVertex::Copy(CTinOrientDBVertex* pOther)
-{
-	m_RID = pOther->m_RID;
-	m_X = pOther->m_X;
-	m_Y = pOther->m_Y;
-	m_RIDHalfEdge = pOther->m_RIDHalfEdge;
-}
-
-
-void CTinOrientDBVertex::ReLoad()
-{
-	CTinOrientDBStorage::GetInstance()->ReLoadVertex(this);
-}

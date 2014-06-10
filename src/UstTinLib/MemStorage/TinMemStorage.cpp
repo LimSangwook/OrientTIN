@@ -1,13 +1,13 @@
-#include "TinMemStorage.h"
-#include "../BaseStorage/ITinHalfEdge.h"
-#include "TinMemHalfEdge.h"
 #include <math.h>
+#include "../Common.h"
+#include "TinMemStorage.h"
+#include "TinMemHalfEdge.h"
 
 
 EdgePtr CTinMemStorage::CreateEdge()
 {
 	EdgePtr edgePtr = EdgePtr(new CTinMemHalfEdge());
-	m_HalfEdgeList.insert(edgePtr);
+	m_HalfEdgeList.insert(edgePtr.get());
 	return edgePtr;
 }
 
@@ -35,7 +35,7 @@ ITinVertex* CTinMemStorage::CreateVertex()
 
 bool CTinMemStorage::DeleteHalfEdge(EdgePtr pEdge)
 {
-	m_HalfEdgeList.erase(pEdge);
+	m_HalfEdgeList.erase(pEdge.get());
 	return true;
 }
 

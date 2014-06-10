@@ -4,7 +4,6 @@
 #include "TinMemVertex.h"
 #include "TinFace.h"
 #include "../Common.h"
-#include "../BaseStorage/ITinHalfEdge.h"
 
 class CTinMemHalfEdge : public ITinHalfEdge
 {

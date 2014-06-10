@@ -1,9 +1,7 @@
 #include <set>
 #include <vector>
-#include "../BaseStorage/ITinStorageManager.h"
+#include "../Common.h"
 
-class ITinHalfEdge;
-class ITinVertex;
 
 class CTinMemStorage : public ITinStorageManager
 {

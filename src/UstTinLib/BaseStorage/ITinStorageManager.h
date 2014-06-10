@@ -1,11 +1,5 @@
 #ifndef __ITIN_STORAGEMANAGER_H__
 #define __ITIN_STORAGEMANAGER_H__
-#include<boost/shared_ptr.hpp>
-
-class ITinHalfEdge;
-class ITinVertex;
-typedef boost::shared_ptr<ITinVertex> VertexPtr;
-typedef ITinHalfEdge* EdgePtr;
 
 class ITinStorageManager
 {

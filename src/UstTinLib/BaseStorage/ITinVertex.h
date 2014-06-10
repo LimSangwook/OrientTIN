@@ -3,8 +3,6 @@
 
 #include<boost/shared_ptr.hpp>
 
-class ITinHalfEdge;
-typedef ITinHalfEdge* EdgePtr;
 class ITinVertex
 {
 public:

@@ -28,12 +28,11 @@ public :
 	virtual bool equal(boost::shared_ptr<ITinVertex> pOther);
 
 	RID GetRIDHalfEdge() {return m_RIDHalfEdge;};
-	void SetRIDHalfEdge(RID RIDHalfEdge) {m_RIDHalfEdge = RIDHalfEdge;_Update();};
+	void SetRIDHalfEdge(RID RIDHalfEdge) {m_RIDHalfEdge = RIDHalfEdge;};
 	RID GetRID(){return m_RID;};
-	void Copy(CTinOrientDBVertex* pOther);
-	void ReLoad();
+
 private:
-	void _Update();
+
 
 private:
 	RID m_RID;

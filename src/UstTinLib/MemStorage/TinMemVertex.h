@@ -2,9 +2,6 @@
 #define __TINVERTEX_H__
 
 #include "../Common.h"
-#include "../BaseStorage/ITinVertex.h"
-
-class CTinHalfEdge;
 
 class CTinMemVertex : public ITinVertex
 {

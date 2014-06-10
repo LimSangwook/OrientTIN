@@ -50,7 +50,7 @@ void CTinMemHalfEdge::SetCWEdge(EdgePtr pEdge)
 }
 bool CTinMemHalfEdge::equal(EdgePtr pOther)
 {
-	if (this == pOther)
+	if (this == pOther.get())
 			return true;
 	return false;
 }
