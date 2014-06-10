@@ -56,7 +56,7 @@ private:
 	EdgePtr 		_Del_Valid_Link(EdgePtr b);
 	EdgePtr 		_Del_Valid_Left(EdgePtr b);
 	EdgePtr 		_Del_Valid_Right(EdgePtr b);
-	void 			_Del_Remove_Halfedge(EdgePtr d);
+	void 			_Del_Remove_Halfedge(ITinHalfEdge* d);
 	void 			_Del_Remove_Single_Halfedge(EdgePtr d);
 	void 			_Halfedge_Free(EdgePtr d);
 	void 			_Build_Halfedge_Face(CTinDelaunay *del, ITinHalfEdge *d );

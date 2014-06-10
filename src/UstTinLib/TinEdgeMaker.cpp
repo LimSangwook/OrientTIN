@@ -55,6 +55,7 @@ void CTinEdgeMaker::MakeDelaunayEdge()
 	m_delaunay.SetStartPointIdx(0);
 	m_delaunay.SetEndPointIdx(_GetCountOfVertexs() - 1);
 	_DivideAndConquer(m_delaunay);
+	m_pTinStorage->Close();
 }
 void CTinEdgeMaker::MakeDelaunayFace()
 {
@@ -108,6 +109,7 @@ void CTinEdgeMaker::_DivideAndConquer(CTinDelaunay& delaunay)
 		_DivideAndConquer(left);
 		_DivideAndConquer(right);
 		_Del_Link(delaunay, left, right );
+		m_pTinStorage->FlushCache();
 	} else	if( n == 3 )
 		_Del_Init_Tri(delaunay);
 	else if( n == 2 )
@@ -272,7 +274,7 @@ EdgePtr CTinEdgeMaker::_Del_Valid_Left( EdgePtr b )
 		du  = dg;
 	return du;
 }
-void CTinEdgeMaker::_Del_Remove_Halfedge( EdgePtr d )
+void CTinEdgeMaker::_Del_Remove_Halfedge( ITinHalfEdge* d )
 {
 	EdgePtr alpha;
 	alpha = d->GetPairEdge();

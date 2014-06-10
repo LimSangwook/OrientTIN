@@ -19,6 +19,9 @@ public :
 
 	virtual bool 				DeleteHalfEdge(EdgePtr pEdge) = 0;
 	virtual void				PrintEdgeList() = 0;
+
+	virtual void				FlushCache() = 0;
+	virtual void				Close() = 0;
 };
 
 #endif //__ITIN_STORAGEMANAGER_H__

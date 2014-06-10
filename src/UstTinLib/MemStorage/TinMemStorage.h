@@ -21,7 +21,8 @@ public:
 
 	virtual bool 				DeleteHalfEdge(EdgePtr pEdge);
 	virtual void				PrintEdgeList();
-
+	virtual void				FlushCache(){};
+	virtual void				Close(){};
 	//////////////////////////////
 	ITinVertex* 	CreateVertex();
 	void 			SetRamdomVertexs(int DATA_NUM);

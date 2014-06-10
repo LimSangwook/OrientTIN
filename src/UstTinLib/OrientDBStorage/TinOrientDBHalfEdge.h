@@ -7,7 +7,8 @@
 class CTinOrientDBHalfEdge : public ITinHalfEdge
 {
 public:
-	CTinOrientDBHalfEdge(RID strRID, RID strRIDVertex = "none", RID strRIDEndVertex = "none", RID strRIDPair = "none", RID strRIDCCW = "none", RID strRIDCw = "none");
+	CTinOrientDBHalfEdge();
+	CTinOrientDBHalfEdge(RID strRID, RID strRIDVertex , RID strRIDEndVertex = "none", RID strRIDPair = "none", RID strRIDCCW = "none", RID strRIDCw = "none");
 	virtual ~CTinOrientDBHalfEdge();
 
 	virtual VertexPtr GetVertex();
@@ -26,26 +27,23 @@ public:
 
 
 
-	RID GetRID()			{;return m_RID;};
-	RID GetRIDVertex()	{_CheckRIDS();return m_RIDVertex;};
-	RID GetRIDEndVertex(){_CheckRIDS();return m_RIDEndVertex;};
-	RID GetRIDPair()		{_CheckRIDS();return m_RIDPair;};
-	RID GetRIDCCW()		{_CheckRIDS();return m_RIDCCW;};
-	RID GetRIDCW()		{_CheckRIDS();return m_RIDCW;};
+	RID GetRID()			{return m_RID;};
+	RID GetRIDVertex()	{return m_RIDVertex;};
+	RID GetRIDEndVertex(){return m_RIDEndVertex;};
+	RID GetRIDPair()		{return m_RIDPair;};
+	RID GetRIDCCW()		{return m_RIDCCW;};
+	RID GetRIDCW()		{return m_RIDCW;};
 
-	void SetRIDVertex(RID nRID)		{m_RIDVertex = nRID;_Update();};
-	void SetRIDEndVertex(RID nRID)	{m_RIDEndVertex = nRID;_Update();};
-	void SetRIDPair(RID nRID)		{m_RIDPair = nRID;_Update();};
-	void SetRIDCCW(RID nRID)			{m_RIDCCW = nRID;_Update();};
-	void SetRIDCW(RID nRID)			{m_RIDCW = nRID;_Update();};
+	void SetRID(RID nRID)			{m_RID = nRID;};
+	void SetRIDVertex(RID nRID)		{m_RIDVertex = nRID;};
+	void SetRIDEndVertex(RID nRID)	{m_RIDEndVertex = nRID;};
 
-	void Copy(EdgePtr pOther);
+	void SetRIDPair(RID nRID)		{m_RIDPair = nRID;};
+	void SetRIDCCW(RID nRID)			{m_RIDCCW = nRID;};
+	void SetRIDCW(RID nRID)			{m_RIDCW = nRID;};
 
-	void ReLoad();
-
+	bool IsMemory()					{return m_isOnlyMemory;};
 private:
-	void _CheckRIDS();
-	void _Update();
 
 private:
 	RID		m_RID;
@@ -54,9 +52,11 @@ private:
 	RID		m_RIDPair;
 	RID		m_RIDCCW;
 	RID		m_RIDCW;
-	CTinOrientDBHalfEdge*	m_pPair;
-	CTinOrientDBHalfEdge*	m_pCCW;
-	CTinOrientDBHalfEdge*	m_pCW;
+	bool	m_isOnlyMemory;
+
+	ITinHalfEdge*	m_pPair;
+	ITinHalfEdge*	m_pCCW;
+	ITinHalfEdge*	m_pCW;
 };
 
 #endif //__TIN_ORIENT_HALFEDGE_H__

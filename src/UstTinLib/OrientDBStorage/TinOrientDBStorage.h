@@ -37,6 +37,9 @@ public:
 	virtual bool 				DeleteHalfEdge(EdgePtr pEdge);
 	virtual void				PrintEdgeList();
 
+	virtual void				FlushCache();
+	virtual void				Close();
+
 public:
 	CTinOrientDBStorage();
 	~CTinOrientDBStorage();
@@ -45,14 +48,13 @@ public:
 	EdgePtr 		GetHalfEdge(RID EdgeRID);
 
 	void 			UpdateVertex(CTinOrientDBVertex* pVertex);
-	void 			UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
 
 	void 			ReLoadVertex(CTinOrientDBVertex* pVertex);
-	void 			ReLoadHalfEdge(CTinOrientDBHalfEdge* pEdge);
 
 	ErrCode 		InitDB(String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName);
 	bool 			SetCleanNRamdomVertexs(int DataNum);
 
+	bool			_CreateBlankEdge(int num);
 private:
 	void 			_UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
 	void 			_UpdateVertex(CTinOrientDBVertex* pVertex);
@@ -71,11 +73,17 @@ private:
 private:
 	std::map<RID,EdgePtr> 	m_EdgeCache;
 	std::map<RID,VertexPtr> 	m_VertexCache;
-	int 						m_RemoveEdgeCount;
-	int 						m_CreateEdgeCount;
+	int 						m_nTotalRemoveEdgeCount;
+	int 						m_nTotalCreateEdgeCount;
 	int							m_MaXVertexCache;
 	int							m_MaXEdgeCache;
 	bool						m_bPrintLog;
+
+	int							m_MaxEdgeID;
+	int							m_NowEdgeID;
+	String						m_EdgeClassID;
+	int							m_nCreatedEdge;
+	int							m_nRemovedEdge;
 
 	////////////////////////////
 	// JNI 호출 관련
@@ -91,6 +99,7 @@ private:
 	jmethodID 	m_JNIFuncGetVertex;
 	jmethodID 	m_JNIFuncGetVertexFromIdx;
 	jmethodID 	m_JNIFuncGetEdge;
+	jmethodID 	m_JNIFuncCreateBlankEdge;
 
 	jmethodID 	m_JNIFuncGetCountOfVertexs;
 	jmethodID 	m_JNIFuncGetCountOfEdges;

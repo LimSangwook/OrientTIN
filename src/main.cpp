@@ -22,9 +22,8 @@ int main() {
 	CTinOrientDBStorage tinDbStorage;
 	tinDbStorage.InitDB("127.0.0.1", "tin", "admin", "admin", "TestVertex", "HalfEdge");
 	StartClock = clock();
-	tinDbStorage.SetCleanNRamdomVertexs(300);
+	tinDbStorage.SetCleanNRamdomVertexs(1000);
 	tinEdgeMaker.AttachTinStorage((ITinStorageManager*)&tinDbStorage);
-
 	tinEdgeMaker.PrintVertexList();		// Vertex 갯수 출력
 
 	LoadingClock = clock();
