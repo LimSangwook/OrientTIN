@@ -9,22 +9,25 @@ class CTinOrientDBHalfEdge : public ITinHalfEdge
 public:
 	CTinOrientDBHalfEdge();
 	CTinOrientDBHalfEdge(RID strRID, RID strRIDVertex , RID strRIDEndVertex = "none", RID strRIDPair = "none", RID strRIDCCW = "none", RID strRIDCw = "none");
-	virtual ~CTinOrientDBHalfEdge();
+	~CTinOrientDBHalfEdge();
 
-	virtual VertexPtr GetVertex();
-	virtual void SetVertex(VertexPtr pVertex);
+public:
+	/////////////////////////////////////////
+	// ITinHalfEdge Interface 구현
+	/////////////////////////////////////////
+	virtual VertexPtr 	GetVertex();
+	virtual EdgePtr 		GetPairEdge();
+	virtual EdgePtr 		GetCCWEdge();
+	virtual EdgePtr 		GetCWEdge();
 
-	virtual EdgePtr GetPairEdge();
-	virtual void SetPairEdge(EdgePtr pEdge);
-
-	virtual EdgePtr GetCCWEdge();
-	virtual void SetCCWEdge(EdgePtr pEdge);
-
-	virtual EdgePtr GetCWEdge();
-	virtual void SetCWEdge(EdgePtr pEdge);
+	virtual void 			SetVertex(VertexPtr pVertex);
+	virtual void 			SetPairEdge(EdgePtr pEdge);
+	virtual void 			SetCCWEdge(EdgePtr pEdge);
+	virtual void 			SetCWEdge(EdgePtr pEdge);
 
 	virtual bool equal(EdgePtr pOther);
 
+public:
 	RID GetRID()			{return m_RID;};
 	RID GetRIDVertex()	{return m_RIDVertex;};
 	RID GetRIDEndVertex(){return m_RIDEndVertex;};
@@ -35,13 +38,9 @@ public:
 	void SetRID(RID nRID)			{m_RID = nRID;};
 	void SetRIDVertex(RID nRID)		{m_RIDVertex = nRID;};
 	void SetRIDEndVertex(RID nRID)	{m_RIDEndVertex = nRID;};
-
 	void SetRIDPair(RID nRID)		{m_RIDPair = nRID;m_pPair = NULL;};
 	void SetRIDCCW(RID nRID)			{m_RIDCCW = nRID;m_pCCW = NULL;};
 	void SetRIDCW(RID nRID)			{m_RIDCW = nRID;m_pCW = NULL;};
-
-	void SetCode(RID code)			{m_Code = code;};
-	RID GetCode(RID code)			{return m_Code;};
 
 	bool IsMemory()					{return m_isOnlyMemory;};
 	void SetSyncDB()					{m_isOnlyMemory = false;};
@@ -51,7 +50,6 @@ public:
 private:
 
 private:
-	RID 	m_Code;
 	RID		m_RID;
 	RID		m_RIDVertex;
 	RID		m_RIDEndVertex;

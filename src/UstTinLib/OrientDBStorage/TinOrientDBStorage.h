@@ -46,9 +46,6 @@ public:
 	VertexPtr 		GetVertex(RID nRID);
 	EdgePtr 		GetHalfEdge(RID EdgeRID);
 
-	void 			UpdateVertex(CTinOrientDBVertex* pVertex);
-	void 			ReLoadVertex(CTinOrientDBVertex* pVertex);
-
 	ErrCode 		InitDB(String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName);
 	bool 			SetCleanNRamdomVertexs(int DataNum);
 

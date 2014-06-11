@@ -452,7 +452,6 @@ EdgePtr CTinOrientDBStorage::CreateEdge()
 
 	CTinOrientDBHalfEdge* pHalfEdge = new CTinOrientDBHalfEdge();
 	pHalfEdge->SetRID(strEdgeRID);
-	pHalfEdge->SetCode(strEdgeRID);
 	EdgePtr edgePtr = EdgePtr(pHalfEdge);
 	m_EdgeCache[strEdgeRID] = edgePtr;
 	m_nTotalCreateEdgeCount++;
