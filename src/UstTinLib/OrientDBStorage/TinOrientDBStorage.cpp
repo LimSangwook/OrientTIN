@@ -30,9 +30,14 @@ CTinOrientDBStorage::~CTinOrientDBStorage()
 
 void CTinOrientDBStorage::FlushCache()
 {
-	int nEdgeCacheCnt = m_EdgeCache.size();
-	if (nEdgeCacheCnt >= m_MaXEdgeCache) {
+	// Edge Cache FLush
+	if (m_EdgeCache.size() >= m_MaXEdgeCache) {
 		_FlushEdgeCache();
+	}
+
+	// Vertex Cache FLush
+	if (m_VertexCache.size() >= m_MaXVertexCache) {
+		_FlushVertexCache();
 	}
 }
 
@@ -190,41 +195,41 @@ void CTinOrientDBStorage::_FlushEdgeCache(bool AllFlush)
 		return;
 	}
 
-	_PrintTime("_FlushEdgeCache 시작");
+	_PrintTime("\t_FlushEdgeCache 시작");
 
 	if (m_nCreatedMemoryEdge > 0) {
-		_PrintTime("_CreateBlankEdge 시작");
+		_PrintTime("\t\t_CreateBlankEdge 시작");
 		_CreateBlankEdge(m_nCreatedMemoryEdge);
-		_PrintTime("_CreateBlankEdge 끝");
+		_PrintTime("\t\t_CreateBlankEdge 종료");
 	}
+	/////////////////////////////////////////
 	// 모든 메모리 Edge에 실제 RID를 부여한다.
-	_PrintTime("_FlushEdgeCache 가상 RID -> 실제 RID 부여 시작");
+	/////////////////////////////////////////
 	std::map<RID,EdgePtr>::iterator iter =  m_EdgeCache.begin();
 	for (;iter != m_EdgeCache.end() ; iter++) {
 		CTinOrientDBHalfEdge* pEdge = (CTinOrientDBHalfEdge*)(iter->second.get());
 		if (pEdge->IsMemory()){
-			char str[100];
+			char str[20];
 			sprintf(str,"%d",m_NowEdgeID);
 
 			String newRID	= m_EdgeClassID + str;
 			String oldRID = pEdge->GetRID();
+
 			m_MemoryRIDList[newRID] = oldRID;
+
 			CTinOrientDBVertex* pVertex = (CTinOrientDBVertex*)(pEdge->GetVertex().get());
 			if (pVertex->GetRIDHalfEdge() == oldRID) {
 				pVertex->SetRIDHalfEdge(newRID);
 			}
 			pEdge->SetRID(newRID);
 			pEdge->SetSyncDB();
-
 			m_NowEdgeID++;
 		}
 	}
-
-	_PrintTime("_FlushEdgeCache 가상 RID -> 실제 RID 부여 끝");
-
-	_PrintTime("_FlushEdgeCache Pair, CCW, CW RID 부여 몇 Update 시작");
-
-	// 모든 Edge의 Pair, CCW, CW 에 대하여 실제 RID를 부여한다.
+	/////////////////////////////////////////////////////////////////////////////
+	// 모든 Edge의 Pair, CCW, CW 에 대하여 실제 RID를 부여하고 DB Update 한다.
+	/////////////////////////////////////////////////////////////////////////////
+	_PrintTime("\t\t_FlushEdgeCache Pair, CCW, CW RID 부여 몇 Update 시작");
 	iter =  m_EdgeCache.begin();
 	for (;iter != m_EdgeCache.end() ; iter++) {
 		CTinOrientDBHalfEdge* pEdge = (CTinOrientDBHalfEdge*)(iter->second.get());
@@ -236,11 +241,12 @@ void CTinOrientDBStorage::_FlushEdgeCache(bool AllFlush)
 			_DeleteEdge(pEdge->GetRID());
 		}
 	}
+	_PrintTime("\t\t_FlushEdgeCache Pair, CCW, CW RID 부여 몇 Update 종료");
 
-	_PrintTime("_FlushEdgeCache Pair, CCW, CW RID 부여 몇 Update 긑");
-	_PrintTime("_FlushEdgeCache Cache CLear 시작");
+	//////////////////////////////////////////////
+	// 참조가 없는 EdgePtr을 Cache에서 제거한다.
+	//////////////////////////////////////////////
 	iter =  m_EdgeCache.begin();
-	int nErase = 0;
 	for (;iter != m_EdgeCache.end() ; iter++) {
 		if (iter->second.use_count() < 2) {
 			CTinOrientDBHalfEdge* pEdge = (CTinOrientDBHalfEdge*)(iter->second.get());
@@ -249,28 +255,29 @@ void CTinOrientDBStorage::_FlushEdgeCache(bool AllFlush)
 				int k = m_EdgeCache.erase(oldRIDIter->second);
 				m_MemoryRIDList.erase(oldRIDIter);
 				if (k != 1) {
-					 m_EdgeCache.erase(pEdge->GetRID());
+					 m_EdgeCache.erase(iter);
 				}
 			} else {
 				m_EdgeCache.erase(iter);
 			}
-			nErase ++;
 		}
 	}
-	_PrintTime("_FlushEdgeCache Cache CLear 끝");
-	// 초기화
+
+	// 관련 변수 초기화
 	m_nCreatedMemoryEdge = 0;
 
-	_PrintTime("_FlushEdgeCache 끝");
+	_PrintTime("\t_FlushEdgeCache 종료");
 }
 
 void CTinOrientDBStorage::_FlushVertexCache()
 {
 	std::map<RID,VertexPtr>::iterator iter =  m_VertexCache.begin();
 	for (;iter != m_VertexCache.end() ; iter++) {
-		_UpdateVertex((CTinOrientDBVertex*)(iter->second).get());
+		if (iter->second.use_count() < 2) {
+			_UpdateVertex((CTinOrientDBVertex*)(iter->second).get());
+			m_VertexCache.erase(iter);
+		}
 	}
-	m_VertexCache.clear();
 }
 
 void CTinOrientDBStorage::_UpdateVertex(CTinOrientDBVertex* pVertex)

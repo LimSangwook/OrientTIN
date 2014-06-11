@@ -27,17 +27,15 @@ public:
 	/////////////////////////////////////////
 	// ITinStorageManager Interface 구현
 	/////////////////////////////////////////
-	virtual VertexPtr 		GetVertex(int idx);
-	virtual int 				GetCountOfVertexs();
+	virtual VertexPtr 	GetVertex(int idx);
+	virtual int 			GetCountOfVertexs();
 
-	virtual EdgePtr 			CreateEdge();
-	virtual int				GetCountOfEdges();
-
-	virtual bool 				DeleteHalfEdge(EdgePtr pEdge);
-	virtual void				PrintEdgeList();
-
-	virtual void				FlushCache();
-	virtual void				Close();
+	virtual EdgePtr 		CreateEdge();
+	virtual int			GetCountOfEdges();
+	virtual bool 			DeleteHalfEdge(EdgePtr pEdge);
+	virtual void			PrintEdgeList();
+	virtual void			FlushCache();
+	virtual void			Close();
 
 public:
 	CTinOrientDBStorage();
@@ -72,7 +70,7 @@ private:
 	///////////////////////////
 	std::map<RID,EdgePtr> 	m_EdgeCache;
 	std::map<RID,VertexPtr> 	m_VertexCache;
-	std::map<RID,RID> 		m_MemoryRIDList;
+	std::map<RID,RID> 		m_MemoryRIDList;		// std::map<실제rid, 가상rid>
 	int							m_MaXVertexCache;
 	int							m_MaXEdgeCache;
 
