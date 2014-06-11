@@ -47,7 +47,6 @@ public:
 	EdgePtr 		GetHalfEdge(RID EdgeRID);
 
 	void 			UpdateVertex(CTinOrientDBVertex* pVertex);
-
 	void 			ReLoadVertex(CTinOrientDBVertex* pVertex);
 
 	ErrCode 		InitDB(String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName);
@@ -71,19 +70,28 @@ private:
 	VertexPtr 		_GetStringToVertex(String& str);
 
 private:
+	///////////////////////////
+	// Cache 용
+	///////////////////////////
 	std::map<RID,EdgePtr> 	m_EdgeCache;
 	std::map<RID,VertexPtr> 	m_VertexCache;
 	std::map<RID,RID> 		m_MemoryRIDList;
-	int 						m_nTotalRemoveEdgeCount;
-	int 						m_nTotalCreateEdgeCount;
 	int							m_MaXVertexCache;
 	int							m_MaXEdgeCache;
-	bool						m_bPrintLog;
 
-	int							m_MaxEdgeID;
-	int							m_NowEdgeID;
-	String						m_EdgeClassID;
+	///////////////////////////
+	// 통게용
+	///////////////////////////
+	int 						m_nTotalRemoveEdgeCount;
+	int 						m_nTotalCreateEdgeCount;
 	int							m_nCreatedMemoryEdge;
+
+	///////////////////////////
+	// Etc.
+	///////////////////////////
+	int							m_NowEdgeID;
+	int							m_MaxEdgeID;
+	String						m_EdgeClassID;
 
 	////////////////////////////
 	// JNI 호출 관련

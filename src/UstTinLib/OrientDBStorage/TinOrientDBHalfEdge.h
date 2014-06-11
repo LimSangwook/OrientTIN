@@ -44,10 +44,10 @@ public:
 	RID GetCode(RID code)			{return m_Code;};
 
 	bool IsMemory()					{return m_isOnlyMemory;};
-	bool SetSyncDB()				{m_isOnlyMemory = false;};
+	void SetSyncDB()					{m_isOnlyMemory = false;};
 
 	bool IsDeleted()					{return m_bDeleted;};
-	bool SetDelete()					{m_bDeleted = true;};
+	void SetDelete()					{m_bDeleted = true;};
 private:
 
 private:
