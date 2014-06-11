@@ -51,7 +51,7 @@ public:
 private:
 	void 			_UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
 	void 			_UpdateVertex(CTinOrientDBVertex* pVertex);
-	void 			_FlushEdgeCache(bool AllFlush = false);
+	void 			_FlushEdgeCache();
 	void 			_FlushVertexCache();
 	String 		_GetProperty(String json, String propertyName);
 	void 			_DeleteEdge(RID edgeRID);

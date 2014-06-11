@@ -11,11 +11,11 @@ void orient_debug(const char *msg) {
 
 void _PrintTime(String msg)
 {
-	time_t htime;
-	tm* pTime;
-	time(&htime);
-	pTime = localtime(&htime);
-	std::cout << msg << " 시간 : " << asctime(pTime);
+//	time_t htime;
+//	tm* pTime;
+//	time(&htime);
+//	pTime = localtime(&htime);
+//	std::cout << msg << " 시간 : " << asctime(pTime);
 
 }
 
@@ -24,7 +24,7 @@ CTinOrientDBStorage* CTinOrientDBStorage::instance;
 CTinOrientDBStorage::~CTinOrientDBStorage()
 {
 	// 캐시된 넘들을 FlushAll 해준다.
-	_FlushEdgeCache(true);
+	_FlushEdgeCache();
 	_FlushVertexCache();
 }
 
@@ -43,15 +43,15 @@ void CTinOrientDBStorage::FlushCache()
 
 void CTinOrientDBStorage::Close()
 {
-	_FlushEdgeCache(true);
+	_FlushEdgeCache();
 	_FlushVertexCache();
 
 }
 
 CTinOrientDBStorage::CTinOrientDBStorage()
 {
-	m_MaXVertexCache = 10010;
-	m_MaXEdgeCache = 1000000;
+	m_MaXVertexCache = 100000;
+	m_MaXEdgeCache = 100000;
 
 	m_nTotalRemoveEdgeCount=0;
 	m_nTotalCreateEdgeCount=0;
@@ -189,7 +189,7 @@ void CTinOrientDBStorage::_DeleteEdge(RID edgeRID)
 
 }
 
-void CTinOrientDBStorage::_FlushEdgeCache(bool AllFlush)
+void CTinOrientDBStorage::_FlushEdgeCache()
 {
 	if (m_EdgeCache.size() < 1) {
 		return;
@@ -271,6 +271,10 @@ void CTinOrientDBStorage::_FlushEdgeCache(bool AllFlush)
 
 void CTinOrientDBStorage::_FlushVertexCache()
 {
+	if (m_VertexCache.size() < 1) {
+		return;
+	}
+	//std::cout << "_FlushVertexCache - Sta : m_VertexCache : " << m_VertexCache.size() << "\n";
 	std::map<RID,VertexPtr>::iterator iter =  m_VertexCache.begin();
 	for (;iter != m_VertexCache.end() ; iter++) {
 		if (iter->second.use_count() < 2) {
@@ -278,6 +282,7 @@ void CTinOrientDBStorage::_FlushVertexCache()
 			m_VertexCache.erase(iter);
 		}
 	}
+//	std::cout << "_FlushVertexCache - End : m_VertexCache : " << m_VertexCache.size() << "\n";
 }
 
 void CTinOrientDBStorage::_UpdateVertex(CTinOrientDBVertex* pVertex)
