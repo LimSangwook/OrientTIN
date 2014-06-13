@@ -5,12 +5,13 @@
 #include <iostream>
 
 CTinEdgeMaker::CTinEdgeMaker() :
-m_pTinStorage(0)
+m_pTinStorage(0), m_nMaxDepth(0), m_nDnCDepth(0)
 {
 }
 
 CTinEdgeMaker::~CTinEdgeMaker()
 {
+	std::cout << "m_nMaxDepth : " << m_nMaxDepth << "\n";
 }
 
 void CTinEdgeMaker::AttachTinStorage(ITinStorageManager* pStorage)
@@ -96,6 +97,9 @@ void CTinEdgeMaker::MakeDelaunayFace()
 //}
 void CTinEdgeMaker::_DivideAndConquer(CTinDelaunay& delaunay)
 {
+	m_nDnCDepth++;
+	if (m_nMaxDepth < m_nDnCDepth)
+		m_nMaxDepth = m_nDnCDepth;
 	CTinDelaunay left, right;
 	int   i, n;
 	int start = delaunay.GetStartPointIdx();
@@ -116,6 +120,7 @@ void CTinEdgeMaker::_DivideAndConquer(CTinDelaunay& delaunay)
 		_Del_Init_Tri(delaunay);
 	else if( n == 2 )
 		_Del_Init_Seg(delaunay);
+	m_nDnCDepth--;
 }
 void CTinEdgeMaker::_Del_Link( CTinDelaunay& result, CTinDelaunay& left, CTinDelaunay& right )
 {

@@ -1,52 +1,54 @@
 #include "TinMemHalfEdge.h"
+#include "TinMemStorage.h"
 
-CTinMemHalfEdge::CTinMemHalfEdge() :
-m_pFace(0)
+CTinMemHalfEdge::CTinMemHalfEdge(int idx) :
+m_pFace(0), m_VertexIdx(-1), m_Idx(idx)
 {
 }
 
 CTinMemHalfEdge::~CTinMemHalfEdge()
 {
 }
-
+CTinMemStorage* CTinMemStorage::instance;
 VertexPtr CTinMemHalfEdge::GetVertex()
 {
-	return m_pVertex;
+	return CTinMemStorage::GetInstance()->GetVertex(m_VertexIdx);
+	//return VertexPtr();
 }
 
 EdgePtr CTinMemHalfEdge::GetPairEdge()
 {
-	return m_pPair;
+	return CTinMemStorage::GetInstance()->GetEdge(m_PairIdx);
 }
 
 EdgePtr CTinMemHalfEdge::GetCCWEdge()
 {
-	return m_pCCW;
+	return CTinMemStorage::GetInstance()->GetEdge(m_CCWIdx);
 }
 
 EdgePtr CTinMemHalfEdge::GetCWEdge()
 {
-	return m_pCW;
+	return CTinMemStorage::GetInstance()->GetEdge(m_CWIdx);
 }
 
 void CTinMemHalfEdge::SetVertex(VertexPtr pVertex)
 {
-	m_pVertex = pVertex;
+	m_VertexIdx = ((CTinMemVertex*)pVertex.get())->idx;
 }
 
 void CTinMemHalfEdge::SetPairEdge(EdgePtr pEdge)
 {
-	m_pPair = pEdge;
+	m_PairIdx = ((CTinMemHalfEdge*)(pEdge.get()))->GetIdx();
 }
 
 void CTinMemHalfEdge::SetCCWEdge(EdgePtr pEdge)
 {
-	m_pCCW = pEdge;
+	m_CCWIdx = ((CTinMemHalfEdge*)(pEdge.get()))->GetIdx();
 }
 
 void CTinMemHalfEdge::SetCWEdge(EdgePtr pEdge)
 {
-	m_pCW = pEdge;
+	m_CWIdx  = ((CTinMemHalfEdge*)(pEdge.get()))->GetIdx();
 }
 bool CTinMemHalfEdge::equal(EdgePtr pOther)
 {

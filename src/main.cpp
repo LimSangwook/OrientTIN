@@ -22,10 +22,11 @@ int main() {
 	CTinOrientDBStorage tinDbStorage;
 	tinDbStorage.InitDB("127.0.0.1", "tin", "admin", "admin", "TestVertex", "HalfEdge");
 	StartClock = clock();
-	tinDbStorage.SetCleanNRamdomVertexs(1000);
+	tinDbStorage.SetCleanNRamdomVertexs(1000000);
 	tinEdgeMaker.AttachTinStorage((ITinStorageManager*)&tinDbStorage);
-	tinEdgeMaker.PrintVertexList();		// Vertex 갯수 출력
 
+
+	tinEdgeMaker.PrintVertexList();		// Vertex 갯수 출력
 	LoadingClock = clock();
 	std::cout << "Load Points Time : " << (double)(LoadingClock - StartClock)/CLOCKS_PER_SEC << " sec" << std::endl;
 

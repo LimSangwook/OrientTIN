@@ -59,6 +59,8 @@ private:
 	void 			_Build_Halfedge_Face(CTinDelaunay *del, ITinHalfEdge *d );
 
 private:
+	int				m_nDnCDepth;
+	int				m_nMaxDepth;
 	CTinDelaunay	m_delaunay;
 	ITinStorageManager* m_pTinStorage;
 };

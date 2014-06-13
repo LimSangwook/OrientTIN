@@ -35,18 +35,20 @@ public:
 	RID GetRIDCCW()		{return ((m_pCCW)?m_pCCW->GetRID():m_RIDCCW);};
 	RID GetRIDCW()		{return ((m_pCW)?m_pCW->GetRID():m_RIDCW);};
 
-	void SetRID(RID nRID)			{m_RID = nRID;};
-	void SetRIDVertex(RID nRID)		{m_RIDVertex = nRID;};
-	void SetRIDEndVertex(RID nRID)	{m_RIDEndVertex = nRID;};
-	void SetRIDPair(RID nRID)		{m_RIDPair = nRID;m_pPair = NULL;};
-	void SetRIDCCW(RID nRID)			{m_RIDCCW = nRID;m_pCCW = NULL;};
-	void SetRIDCW(RID nRID)			{m_RIDCW = nRID;m_pCW = NULL;};
+	void SetRID(RID nRID)			{if (m_RID 			== nRID) return; m_bDirty = true; m_RID 			= nRID;};
+	void SetRIDVertex(RID nRID)		{if (m_RIDVertex 		== nRID) return; m_bDirty = true; m_RIDVertex 	= nRID;};
+	void SetRIDEndVertex(RID nRID)	{if (m_RIDEndVertex 	== nRID) return; m_bDirty = true; m_RIDEndVertex = nRID;};
+	void SetRIDPair(RID nRID)		{if (m_RIDPair 		== nRID) return; m_bDirty = true; m_RIDPair 		= nRID;m_pPair 	= NULL;};
+	void SetRIDCCW(RID nRID)			{if (m_RIDCCW 		== nRID) return; m_bDirty = true; m_RIDCCW 		= nRID;m_pCCW 	= NULL;};
+	void SetRIDCW(RID nRID)			{if (m_RIDCW 			== nRID) return; m_bDirty = true; m_RIDCW 		= nRID;m_pCW 		= NULL;};
 
 	bool IsMemory()					{return m_isOnlyMemory;};
 	void SetSyncDB()					{m_isOnlyMemory = false;};
 
 	bool IsDeleted()					{return m_bDeleted;};
-	void SetDelete()					{m_bDeleted = true;};
+	void SetDelete()					{m_bDeleted = true;m_bDirty = true;};
+
+	bool IsDirty()					{return m_bDirty;};
 private:
 
 private:
@@ -58,6 +60,7 @@ private:
 	RID		m_RIDCW;
 	bool	m_isOnlyMemory;
 	bool	m_bDeleted;
+	bool	m_bDirty;
 
 	CTinOrientDBHalfEdge*	m_pPair;
 	CTinOrientDBHalfEdge*	m_pCCW;

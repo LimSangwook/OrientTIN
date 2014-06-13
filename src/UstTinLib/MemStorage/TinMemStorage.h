@@ -1,15 +1,21 @@
-#include <set>
+#include <map>
 #include <vector>
 #include "../Common.h"
-
 
 class CTinMemStorage : public ITinStorageManager
 {
 public:
+	static CTinMemStorage* instance;
+	static CTinMemStorage* GetInstance() {
+		return CTinMemStorage::instance;
+	}
+public:
+	CTinMemStorage();
+	~CTinMemStorage();
 	//////////////////////////////
 	// ITinStorageManager 구현
-	typedef std::vector<VertexPtr> VertexList;
-	typedef std::set<ITinHalfEdge*> HalfEdgeList;
+	typedef std::map<int, VertexPtr> VertexList;
+	typedef std::map<int, EdgePtr> HalfEdgeList;
 
 	virtual VertexPtr 		GetVertex(int idx);
 	virtual int 				GetCountOfVertexs();
@@ -23,9 +29,11 @@ public:
 	virtual void				Close(){};
 	//////////////////////////////
 	ITinVertex* 	CreateVertex();
+	EdgePtr		GetEdge(int idx);
 	void 			SetRamdomVertexs(int DATA_NUM);
 
 private:
+	int				m_EdgeIdx;
 	VertexList 	m_VertexList;
 	HalfEdgeList 	m_HalfEdgeList;
 };

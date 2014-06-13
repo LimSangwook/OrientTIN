@@ -11,11 +11,11 @@ void orient_debug(const char *msg) {
 
 void _PrintTime(String msg)
 {
-//	time_t htime;
-//	tm* pTime;
-//	time(&htime);
-//	pTime = localtime(&htime);
-//	std::cout << msg << " 시간 : " << asctime(pTime);
+	time_t htime;
+	tm* pTime;
+	time(&htime);
+	pTime = localtime(&htime);
+	std::cout << msg << " 시간 : " << asctime(pTime);
 
 }
 
@@ -50,8 +50,8 @@ void CTinOrientDBStorage::Close()
 
 CTinOrientDBStorage::CTinOrientDBStorage()
 {
-	m_MaXVertexCache = 100000;
-	m_MaXEdgeCache = 100000;
+	m_MaXVertexCache = 500000;
+	m_MaXEdgeCache = 500000;
 
 	m_nTotalRemoveEdgeCount=0;
 	m_nTotalCreateEdgeCount=0;
@@ -98,6 +98,13 @@ CTinOrientDBStorage::ErrCode CTinOrientDBStorage::InitDB(
 	jstring g = m_JNIEnv->NewStringUTF(edgeClassName.c_str());
 
 	jboolean ret = m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncInitDB, a, b, c, d, e, f, g);
+	m_JNIEnv->DeleteLocalRef(a);
+	m_JNIEnv->DeleteLocalRef(b);
+	m_JNIEnv->DeleteLocalRef(c);
+	m_JNIEnv->DeleteLocalRef(d);
+	m_JNIEnv->DeleteLocalRef(e);
+	m_JNIEnv->DeleteLocalRef(f);
+	m_JNIEnv->DeleteLocalRef(g);
 
 	if (!ret){
 		return ERR_DB_INIT;
@@ -186,7 +193,7 @@ void CTinOrientDBStorage::_DeleteEdge(RID edgeRID)
 {
 	jstring jStrRID = m_JNIEnv->NewStringUTF(edgeRID.c_str());
 	m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncDeleteEdge, jStrRID);
-
+	m_JNIEnv->DeleteLocalRef(jStrRID);
 }
 
 void CTinOrientDBStorage::_FlushEdgeCache()
@@ -199,6 +206,7 @@ void CTinOrientDBStorage::_FlushEdgeCache()
 
 	if (m_nCreatedMemoryEdge > 0) {
 		_PrintTime("\t\t_CreateBlankEdge 시작");
+		std::cout << "\t\t m_nCreatedMemoryEdge : " << m_nCreatedMemoryEdge << " m_EdgeCache.size() : " << m_EdgeCache.size() << "\n";
 		_CreateBlankEdge(m_nCreatedMemoryEdge);
 		_PrintTime("\t\t_CreateBlankEdge 종료");
 	}
@@ -231,8 +239,12 @@ void CTinOrientDBStorage::_FlushEdgeCache()
 	/////////////////////////////////////////////////////////////////////////////
 	_PrintTime("\t\t_FlushEdgeCache Pair, CCW, CW RID 부여 몇 Update 시작");
 	iter =  m_EdgeCache.begin();
+	int nUpdateCnt = 0;
 	for (;iter != m_EdgeCache.end() ; iter++) {
 		CTinOrientDBHalfEdge* pEdge = (CTinOrientDBHalfEdge*)(iter->second.get());
+		if(pEdge->IsDirty() == false) {
+			continue;
+		}
 		pEdge->SetRIDPair(pEdge->GetRIDPair());
 		pEdge->SetRIDCCW(pEdge->GetRIDCCW());
 		pEdge->SetRIDCW(pEdge->GetRIDCW());
@@ -240,7 +252,9 @@ void CTinOrientDBStorage::_FlushEdgeCache()
 		if (pEdge->IsDeleted()) {
 			_DeleteEdge(pEdge->GetRID());
 		}
+		nUpdateCnt++;
 	}
+	std::cout << "\t\t UpdateCnt : " << nUpdateCnt << "\n";
 	_PrintTime("\t\t_FlushEdgeCache Pair, CCW, CW RID 부여 몇 Update 종료");
 
 	//////////////////////////////////////////////
@@ -290,6 +304,8 @@ void CTinOrientDBStorage::_UpdateVertex(CTinOrientDBVertex* pVertex)
 	jstring jStrRID = m_JNIEnv->NewStringUTF(pVertex->GetRID().c_str());
 	jstring jStrHalfEdge = m_JNIEnv->NewStringUTF(pVertex->GetRIDHalfEdge().c_str());
 	m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncUpdateVertex, jStrRID, pVertex->GetX(), pVertex->GetY(), jStrHalfEdge);
+	m_JNIEnv->DeleteLocalRef(jStrRID);
+	m_JNIEnv->DeleteLocalRef(jStrHalfEdge);
 }
 
 void CTinOrientDBStorage::_UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge)
@@ -302,6 +318,12 @@ void CTinOrientDBStorage::_UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge)
 	jstring jStrCW = m_JNIEnv->NewStringUTF(pEdge->GetRIDCW().c_str());
 
 	m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncUpdateEdge, jStrRID, jStrOut, jStrIn, jStrPair, jStrCCW, jStrCW);
+	m_JNIEnv->DeleteLocalRef(jStrRID);
+	m_JNIEnv->DeleteLocalRef(jStrOut);
+	m_JNIEnv->DeleteLocalRef(jStrIn);
+	m_JNIEnv->DeleteLocalRef(jStrPair);
+	m_JNIEnv->DeleteLocalRef(jStrCCW);
+	m_JNIEnv->DeleteLocalRef(jStrCW);
 }
 
 bool CTinOrientDBStorage::SetCleanNRamdomVertexs(int DataNum)
@@ -409,6 +431,8 @@ VertexPtr CTinOrientDBStorage::GetVertex(RID vertexRID)
 	VertexPtr vPtr = _GetStringToVertex(strV);
 	m_VertexCache[strIndex] = vPtr;
 
+	m_JNIEnv->DeleteLocalRef(a);
+	m_JNIEnv->DeleteLocalRef(jStrVertex);
 	return vPtr;
 }
 
@@ -432,6 +456,9 @@ EdgePtr CTinOrientDBStorage::GetHalfEdge(RID RealEdgeRID)
 	const char* strCln = m_JNIEnv->GetStringUTFChars(jStrVertex, &bInIsCopy);
 	String strE = strCln;
 	m_JNIEnv->ReleaseStringUTFChars(jStrVertex, strCln);
+
+	m_JNIEnv->DeleteLocalRef(jStrVertex);
+	m_JNIEnv->DeleteLocalRef(a);
 
 	String strEdgeRID = _GetProperty(strE, "rid");
 	String strIn = _GetProperty(strE, "in");

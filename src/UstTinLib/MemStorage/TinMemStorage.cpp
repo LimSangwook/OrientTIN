@@ -2,13 +2,51 @@
 #include "../Common.h"
 #include "TinMemStorage.h"
 #include "TinMemHalfEdge.h"
+#include "../BaseStorage/TinDelaunay.h"
 
+CTinMemStorage::CTinMemStorage()
+{
+	instance = this;
+
+	std::cout<<"sizeof(CTinDelaunay)" << sizeof(CTinDelaunay) <<"\n";
+	std::cout<<"sizeof(CTinMemVertex)" << sizeof(CTinMemVertex) <<"\n";
+	std::cout<<"sizeof(VertexPtr)" << sizeof(VertexPtr) <<"\n";
+	std::cout<<"sizeof(CTinMemHalfEdge)" << sizeof(CTinMemHalfEdge) <<"\n";
+	std::cout<<"sizeof(EdgePtr)" << sizeof(EdgePtr) <<"\n";
+	m_EdgeIdx = 0;
+}
+
+CTinMemStorage::~CTinMemStorage()
+{
+	std::cout<<"m_EdgeIdx :" << m_EdgeIdx <<"\n";
+
+//	VertexList::iterator iter = m_VertexList.begin();
+//	for (int i = 0 ;iter != m_VertexList.end() ; iter++, i++) {
+//		std::cout<<i << " : " << iter->use_count() <<"\n";
+//	}
+//
+//	HalfEdgeList::iterator eIter = m_HalfEdgeList.begin();
+//	for (int i = 0 ;eIter != m_HalfEdgeList.end() ; eIter++, i++) {
+//		std::cout<<i << " : " << eIter->second.use_count() <<"\n";
+//	}
+}
 
 EdgePtr CTinMemStorage::CreateEdge()
 {
-	EdgePtr edgePtr = EdgePtr(new CTinMemHalfEdge());
-	m_HalfEdgeList.insert(edgePtr.get());
+
+	EdgePtr edgePtr = EdgePtr(new CTinMemHalfEdge(m_EdgeIdx));
+	m_HalfEdgeList[m_EdgeIdx] = (edgePtr);
+	m_EdgeIdx++;
 	return edgePtr;
+}
+
+EdgePtr CTinMemStorage::GetEdge(int idx)
+{
+	HalfEdgeList::iterator iter = m_HalfEdgeList.find(idx);
+	if (iter != m_HalfEdgeList.end()) {
+		return iter->second;
+	}
+	return EdgePtr();
 }
 
 int CTinMemStorage::GetCountOfVertexs()
@@ -29,13 +67,17 @@ int	CTinMemStorage::GetCountOfEdges()
 ITinVertex* CTinMemStorage::CreateVertex()
 {
 	CTinMemVertex* pVertex = new CTinMemVertex;
-	m_VertexList.push_back(VertexPtr(pVertex));
+
+	m_VertexList[m_VertexList.size()]= VertexPtr(pVertex);
 	return pVertex;
 }
 
 bool CTinMemStorage::DeleteHalfEdge(EdgePtr pEdge)
 {
-	m_HalfEdgeList.erase(pEdge.get());
+	HalfEdgeList::iterator iter = m_HalfEdgeList.find(((CTinMemHalfEdge*)(pEdge.get()))->GetIdx());
+	if (iter != m_HalfEdgeList.end()) {
+		m_HalfEdgeList.erase(iter);
+	}
 	return true;
 }
 

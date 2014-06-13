@@ -8,7 +8,7 @@
 class CTinMemHalfEdge : public ITinHalfEdge
 {
 public:
-	CTinMemHalfEdge();
+	CTinMemHalfEdge(int idx);
 	virtual ~CTinMemHalfEdge();
 
 	virtual VertexPtr GetVertex();
@@ -27,11 +27,13 @@ public:
 	void SetFace(CTinFace* pFace);
 
 	virtual bool equal(EdgePtr pOther);
+	int GetIdx() {return m_Idx;};
 private:
-	VertexPtr		m_pVertex;
-	EdgePtr		m_pPair;
-	EdgePtr 		m_pCCW;
-	EdgePtr		m_pCW;
+	int				m_Idx;
+	int				m_VertexIdx;
+	int				m_PairIdx;
+	int 			m_CCWIdx;
+	int				m_CWIdx;
 	CTinFace*			m_pFace;
 };
 
