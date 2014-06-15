@@ -49,12 +49,12 @@ public:
 
 	bool			_CreateBlankEdge(int num);
 private:
-	void 			_UpdateHalfEdge(CTinOrientDBHalfEdge* pEdge);
+	void 			_UpdateHalfEdge(String& strEdgeDatas);
 	void 			_UpdateVertex(CTinOrientDBVertex* pVertex);
 	void 			_FlushEdgeCache();
 	void 			_FlushVertexCache();
 	String 		_GetProperty(String json, String propertyName);
-	void 			_DeleteEdge(RID edgeRID);
+	void 			_DeleteEdge(RID& edgeRID);
 
 	//////////////////////////
 	// JNI 관련 함수
