@@ -5,6 +5,8 @@
 #include "TinOrientDBStorage.h"
 #include <time.h>
 
+CTinOrientDBStorage* CTinOrientDBStorage::instance;
+
 void orient_debug(const char *msg) {
 	fprintf(stderr, "program: %s", msg);
 }
@@ -16,16 +18,11 @@ void _PrintTime(String msg)
 	time(&htime);
 	pTime = localtime(&htime);
 	std::cout << msg << " 시간 : " << asctime(pTime);
-
 }
-
-CTinOrientDBStorage* CTinOrientDBStorage::instance;
 
 CTinOrientDBStorage::~CTinOrientDBStorage()
 {
-	// 캐시된 넘들을 FlushAll 해준다.
-	_FlushEdgeCache();
-	_FlushVertexCache();
+	Close();
 }
 
 void CTinOrientDBStorage::FlushCache()
@@ -34,7 +31,6 @@ void CTinOrientDBStorage::FlushCache()
 	if (m_EdgeCache.size() >= m_MaXEdgeCache) {
 		_FlushEdgeCache();
 	}
-
 	// Vertex Cache FLush
 	if (m_VertexCache.size() >= m_MaXVertexCache) {
 		_FlushVertexCache();
@@ -43,9 +39,9 @@ void CTinOrientDBStorage::FlushCache()
 
 void CTinOrientDBStorage::Close()
 {
+	// 캐시된 넘들을 FlushAll 해준다.
 	_FlushEdgeCache();
 	_FlushVertexCache();
-
 }
 
 CTinOrientDBStorage::CTinOrientDBStorage()
@@ -60,13 +56,12 @@ CTinOrientDBStorage::CTinOrientDBStorage()
 
 	m_NowEdgeID = 0;
 	m_MaxEdgeID = 0;
+
 	CTinOrientDBStorage::instance = this;
 }
 
-bool CTinOrientDBStorage::InitDB(
-		String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName)
+bool CTinOrientDBStorage::InitDB(String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName)
 {
-
 	if (!m_JNIOrientDB.InitDB(url, dbName, id, pw, vertexClassName, edgeClassName)) {
 		return false;
 	}
@@ -91,13 +86,13 @@ void CTinOrientDBStorage::_FlushEdgeCache()
 		return;
 	}
 
-	_PrintTime("\t_FlushEdgeCache 시작");
+	//_PrintTime("\t_FlushEdgeCache 시작");
 
 	if (m_nCreatedMemoryEdge > 0) {
-		_PrintTime("\t\t_CreateBlankEdge 시작");
-		std::cout << "\t\t m_nCreatedMemoryEdge : " << m_nCreatedMemoryEdge << " m_EdgeCache.size() : " << m_EdgeCache.size() << "\n";
+		//_PrintTime("\t\t_CreateBlankEdge 시작");
+		//std::cout << "\t\t m_nCreatedMemoryEdge : " << m_nCreatedMemoryEdge << " m_EdgeCache.size() : " << m_EdgeCache.size() << "\n";
 		_CreateBlankEdge(m_nCreatedMemoryEdge);
-		_PrintTime("\t\t_CreateBlankEdge 종료");
+		//_PrintTime("\t\t_CreateBlankEdge 종료");
 	}
 	/////////////////////////////////////////
 	// 모든 메모리 Edge에 실제 RID를 부여한다.
@@ -126,7 +121,7 @@ void CTinOrientDBStorage::_FlushEdgeCache()
 	/////////////////////////////////////////////////////////////////////////////
 	// 모든 Edge의 Pair, CCW, CW 에 대하여 실제 RID를 부여하고 DB Update 한다.
 	/////////////////////////////////////////////////////////////////////////////
-	_PrintTime("\t\t_FlushEdgeCache Pair, CCW, CW RID 부여 몇 Update 시작");
+//	_PrintTime("\t\t_FlushEdgeCache Pair, CCW, CW RID 부여 몇 Update 시작");
 	iter =  m_EdgeCache.begin();
 	int nUpdateCnt = 0;
 	String strEdgeDatas;
@@ -165,10 +160,7 @@ void CTinOrientDBStorage::_FlushEdgeCache()
 		}
 	}
 	m_JNIOrientDB.DeleteEdge(strDelRID);
-
-
-	std::cout << "\t\t UpdateCnt : " << nUpdateCnt << "\n";
-	_PrintTime("\t\t_FlushEdgeCache Pair, CCW, CW RID 부여 몇 Update 종료");
+	//_PrintTime("\t\t_FlushEdgeCache Pair, CCW, CW RID 부여 몇 Update 종료");
 
 	//////////////////////////////////////////////
 	// 참조가 없는 EdgePtr을 Cache에서 제거한다.
@@ -193,7 +185,7 @@ void CTinOrientDBStorage::_FlushEdgeCache()
 	// 관련 변수 초기화
 	m_nCreatedMemoryEdge = 0;
 
-	_PrintTime("\t_FlushEdgeCache 종료");
+	//_PrintTime("\t_FlushEdgeCache 종료");
 }
 
 void CTinOrientDBStorage::_FlushVertexCache()
@@ -201,7 +193,6 @@ void CTinOrientDBStorage::_FlushVertexCache()
 	if (m_VertexCache.size() < 1) {
 		return;
 	}
-	//std::cout << "_FlushVertexCache - Sta : m_VertexCache : " << m_VertexCache.size() << "\n";
 	std::map<RID,VertexPtr>::iterator iter =  m_VertexCache.begin();
 	for (;iter != m_VertexCache.end() ; iter++) {
 		if (iter->second.use_count() < 2) {
@@ -209,7 +200,6 @@ void CTinOrientDBStorage::_FlushVertexCache()
 			m_VertexCache.erase(iter);
 		}
 	}
-//	std::cout << "_FlushVertexCache - End : m_VertexCache : " << m_VertexCache.size() << "\n";
 }
 
 bool CTinOrientDBStorage::SetCleanNRamdomVertexs(int DataNum)
@@ -231,6 +221,7 @@ VertexPtr CTinOrientDBStorage::_GetStringToVertex(String& str)
 
 	return VertexPtr(pV);
 }
+
 VertexPtr CTinOrientDBStorage::GetVertex(int idx)
 {
 	if ((int)m_VertexCache.size() >= m_MaXVertexCache) {
@@ -256,9 +247,6 @@ VertexPtr CTinOrientDBStorage::GetVertex(int idx)
 
 String CTinOrientDBStorage::_GetProperty(String json, String propertyName)
 {
-	//',' + propertyName + ":" 일수 있고
-	//'@' + propertyName + ":" 일수 있다
-
 	String token = "," + propertyName + ":";
 	int findPropertyName = json.find(token) ;
 	if ((findPropertyName == -1)) {
@@ -285,6 +273,7 @@ String CTinOrientDBStorage::_GetProperty(String json, String propertyName)
 	}
 	return retStr;
 }
+
 VertexPtr CTinOrientDBStorage::GetVertex(RID vertexRID)
 {
 	if ((int)m_VertexCache.size() >= m_MaXVertexCache) {
