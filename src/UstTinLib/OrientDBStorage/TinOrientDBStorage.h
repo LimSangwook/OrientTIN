@@ -52,7 +52,7 @@ private:
 	void 			_FlushVertexCache();
 	String 		_GetProperty(String json, String propertyName);
 	VertexPtr 		_GetStringToVertex(String& str);
-
+	bool			_RemoveDeletedEdge();
 private:
 	///////////////////////////
 	// Cache 용

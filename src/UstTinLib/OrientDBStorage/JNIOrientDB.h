@@ -22,7 +22,7 @@ public:
 	String 	GetHalfEdge(RID RealEdgeRID);
 	String 	GetVertex(RID vertexRID);
 	String 	GetVertex(int idx);
-
+	bool 		RemoveDeletedEdge();
 private:
 	bool 		_InitJNI();
 	JNIEnv* 	_Create_VM(JavaVM ** jvm);
@@ -48,6 +48,8 @@ private:
 	jmethodID 	m_JNIFuncUpdateVertex;
 	jmethodID 	m_JNIFuncDeleteEdge;
 	jmethodID 	m_JNIFuncSetRandomVertex;
+	jmethodID 	m_JNIFuncRemoveDeletedEdge;
+
 };
 
 #endif //__JNI_ORIENTDB_H__

@@ -42,8 +42,14 @@ void CTinOrientDBStorage::Close()
 	// 캐시된 넘들을 FlushAll 해준다.
 	_FlushEdgeCache();
 	_FlushVertexCache();
+	//_RemoveDeletedEdge();
 }
 
+bool CTinOrientDBStorage::_RemoveDeletedEdge()
+{
+	m_JNIOrientDB.RemoveDeletedEdge();
+	return true;
+}
 CTinOrientDBStorage::CTinOrientDBStorage()
 {
 	m_MaXVertexCache = 500000;

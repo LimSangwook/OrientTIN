@@ -107,6 +107,8 @@ bool CJNIOrientDB::_GetJNIMethodID()
 	m_JNIFuncSetRandomVertex		= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "SetRandomVertex", "(I)Z");
 	m_JNIFuncGetEdge				= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "GetEdge", "(Ljava/lang/String;)Ljava/lang/String;");
 	m_JNIFuncCreateBlankEdge		= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "CreateBlankEdge", "(I)Ljava/lang/String;");
+	m_JNIFuncRemoveDeletedEdge		= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "RemoveDeletedEdge", "()Z");
+
 
 
 	return m_JNIFuncInitDB && 				m_JNIFuncCreateEdge &&			m_JNIFuncGetVertex &&
@@ -124,6 +126,12 @@ String CJNIOrientDB::CreateBlankEdge(int num)
 	String strRID = strCln;
 	m_JNIEnv->ReleaseStringUTFChars(jStrEdgeRID, strCln);
 	return strRID;
+}
+
+bool CJNIOrientDB::RemoveDeletedEdge()
+{
+	m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncRemoveDeletedEdge);
+	return true;
 }
 
 void CJNIOrientDB::DeleteEdge(RID& edgeRID)
