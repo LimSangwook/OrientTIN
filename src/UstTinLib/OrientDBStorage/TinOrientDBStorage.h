@@ -59,7 +59,6 @@ private:
 	std::map<RID,EdgePtr> 	m_EdgeCache;
 	std::map<RID,VertexPtr> 	m_VertexCache;
 	std::map<RID,RID> 		m_MemoryRIDList;		// std::map<실제rid, 가상rid>
-	std::map<int,RID> 		m_VertexRIDList;		// std::map<index. rid>
 	int							m_MaXVertexCache;
 	int							m_MaXEdgeCache;
 

@@ -30,7 +30,6 @@ public :
 	RID GetRIDHalfEdge() {return m_RIDHalfEdge;};
 	void SetRIDHalfEdge(RID RIDHalfEdge) {m_RIDHalfEdge = RIDHalfEdge;};
 	RID GetRID(){return m_RID;};
-	int index;
 private:
 
 

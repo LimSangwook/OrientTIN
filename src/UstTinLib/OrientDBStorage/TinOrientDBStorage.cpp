@@ -28,11 +28,11 @@ CTinOrientDBStorage::~CTinOrientDBStorage()
 void CTinOrientDBStorage::FlushCache()
 {
 	// Edge Cache FLush
-	if (m_EdgeCache.size() >= m_MaXEdgeCache) {
+	if ((int)m_EdgeCache.size() >= m_MaXEdgeCache) {
 		_FlushEdgeCache();
 	}
 	// Vertex Cache FLush
-	if (m_VertexCache.size() >= m_MaXVertexCache) {
+	if ((int)m_VertexCache.size() >= m_MaXVertexCache) {
 		_FlushVertexCache();
 	}
 }
@@ -237,7 +237,6 @@ VertexPtr CTinOrientDBStorage::GetVertex(int idx)
 	String strV = m_JNIOrientDB.GetVertex(idx);
 
 	VertexPtr vPtr = _GetStringToVertex(strV);
-	((CTinOrientDBVertex*)(vPtr.get()))->index = idx; // debugging
 
 	// Fill Cache
 	m_VertexCache[((CTinOrientDBVertex*)(vPtr.get()))->GetRID()] = vPtr;
