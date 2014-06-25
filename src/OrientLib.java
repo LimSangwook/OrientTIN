@@ -1,9 +1,5 @@
 import java.util.Iterator;
-import java.util.Map;
 
-import com.orientechnologies.orient.core.config.OGlobalConfiguration;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.tx.OTransaction.TXTYPE;
 import com.tinkerpop.blueprints.Edge;
@@ -14,12 +10,12 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphQuery;
 public class OrientLib {
 	public static void main(String[] args) {
 		OrientLib db = new OrientLib();
-		db.InitDB("127.0.0.1", "tin", "2424", "root", "root", "TestVertex", "HalfEdge");
+		db.InitDB("127.0.0.1", "tin3", "2424", "root", "root", "TestVertex", "HalfEdge");
 		
 		//db._CreateBlankClass();
 		long StartTime = System.currentTimeMillis();
-		//db.SetRandomVertex(1000000000);
-		db.CreateBlankEdge(100000);
+		db.SetRandomVertex(10000);
+		//db.CreateBlankEdge(100);
 		long createblankEdgetim = System.currentTimeMillis();
 		System.out.println("Set Blank : " + (createblankEdgetim - StartTime)/1000.0 + "sec");
 		//db.UpdateBlankEdge();
@@ -29,7 +25,15 @@ public class OrientLib {
 		System.out.println("#######db.GetCountOfVertexs()####### : " + db.GetCountOfVertexs());
 		System.out.println("#######db.GetCountOfEdges()####### : " + db.GetCountOfEdges());
 	}
-
+	
+	boolean RemoveDeletedEdge() {
+		String query = "delete from "+ m_EdgeClassName + " where deleted = 'yes'";
+		m_Graph.getRawGraph().command(new OCommandSQL(query)).execute();
+		m_Graph.getRawGraph().commit();
+		
+		return true;
+	}
+	
 boolean SetRandomVertex(int dataNum){
 	m_Graph.setAutoStartTx(true);
 	m_Graph.commit();
@@ -128,7 +132,7 @@ boolean SetRandomVertex(int dataNum){
 		
 		
 		try{
-			m_Graph = new OrientGraph(FullPath, "admin", "admin");
+			m_Graph = new OrientGraph(FullPath, ID, PW);
 			System.out.println("JAVA ConnectDB OK");
 		} catch(Exception e) {
 			System.out.println("InitDB() ERROR : " + e.getMessage());
@@ -342,6 +346,7 @@ boolean SetRandomVertex(int dataNum){
 				m_Graph.commit();
 			}
 		}
+		m_Graph.commit();
 		return true;
 	}
 	
@@ -366,4 +371,3 @@ boolean SetRandomVertex(int dataNum){
 	private Vertex		m_BlankVertex;
 	private String 		m_VertexClassCluster;
 }
-

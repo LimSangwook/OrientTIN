@@ -42,7 +42,7 @@ void CTinOrientDBStorage::Close()
 	// 캐시된 넘들을 FlushAll 해준다.
 	_FlushEdgeCache();
 	_FlushVertexCache();
-	//_RemoveDeletedEdge();
+	_RemoveDeletedEdge();
 }
 
 bool CTinOrientDBStorage::_RemoveDeletedEdge()
@@ -68,7 +68,7 @@ CTinOrientDBStorage::CTinOrientDBStorage()
 
 bool CTinOrientDBStorage::InitDB(String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName)
 {
-	if (!m_JNIOrientDB.InitDB(url, dbName, id, pw, vertexClassName, edgeClassName)) {
+ 	if (!m_JNIOrientDB.InitDB(url, dbName, id, pw, vertexClassName, edgeClassName)) {
 		return false;
 	}
 
