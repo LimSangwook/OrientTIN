@@ -1,5 +1,7 @@
 import java.util.Iterator;
+import java.util.List;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.tx.OTransaction.TXTYPE;
 import com.tinkerpop.blueprints.Edge;
@@ -10,7 +12,7 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphQuery;
 public class OrientLib {
 	public static void main(String[] args) {
 		OrientLib db = new OrientLib();
-		db.InitDB("127.0.0.1", "tin3", "2424", "root", "root", "TestVertex", "HalfEdge");
+		db.InitDB("127.0.0.1", "tin3", "2424", "root", "root", "TestVertex", "", "HalfEdge");
 		
 		//db._CreateBlankClass();
 		long StartTime = System.currentTimeMillis();
@@ -28,6 +30,10 @@ public class OrientLib {
 	
 	boolean RemoveDeletedEdge() {
 		String query = "delete from "+ m_EdgeClassName + " where deleted = 'yes'";
+		m_Graph.getRawGraph().command(new OCommandSQL(query)).execute();
+		m_Graph.getRawGraph().commit();
+
+		query = "drop class TIN_BLANK_CLASS";
 		m_Graph.getRawGraph().command(new OCommandSQL(query)).execute();
 		m_Graph.getRawGraph().commit();
 		
@@ -123,7 +129,7 @@ boolean SetRandomVertex(int dataNum){
 		m_Graph = null;
 	}
 	
-	boolean InitDB(String URL, String DBName, String DBPort, String ID, String PW, String VertexClassName, String EdgeClassName) {
+	boolean InitDB(String URL, String DBName, String DBPort, String ID, String PW, String VertexClassName, String IndexName, String EdgeClassName) {
 		///////////////////////////////////////
 		// DB 접속
 		String FullPath = "remote:" + URL + "/" + DBName;
@@ -140,7 +146,7 @@ boolean SetRandomVertex(int dataNum){
 		}
 		m_VertexClassName = VertexClassName;
 		m_EdgeClassName = EdgeClassName;
-		
+		m_IndexName = IndexName;
 		m_Graph.setAutoStartTx(false);
 		m_Graph.commit();
 		
@@ -252,17 +258,27 @@ boolean SetRandomVertex(int dataNum){
 		return _GetVertexString(v);
 	}
 	String GetVertexFromIndex(int Index){
-		if (m_VertexClassCluster == null) {
-			OrientGraphQuery oQuery = (OrientGraphQuery)m_Graph.query();
-			Iterator<Vertex> iter = oQuery.labels(m_VertexClassName).vertices().iterator();
-			if(iter.hasNext()){
-				Vertex v = iter.next();
-				String vRID = v.getId().toString(); 
-				m_VertexClassCluster = vRID.split(":")[0];
-			}
-		}
+		String query = "select from index:" + m_IndexName + " skip "+(Index)+" limit 1";
+		List<ODocument> doc =  m_Graph.getRawGraph().command(new OCommandSQL(query)).execute();
 		
-		return GetVertex(m_VertexClassCluster + ":" + Index);
+		String vertexRID = doc.get(0).field("rid").toString();
+		int startIDX = vertexRID.indexOf('#');
+		int endIDX = vertexRID.indexOf('{');
+		String rid = vertexRID.substring(startIDX, endIDX);
+		return GetVertex(rid);
+		
+		
+//		if (m_VertexClassCluster == null) {
+//			OrientGraphQuery oQuery = (OrientGraphQuery)m_Graph.query();
+//			Iterator<Vertex> iter = oQuery.labels(m_VertexClassName).vertices().iterator();
+//			if(iter.hasNext()){
+//				Vertex v = iter.next();
+//				String vRID = v.getId().toString(); 
+//				m_VertexClassCluster = vRID.split(":")[0];
+//			}
+//		}
+//		
+//		return GetVertex(m_VertexClassCluster + ":" + Index);
 	}	
 	
 	boolean UpdateVertex(String RID, double xPos, double yPos, String RIDHalfEdge) 
@@ -370,4 +386,5 @@ boolean SetRandomVertex(int dataNum){
 	private OrientGraph 	m_Graph;
 	private Vertex		m_BlankVertex;
 	private String 		m_VertexClassCluster;
+	private String 		m_IndexName;
 }

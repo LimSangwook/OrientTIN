@@ -25,7 +25,7 @@ CJNIOrientDB::CJNIOrientDB()
 }
 
 bool CJNIOrientDB::InitDB(
-		String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName)
+		String url, String dbName, String id, String pw, String vertexClassName, String indexName, String edgeClassName)
 {
 	if (!_InitJNI()) {
 		return false;
@@ -38,9 +38,10 @@ bool CJNIOrientDB::InitDB(
 	jstring d = m_JNIEnv->NewStringUTF(id.c_str());
 	jstring e = m_JNIEnv->NewStringUTF(pw.c_str());
 	jstring f = m_JNIEnv->NewStringUTF(vertexClassName.c_str());
-	jstring g = m_JNIEnv->NewStringUTF(edgeClassName.c_str());
+	jstring g = m_JNIEnv->NewStringUTF(indexName.c_str());
+	jstring h = m_JNIEnv->NewStringUTF(edgeClassName.c_str());
 
-	jboolean ret = m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncInitDB, a, b, c, d, e, f, g);
+	jboolean ret = m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncInitDB, a, b, c, d, e, f, g, h);
 	m_JNIEnv->DeleteLocalRef(a);
 	m_JNIEnv->DeleteLocalRef(b);
 	m_JNIEnv->DeleteLocalRef(c);
@@ -48,6 +49,7 @@ bool CJNIOrientDB::InitDB(
 	m_JNIEnv->DeleteLocalRef(e);
 	m_JNIEnv->DeleteLocalRef(f);
 	m_JNIEnv->DeleteLocalRef(g);
+	m_JNIEnv->DeleteLocalRef(h);
 
 	if (!ret){
 		return false;
@@ -96,7 +98,7 @@ JNIEnv* CJNIOrientDB::_Create_VM(JavaVM ** jvm)
 bool CJNIOrientDB::_GetJNIMethodID()
 {
 	m_JNIFuncInit 				= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "<init>", "()V");
-	m_JNIFuncInitDB 				= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "InitDB", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
+	m_JNIFuncInitDB 				= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "InitDB", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
 	m_JNIFuncCreateEdge 			= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "CreateEdge", "()Ljava/lang/String;");
 	m_JNIFuncGetVertex 			= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "GetVertex", "(Ljava/lang/String;)Ljava/lang/String;");
 	m_JNIFuncGetVertexFromIdx 	= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "GetVertexFromIndex", "(I)Ljava/lang/String;");

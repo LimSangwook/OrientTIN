@@ -8,7 +8,7 @@ class CJNIOrientDB
 {
 public:
 	CJNIOrientDB();
-	bool 		InitDB(String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName);
+	bool 		InitDB(String url, String dbName, String id, String pw, String vertexClassName, String indexName, String edgeClassName);
 
 	String 	CreateBlankEdge(int num);
 	void 		DeleteEdge(RID& edgeRID);

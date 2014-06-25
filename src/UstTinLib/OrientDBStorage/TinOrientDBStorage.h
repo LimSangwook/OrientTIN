@@ -40,7 +40,7 @@ public:
 	VertexPtr 		GetVertex(RID nRID);
 	EdgePtr 		GetHalfEdge(RID EdgeRID);
 
-	bool	 		InitDB(String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName);
+	bool	 		InitDB(String url, String dbName, String id, String pw, String vertexClassName, String indexName, String edgeClassName);
 	bool 			SetCleanNRamdomVertexs(int DataNum);
 	bool			_CreateBlankEdge(int num);
 
@@ -59,6 +59,7 @@ private:
 	std::map<RID,EdgePtr> 	m_EdgeCache;
 	std::map<RID,VertexPtr> 	m_VertexCache;
 	std::map<RID,RID> 		m_MemoryRIDList;		// std::map<실제rid, 가상rid>
+	std::map<int,RID> 		m_VertexRIDList;		// std::map<index. rid>
 	int							m_MaXVertexCache;
 	int							m_MaXEdgeCache;
 

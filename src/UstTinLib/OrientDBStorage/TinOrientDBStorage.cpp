@@ -66,9 +66,9 @@ CTinOrientDBStorage::CTinOrientDBStorage()
 	CTinOrientDBStorage::instance = this;
 }
 
-bool CTinOrientDBStorage::InitDB(String url, String dbName, String id, String pw, String vertexClassName, String edgeClassName)
+bool CTinOrientDBStorage::InitDB(String url, String dbName, String id, String pw, String vertexClassName, String indexName, String edgeClassName)
 {
- 	if (!m_JNIOrientDB.InitDB(url, dbName, id, pw, vertexClassName, edgeClassName)) {
+ 	if (!m_JNIOrientDB.InitDB(url, dbName, id, pw, vertexClassName, indexName, edgeClassName)) {
 		return false;
 	}
 
@@ -234,19 +234,13 @@ VertexPtr CTinOrientDBStorage::GetVertex(int idx)
 		_FlushVertexCache();
 	}
 
-	char buf[100];
-	sprintf(buf, "%d", idx);
-	String strIndex = buf;
-	std::map<RID,VertexPtr>::iterator iter = m_VertexCache.find(strIndex);
-
-	if (iter != m_VertexCache.end()) {
-		return iter->second;
-	}
-
 	String strV = m_JNIOrientDB.GetVertex(idx);
 
 	VertexPtr vPtr = _GetStringToVertex(strV);
-	m_VertexCache[strIndex] = vPtr;
+	((CTinOrientDBVertex*)(vPtr.get()))->index = idx; // debugging
+
+	// Fill Cache
+	m_VertexCache[((CTinOrientDBVertex*)(vPtr.get()))->GetRID()] = vPtr;
 
 	return vPtr;
 }
@@ -286,18 +280,20 @@ VertexPtr CTinOrientDBStorage::GetVertex(RID vertexRID)
 		_FlushVertexCache();
 	}
 
-	int start = vertexRID.find(":") + 1;
-	String strIndex = vertexRID.substr(start, vertexRID.length() - start );
-	std::map<RID,VertexPtr>::iterator iter = m_VertexCache.find(strIndex);
+	////////////////////////////
+	// Find Cache
+	std::map<RID,VertexPtr>::iterator iter = m_VertexCache.find(vertexRID);
 
 	if (iter != m_VertexCache.end()) {
 		return iter->second;
 	}
 
+	////////////////////////////
+	// Cache not found
 	String strV = m_JNIOrientDB.GetVertex(vertexRID);;
 
 	VertexPtr vPtr = _GetStringToVertex(strV);
-	m_VertexCache[strIndex] = vPtr;
+	m_VertexCache[vertexRID] = vPtr;
 
 	return vPtr;
 }

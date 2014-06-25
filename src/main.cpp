@@ -1,7 +1,7 @@
 #include "UstTinLib/Include.h"
 #include <time.h>
 
-int main() {
+int main(int argc, char* args[]) {
 	clock_t StartClock, LoadingClock, TinClock;
 
 	///////////////////////////////////////
@@ -20,9 +20,9 @@ int main() {
 	///////////////////////////////////////
 	// OrientDB를 사용하여 edge를 만들 경우
 	CTinOrientDBStorage tinDbStorage;
-	tinDbStorage.InitDB("127.0.0.1", "tin", "admin", "admin", "TestVertex", "HalfEdge");
+	tinDbStorage.InitDB("127.0.0.1", "tin3", "root", "root", "xyz", "xyUniq", "HalfEdge");
 	StartClock = clock();
-	tinDbStorage.SetCleanNRamdomVertexs(1000000);
+	//tinDbStorage.SetCleanNRamdomVertexs(100);
 	tinEdgeMaker.AttachTinStorage((ITinStorageManager*)&tinDbStorage);
 
 
