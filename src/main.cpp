@@ -2,13 +2,37 @@
 #include <time.h>
 
 int main(int argc, char* args[]) {
-	clock_t StartClock, LoadingClock, TinClock;
+	if (argc != 7) {
+		std::cout << "MakeTIN <DBURL> <DBName> <ID> <PW> <VertexClassName> <VertexIndexName> <EdgeClassName>\n";
+		return 0;
+	}
+
+	// Argument값 변수 초기화
+	String strURL 		= args[0];
+	String strDBName 		= args[1];
+	String strID 			= args[2];
+	String strPW 			= args[3];
+	String strVClassName = args[4];
+	String strVIndexName = args[5];
+	String strEClassName = args[6];
+
+	// 값이 안들어 없을때 Default 값
+	if (argc!=7) {
+		strURL 		= "127.0.0.1";
+		strDBName 		= "tin";
+		strID 			= "root";
+		strPW 			= "root";
+		strVClassName = "Vt";
+		strVIndexName = "";
+		strEClassName = "Eg";
+	}
 
 	///////////////////////////////////////
 	// TinEdgeMaker 생성
 	CTinEdgeMaker tinEdgeMaker;
 	time_t htime;
 	tm* pTime;
+	clock_t StartClock, LoadingClock, TinClock;
 
 	///////////////////////////////////////
 	// Memory를 사용하여 Edge를 만들 경우
@@ -20,9 +44,11 @@ int main(int argc, char* args[]) {
 	///////////////////////////////////////
 	// OrientDB를 사용하여 edge를 만들 경우
 	CTinOrientDBStorage tinDbStorage;
-	tinDbStorage.InitDB("127.0.0.1", "tin3", "root", "root", "xyz", "xyUniq", "HalfEdge");
+	tinDbStorage.InitDB(strURL, strDBName, strID, strPW, strVClassName, strVIndexName, strEClassName);
+
+
 	StartClock = clock();
-	//tinDbStorage.SetCleanNRamdomVertexs(100);
+	tinDbStorage.SetCleanNRamdomVertexs(10000);
 	tinEdgeMaker.AttachTinStorage((ITinStorageManager*)&tinDbStorage);
 
 
