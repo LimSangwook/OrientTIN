@@ -12,14 +12,13 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphQuery;
 public class OrientLib {
 	public static void main(String[] args) {
 		OrientLib db = new OrientLib();
-		db.InitDB("127.0.0.1", "tin3", "2424", "root", "root", "TestVertex", "", "HalfEdge");
+		db.InitDB("127.0.0.1", "tin", "2424", "root", "root", "TestVertex", "", "HalfEdge2");
 		
-		//db._CreateBlankClass();
 		long StartTime = System.currentTimeMillis();
-		db.SetRandomVertex(10000);
-		//db.CreateBlankEdge(100);
+		db.CreateBlankEdge(100000);
 		long createblankEdgetim = System.currentTimeMillis();
 		System.out.println("Set Blank : " + (createblankEdgetim - StartTime)/1000.0 + "sec");
+		db.CreateBlankEdge_DOC(100000);
 		//db.UpdateBlankEdge();
 		long updateedge = System.currentTimeMillis();
 		System.out.println("Set Blank : " + (updateedge - createblankEdgetim)/1000.0 + "sec");
@@ -96,6 +95,37 @@ boolean SetRandomVertex(int dataNum){
 		}
 		m_Graph.commit();
 	}
+
+	String CreateBlankEdge_DOC(int dataNum){
+		m_Graph.setAutoStartTx(true);
+		m_Graph.commit();
+//		m_Graph.getRawGraph().declareIntent(new OIntentMassiveInsert());
+		String StartRID ="";
+		try{
+			m_Graph.getRawGraph().begin(TXTYPE.NOTX);
+			for (int i = 0 ; i < dataNum ; i ++) {
+				ODocument doc = new ODocument(m_EdgeClassName+"_DOC");
+				doc.field("in", m_BlankVertex.getId());
+				doc.field("out", m_BlankVertex.getId());
+				doc.field("cw", "none");
+				doc.field("ccw", "none");
+				doc.field("pair", "none");
+				doc.field("delete", "none");
+				doc.save();
+				if (i % 300 == 0) {
+					m_Graph.commit();
+				}
+			}
+			m_Graph.commit();
+		} catch(Exception E) {
+			return "";
+		}
+		m_Graph.getRawGraph().declareIntent(null);
+		
+		System.gc();
+		
+		return StartRID;
+	}
 	
 	String CreateBlankEdge(int dataNum){
 		m_Graph.setAutoStartTx(true);
@@ -106,13 +136,16 @@ boolean SetRandomVertex(int dataNum){
 			m_Graph.getRawGraph().begin(TXTYPE.NOTX);
 			for (int i = 0 ; i < dataNum ; i ++) {
 				Edge e = m_Graph.addEdge(null, m_BlankVertex, m_BlankVertex, m_EdgeClassName);
-				e.setProperty("ccw", i);
+				e.setProperty("cw", "none");
+				e.setProperty("ccw", "none");
+				e.setProperty("pair", "none");
+				e.setProperty("delete", "none");
 				if (i % 300 == 0) {
 					m_Graph.commit();
 				}
 				if(StartRID.length() == 0) {
 					StartRID = e.getId().toString();
-					//System.out.println("CreateBlankEdge : " + e.getId().toString());
+					//System.out.println("CreateBlankEdge : " + StartRID);
 				}
 			}
 			m_Graph.commit();
@@ -213,7 +246,7 @@ boolean SetRandomVertex(int dataNum){
 		m_Graph.getRawGraph().begin(TXTYPE.NOTX);
 		e.setProperty("ccw", "0");
 		m_Graph.commit();
-//		System.out.println("JAVA Create Edge : " + e.getId().toString());
+		System.out.println("JAVA Create Edge : " + e.getId().toString());
 		
 		return e.getId().toString();
 	}
@@ -258,27 +291,29 @@ boolean SetRandomVertex(int dataNum){
 		return _GetVertexString(v);
 	}
 	String GetVertexFromIndex(int Index){
-		String query = "select from index:" + m_IndexName + " skip "+(Index)+" limit 1";
-		List<ODocument> doc =  m_Graph.getRawGraph().command(new OCommandSQL(query)).execute();
+		if (m_IndexName.length() != 0) {
+			String query = "select from index:" + m_IndexName + " skip "+(Index)+" limit 1";
+			List<ODocument> doc =  m_Graph.getRawGraph().command(new OCommandSQL(query)).execute();
+			
+			String vertexRID = doc.get(0).field("rid").toString();
+			int startIDX = vertexRID.indexOf('#');
+			int endIDX = vertexRID.indexOf('{');
+			String rid = vertexRID.substring(startIDX, endIDX);
+			return GetVertex(rid);
+		}
 		
-		String vertexRID = doc.get(0).field("rid").toString();
-		int startIDX = vertexRID.indexOf('#');
-		int endIDX = vertexRID.indexOf('{');
-		String rid = vertexRID.substring(startIDX, endIDX);
-		return GetVertex(rid);
+	
+		if (m_VertexClassCluster == null) {
+			OrientGraphQuery oQuery = (OrientGraphQuery)m_Graph.query();
+			Iterator<Vertex> iter = oQuery.labels(m_VertexClassName).vertices().iterator();
+			if(iter.hasNext()){
+				Vertex v = iter.next();
+				String vRID = v.getId().toString(); 
+				m_VertexClassCluster = vRID.split(":")[0];
+			}
+		}
 		
-		
-//		if (m_VertexClassCluster == null) {
-//			OrientGraphQuery oQuery = (OrientGraphQuery)m_Graph.query();
-//			Iterator<Vertex> iter = oQuery.labels(m_VertexClassName).vertices().iterator();
-//			if(iter.hasNext()){
-//				Vertex v = iter.next();
-//				String vRID = v.getId().toString(); 
-//				m_VertexClassCluster = vRID.split(":")[0];
-//			}
-//		}
-//		
-//		return GetVertex(m_VertexClassCluster + ":" + Index);
+		return GetVertex(m_VertexClassCluster + ":" + Index);
 	}	
 	
 	boolean UpdateVertex(String RID, double xPos, double yPos, String RIDHalfEdge) 
@@ -315,6 +350,17 @@ boolean SetRandomVertex(int dataNum){
 			if (RID.length() < 3) {
 				return false;
 			}
+//			String query = "select from "+ RID;
+//			System.out.println(query);
+//			List<ODocument> docList = m_Graph.getRawGraph().command(new OCommandSQL(query)).execute();
+//			ODocument doc = docList.get(0);
+//			doc.field("out", RIDOut);
+//			doc.field("in", RIDIn);
+//			doc.field("pair", RIDPair);
+//			doc.field("ccw", RIDCCW);
+//			doc.field("cw", RIDCW);
+//			doc.save();
+			
 			Edge e = m_Graph.getEdge(RID);
 			if (e == null) {
 				return false;
