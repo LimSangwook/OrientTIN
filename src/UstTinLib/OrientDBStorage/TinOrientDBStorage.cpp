@@ -17,7 +17,7 @@ void _PrintTime(String msg)
 	tm* pTime;
 	time(&htime);
 	pTime = localtime(&htime);
-	std::cout << msg << " 시간 : " << asctime(pTime);
+	//std::cout << msg << " 시간 : " << asctime(pTime);
 }
 
 CTinOrientDBStorage::~CTinOrientDBStorage()
@@ -141,8 +141,8 @@ void CTinOrientDBStorage::_FlushEdgeCache()
 		pEdge->SetRIDCCW(pEdge->GetRIDCCW());
 		pEdge->SetRIDCW(pEdge->GetRIDCW());
 		if (pEdge->GetRIDEndVertex() == "none") {
-			CTinOrientDBHalfEdge* pPairEdge = ((CTinOrientDBHalfEdge*)(pEdge->GetPairEdge().get()));
-			pEdge->SetRIDEndVertex(pPairEdge->GetRID());
+			CTinOrientDBVertex* pPairV = (CTinOrientDBVertex*)pEdge->GetPairEdge()->GetVertex().get();
+			pEdge->SetRIDEndVertex(pPairV->GetRID());
 		}
 
 		strEdgeDatas += pEdge->GetRID() + ";";
