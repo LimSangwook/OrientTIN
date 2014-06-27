@@ -1,6 +1,6 @@
 import java.util.Iterator;
 import java.util.List;
-
+ 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.tx.OTransaction.TXTYPE;
@@ -8,11 +8,11 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphQuery;
-
+ 
 public class OrientLib {
 	public static void main(String[] args) {
 		OrientLib db = new OrientLib();
-		db.InitDB("127.0.0.1", "tin", "2424", "root", "root", "TestVertex", "", "HalfEdge2");
+		db.InitDB("127.0.0.1", "tin3", "2424", "root", "root", "TestVertex", "", "HalfEdge2");
 		
 		long StartTime = System.currentTimeMillis();
 		db.CreateBlankEdge(100000);
@@ -31,10 +31,28 @@ public class OrientLib {
 		String query = "delete from "+ m_EdgeClassName + " where deleted = 'yes'";
 		m_Graph.getRawGraph().command(new OCommandSQL(query)).execute();
 		m_Graph.getRawGraph().commit();
-
+ 
 		query = "drop class TIN_BLANK_CLASS";
 		m_Graph.getRawGraph().command(new OCommandSQL(query)).execute();
 		m_Graph.getRawGraph().commit();
+		
+		Iterator<Edge> iter = m_Graph.getEdgesOfClass(m_EdgeClassName).iterator();
+		if (iter.hasNext()) {
+			Edge eg = iter.next();
+			Edge startEG = eg;
+			
+			int i = 0;
+			do {
+				eg.setProperty("ch", "1");
+				
+				Edge PairEg = m_Graph.getEdge(eg.getProperty("pair"));
+				Edge PairCWEg = m_Graph.getEdge(PairEg.getProperty("cw"));
+				eg = PairCWEg;
+				i ++;
+			} while (startEG.getId().toString().compareTo(eg.getId().toString()) != 0 && i < 100);
+			System.out.println("Null Face Edge Cnt : " + i);
+		}
+		
 		
 		return true;
 	}
@@ -78,8 +96,8 @@ boolean SetRandomVertex(int dataNum){
 		System.gc();
 		return true;
 	}
-
-
+ 
+ 
 	void UpdateBlankEdge()
 	{
 		m_Graph.getRawGraph().begin(TXTYPE.NOTX);
@@ -95,7 +113,7 @@ boolean SetRandomVertex(int dataNum){
 		}
 		m_Graph.commit();
 	}
-
+ 
 	String CreateBlankEdge_DOC(int dataNum){
 		m_Graph.setAutoStartTx(true);
 		m_Graph.commit();
@@ -198,14 +216,14 @@ boolean SetRandomVertex(int dataNum){
 			System.out.println("_CreateEdgeClass() ERROR ");
 			return false;
 		}
-
+ 
 		System.out.println("JAVA _CreateEdgeClass OK");
 		if (!_CreateBlankClass()) {
 			System.out.println("_CreateBlankClass() ERROR ");
 			return false;
 		}
 		System.out.println("JAVA _CreateBlankClass OK");
-
+ 
 		return true;
 	}
 	
@@ -321,7 +339,7 @@ boolean SetRandomVertex(int dataNum){
 		if (RID.length() < 3) {
 			return false;
 		}
-
+ 
 		Vertex v = m_Graph.getVertex(RID);
 		if (v == null) {
 			return false;
@@ -330,7 +348,7 @@ boolean SetRandomVertex(int dataNum){
 		v.setProperty("y", yPos);
 		v.setProperty("halfedge", RIDHalfEdge);
 		m_Graph.commit();
-
+ 
 		return true;
 	}
 	boolean UpdateEdge(String EdgeLists)
@@ -423,7 +441,7 @@ boolean SetRandomVertex(int dataNum){
 			
 		return true;
 	}
-
+ 
 	///////////////////////////////////
 	// Member 변수 
 	///////////////////////////////////
