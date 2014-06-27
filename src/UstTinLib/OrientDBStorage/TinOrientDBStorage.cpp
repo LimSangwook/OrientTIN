@@ -92,7 +92,7 @@ void CTinOrientDBStorage::_FlushEdgeCache()
 		return;
 	}
 
-	//_PrintTime("\t_FlushEdgeCache 시작");
+	_PrintTime("\t_FlushEdgeCache 시작");
 
 	if (m_nCreatedMemoryEdge > 0) {
 		//_PrintTime("\t\t_CreateBlankEdge 시작");
@@ -140,6 +140,10 @@ void CTinOrientDBStorage::_FlushEdgeCache()
 		pEdge->SetRIDPair(pEdge->GetRIDPair());
 		pEdge->SetRIDCCW(pEdge->GetRIDCCW());
 		pEdge->SetRIDCW(pEdge->GetRIDCW());
+		if (pEdge->GetRIDEndVertex() == "none") {
+			CTinOrientDBHalfEdge* pPairEdge = ((CTinOrientDBHalfEdge*)(pEdge->GetPairEdge().get()));
+			pEdge->SetRIDEndVertex(pPairEdge->GetRID());
+		}
 
 		strEdgeDatas += pEdge->GetRID() + ";";
 		strEdgeDatas += pEdge->GetRIDVertex() + ";";
@@ -240,7 +244,6 @@ VertexPtr CTinOrientDBStorage::GetVertex(int idx)
 
 	// Fill Cache
 	m_VertexCache[((CTinOrientDBVertex*)(vPtr.get()))->GetRID()] = vPtr;
-
 	return vPtr;
 }
 
