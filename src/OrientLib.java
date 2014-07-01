@@ -27,7 +27,73 @@ public class OrientLib {
 		System.out.println("#######db.GetCountOfEdges()####### : " + db.GetCountOfEdges());
 	}
 	
-	boolean RemoveDeletedEdge() {
+	boolean CreateEdges(String EdgeLists)
+	{
+		String[] EdgeList = EdgeLists.split("/");
+		int idx = 0;
+		m_Graph.setAutoStartTx(true);
+		m_Graph.getRawGraph().begin(TXTYPE.NOTX);
+//		System.out.println("EdgeList : " + EdgeList.length);
+		try {
+			for (String EdgeData : EdgeList) {
+				String[] dataLIst = EdgeData.split(";");
+				String RID 	= dataLIst[0];			
+				String RIDOut 	= dataLIst[1];
+				String RIDIn 		= dataLIst[2];
+				String RIDPair 	= dataLIst[3];
+				String RIDCCW 	= dataLIst[4];
+				String RIDCW 		= dataLIst[5];
+				
+				Vertex OutV = m_Graph.getVertex(RIDOut);
+				Vertex InV = m_Graph.getVertex(RIDIn);
+				
+				Edge e = m_Graph.addEdge(null, OutV, InV, m_EdgeClassName);
+				if (e == null) {
+					return false;
+				}
+
+				e.setProperty("pair", RIDPair);
+				e.setProperty("ccw", RIDCCW);
+				e.setProperty("cw", RIDCW);
+				idx++;
+				if (idx % 300 == 0) {
+					m_Graph.commit();
+				}
+			}
+			m_Graph.commit();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+
+	String GetNextEdgeRID(){
+		m_Graph.setAutoStartTx(true);
+		m_Graph.commit();
+		String StartRID ="";
+		try{
+			Edge e= m_Graph.addEdge(null, m_BlankVertex, m_BlankVertex, m_EdgeClassName);
+			e.setProperty("cw", "0");
+			m_Graph.commit();
+			StartRID = e.getId().toString();
+			String ORID = StartRID;
+			e.remove();
+			m_Graph.commit();
+			
+			StartRID = StartRID.split(":")[1];
+
+			int i = Integer.parseInt(StartRID);
+			i++;
+			StartRID = ORID.split(":")[0].toString() + ":" + Integer.toString(i);
+		} catch(Exception E) {
+			E.printStackTrace();
+			return "";
+		}
+//		System.out.println("GetNextEdgeRID() : " + StartRID);
+		return StartRID;
+	}
+	
+	boolean RemoveDeletedEdge(String NullFaceEdgeRID) {
 		String query = "delete from "+ m_EdgeClassName + " where deleted = 'yes'";
 		m_Graph.getRawGraph().command(new OCommandSQL(query)).execute();
 		m_Graph.getRawGraph().commit();
@@ -36,9 +102,8 @@ public class OrientLib {
 		m_Graph.getRawGraph().command(new OCommandSQL(query)).execute();
 		m_Graph.getRawGraph().commit();
 		
-		Iterator<Edge> iter = m_Graph.getEdgesOfClass(m_EdgeClassName).iterator();
-		if (iter.hasNext()) {
-			Edge eg = iter.next();
+		Edge eg = m_Graph.getEdge(NullFaceEdgeRID);
+		if (eg != null) {
 			Edge startEG = eg;
 			
 			int i = 0;
@@ -52,7 +117,6 @@ public class OrientLib {
 			} while (startEG.getId().toString().compareTo(eg.getId().toString()) != 0 && i < 100);
 			System.out.println("Null Face Edge Cnt : " + i);
 		}
-		
 		
 		return true;
 	}

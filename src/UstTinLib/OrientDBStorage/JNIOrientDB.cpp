@@ -22,6 +22,8 @@ CJNIOrientDB::CJNIOrientDB()
 	m_JNIFuncSetRandomVertex = NULL;
 	m_JNIFuncCreateBlankEdge = NULL;
 	m_JNIFuncRemoveDeletedEdge = NULL;
+	m_JNIFuncCreateEdges = NULL;
+	m_JNIFuncGetNextEdgeRID = NULL;
 }
 
 bool CJNIOrientDB::InitDB(
@@ -111,14 +113,39 @@ bool CJNIOrientDB::_GetJNIMethodID()
 	m_JNIFuncGetEdge				= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "GetEdge", "(Ljava/lang/String;)Ljava/lang/String;");
 	m_JNIFuncCreateBlankEdge		= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "CreateBlankEdge", "(I)Ljava/lang/String;");
 	m_JNIFuncRemoveDeletedEdge	= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "RemoveDeletedEdge", "(Ljava/lang/String;)Z");
-
-
+	m_JNIFuncGetNextEdgeRID		= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "GetNextEdgeRID", "()Ljava/lang/String;");
+	m_JNIFuncCreateEdges			= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "CreateEdges", "(Ljava/lang/String;)Z");
 
 	return m_JNIFuncInitDB && 				m_JNIFuncCreateEdge &&			m_JNIFuncGetVertex &&
 			m_JNIFuncGetVertexFromIdx && 	m_JNIFuncGetCountOfVertexs &&	m_JNIFuncGetCountOfEdges &&
 			m_JNIFuncUpdateEdge && 			m_JNIFuncUpdateVertex && 		m_JNIFuncDeleteEdge &&
 			m_JNIFuncSetRandomVertex &&		m_JNIFuncInit	&&					m_JNIFuncGetEdge &&
-			m_JNIFuncCreateBlankEdge &&		m_JNIFuncRemoveDeletedEdge;
+			m_JNIFuncCreateBlankEdge &&		m_JNIFuncRemoveDeletedEdge&&	m_JNIFuncGetNextEdgeRID&&
+			m_JNIFuncCreateEdges;
+}
+
+String CJNIOrientDB::GetNextEdgeRID()
+{
+	jstring jStrEdgeRID =  (jstring)m_JNIEnv->CallObjectMethod(m_JNIOrientLibObject, m_JNIFuncGetNextEdgeRID);
+	jboolean bInIsCopy;
+	const char* strCln = m_JNIEnv->GetStringUTFChars(jStrEdgeRID, &bInIsCopy);
+	String strRID = strCln;
+	m_JNIEnv->ReleaseStringUTFChars(jStrEdgeRID, strCln);
+	return strRID;
+}
+
+bool CJNIOrientDB::CreateEdges(String& strEdgeDatas)
+{
+	if (strEdgeDatas.length() == 0) {
+		return true;
+	}
+
+	jstring jStrEdgeDatas = m_JNIEnv->NewStringUTF(strEdgeDatas.c_str());
+
+	m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncCreateEdges, jStrEdgeDatas);
+	m_JNIEnv->DeleteLocalRef(jStrEdgeDatas);
+	strEdgeDatas = "";
+	return true;
 }
 
 String CJNIOrientDB::CreateBlankEdge(int num)
