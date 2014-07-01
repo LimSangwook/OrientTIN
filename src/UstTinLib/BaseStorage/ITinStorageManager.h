@@ -16,6 +16,8 @@ public :
 
 	virtual void				FlushCache() = 0;
 	virtual void				Close() = 0;
+
+	virtual void				SetNullFaceEdge(EdgePtr pNullFaceEdge) = 0;
 };
 
 #endif //__ITIN_STORAGEMANAGER_H__

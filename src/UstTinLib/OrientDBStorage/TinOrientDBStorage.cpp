@@ -20,6 +20,14 @@ void _PrintTime(String msg)
 	//std::cout << msg << " 시간 : " << asctime(pTime);
 }
 
+void CTinOrientDBStorage::SetNullFaceEdge(EdgePtr pNullFaceEdge)
+{
+	CTinOrientDBHalfEdge* pEdge = (CTinOrientDBHalfEdge*)(pNullFaceEdge.get());
+	if (pEdge) {
+		m_NullFaceEdge = pEdge->GetRID();
+	}
+}
+
 CTinOrientDBStorage::~CTinOrientDBStorage()
 {
 	Close();
@@ -47,7 +55,7 @@ void CTinOrientDBStorage::Close()
 
 bool CTinOrientDBStorage::_RemoveDeletedEdge()
 {
-	m_JNIOrientDB.RemoveDeletedEdge();
+	m_JNIOrientDB.RemoveDeletedEdge(m_NullFaceEdge);
 	return true;
 }
 CTinOrientDBStorage::CTinOrientDBStorage()
@@ -114,6 +122,9 @@ void CTinOrientDBStorage::_FlushEdgeCache()
 			String oldRID = pEdge->GetRID();
 
 			m_MemoryRIDList[newRID] = oldRID;
+			if (m_NullFaceEdge == oldRID) {
+				m_NullFaceEdge = newRID;
+			}
 
 			CTinOrientDBVertex* pVertex = (CTinOrientDBVertex*)(pEdge->GetVertex().get());
 			if (pVertex->GetRIDHalfEdge() == oldRID) {
@@ -124,6 +135,7 @@ void CTinOrientDBStorage::_FlushEdgeCache()
 			m_NowEdgeID++;
 		}
 	}
+
 	/////////////////////////////////////////////////////////////////////////////
 	// 모든 Edge의 Pair, CCW, CW 에 대하여 실제 RID를 부여하고 DB Update 한다.
 	/////////////////////////////////////////////////////////////////////////////

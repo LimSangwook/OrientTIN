@@ -56,6 +56,7 @@ void CTinEdgeMaker::MakeDelaunayEdge()
 	m_delaunay.SetStartPointIdx(0);
 	m_delaunay.SetEndPointIdx(_GetCountOfVertexs() - 1);
 	_DivideAndConquer(m_delaunay);
+	m_pTinStorage->SetNullFaceEdge(m_delaunay.GetRightMostEdge()->GetPairEdge());
 	m_delaunay.SetLeftMostEdge(EdgePtr((ITinHalfEdge*)NULL));
 	m_delaunay.SetRightMostEdge(EdgePtr((ITinHalfEdge*)NULL));
 	m_pTinStorage->Close();

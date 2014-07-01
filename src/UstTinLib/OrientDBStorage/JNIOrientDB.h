@@ -22,7 +22,7 @@ public:
 	String 	GetHalfEdge(RID RealEdgeRID);
 	String 	GetVertex(RID vertexRID);
 	String 	GetVertex(int idx);
-	bool 		RemoveDeletedEdge();
+	bool 		RemoveDeletedEdge(String NullFaceEdge);
 private:
 	bool 		_InitJNI();
 	JNIEnv* 	_Create_VM(JavaVM ** jvm);

@@ -32,6 +32,7 @@ public:
 	virtual void			PrintEdgeList();
 	virtual void			FlushCache();
 	virtual void			Close();
+	virtual void			SetNullFaceEdge(EdgePtr pNullFaceEdge);
 
 public:
 	CTinOrientDBStorage();
@@ -80,6 +81,7 @@ private:
 	int							m_NowEdgeID;
 	int							m_MaxEdgeID;
 	String						m_EdgeClassID;
+RID								m_NullFaceEdge;
 };
 
 #endif //__UST_TIN_MAKER_H__

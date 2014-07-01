@@ -27,6 +27,7 @@ public:
 	virtual void				PrintEdgeList();
 	virtual void				FlushCache(){};
 	virtual void				Close(){};
+	virtual void				SetNullFaceEdge(EdgePtr pNullFaceEdge){};
 	//////////////////////////////
 	ITinVertex* 	CreateVertex();
 	EdgePtr		GetEdge(int idx);
