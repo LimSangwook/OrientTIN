@@ -5,7 +5,7 @@ int main(int argc, char* args[]) {
 	if (argc != 8) {
 		std::cout << "OrientTIN <IP> <DBName> <ID> <PW> <VertexClassName> <VertexIdxName> <EdgeClassName>\n";
 		std::cout << "ex) OrientTIN 127.0.0.1 tin3 root root xyz xyUniq Eq\n";
-		return 0;
+//		return 0;
 	}
 
 	// Argument값 변수 초기화

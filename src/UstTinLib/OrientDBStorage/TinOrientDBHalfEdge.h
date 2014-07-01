@@ -49,7 +49,6 @@ public:
 	void SetDelete()					{m_bDeleted = true;m_bDirty = true;};
 
 	bool IsDirty()					{return m_bDirty;};
-	bool ReSetDirty()					{m_bDirty = false;};
 private:
 
 private:

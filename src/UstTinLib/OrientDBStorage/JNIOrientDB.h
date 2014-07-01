@@ -23,8 +23,6 @@ public:
 	String 	GetVertex(RID vertexRID);
 	String 	GetVertex(int idx);
 	bool 		RemoveDeletedEdge();
-	String 	GetNextEdgeRID();
-	bool		CreateEdges(String& strEdgeDatas);
 private:
 	bool 		_InitJNI();
 	JNIEnv* 	_Create_VM(JavaVM ** jvm);
@@ -51,9 +49,6 @@ private:
 	jmethodID 	m_JNIFuncDeleteEdge;
 	jmethodID 	m_JNIFuncSetRandomVertex;
 	jmethodID 	m_JNIFuncRemoveDeletedEdge;
-
-	jmethodID 	m_JNIFuncGetNextEdgeRID;
-	jmethodID 	m_JNIFuncCreateEdges;
 
 };
 
