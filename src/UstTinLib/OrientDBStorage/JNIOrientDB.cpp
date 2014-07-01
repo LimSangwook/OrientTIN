@@ -22,6 +22,8 @@ CJNIOrientDB::CJNIOrientDB()
 	m_JNIFuncSetRandomVertex = NULL;
 	m_JNIFuncCreateBlankEdge = NULL;
 	m_JNIFuncRemoveDeletedEdge = NULL;
+	m_JNIFuncCreateEdges = NULL;
+	m_JNIFuncGetNextEdgeRID = NULL;
 }
 
 bool CJNIOrientDB::InitDB(
@@ -83,7 +85,7 @@ JNIEnv* CJNIOrientDB::_Create_VM(JavaVM ** jvm)
     JNIEnv *env;
     JavaVMInitArgs vm_args;
     JavaVMOption options[1];
-    options[0].optionString = (char*)"-Djava.class.path=./:/home/dell/maketin/OrientLib/bin:/media/dell/Oi/orientdb-community-1.7.3/lib/orientdb-client-1.7.3.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/orientdb-tools-1.7.3.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/orientdb-distributed-1.7.3.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/orientdb-graphdb-1.7.3.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/orientdb-server-1.7.3.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/orientdb-object-1.7.3.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/orientdb-enterprise-1.7.3.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/orientdb-core-1.7.3.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/orientdb-nativeos-1.7.3.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/orient-commons-1.7.3.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/hazelcast-3.2.2.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/gremlin-groovy-2.5.0.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/gremlin-java-2.5.0.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/pipes-2.5.0.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/blueprints-core-2.5.0.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/annotations-1.3.2.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/snappy-java-1.1.0.1.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/concurrentlinkedhashmap-lru-1.4.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/jna-platform-4.0.0.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/jna-4.0.0.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/jackson-core-2.2.2.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/jackson-datatype-json-org-2.2.3.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/jackson-databind-2.2.2.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/jackson-annotations-2.2.2.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/commons-beanutils-core-1.8.0.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/groovy-1.8.9.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/commons-configuration-1.6.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/commons-digester-1.8.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/commons-collections-3.2.1.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/json-20090211.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/jettison-1.3.3.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/commons-beanutils-1.7.0.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/jansi-1.5.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/asm-analysis-3.2.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/asm-util-3.2.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/asm-tree-3.2.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/antlr-2.7.7.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/jline-0.9.94.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/asm-commons-3.2.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/asm-3.2.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/javassist-3.16.1-GA.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/mail-1.4.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/hibernate-jpa-2.0-api-1.0.0.Final.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/activation-1.1.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/colt-1.2.0.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/concurrent-1.3.4.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/stax-api-1.0.1.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/commons-lang-2.4.jar:/media/dell/Oi/orientdb-community-1.7.3/lib/commons-logging-1.1.1.jar";
+    options[0].optionString = (char*)"-Djava.class.path=./:/home/iswook/workspace2/OrientLib/bin:/usr/lib/jvm/java-6-oracle/jre/lib/charsets.jar:/usr/lib/jvm/java-6-oracle/jre/lib/jce.jar:/usr/lib/jvm/java-6-oracle/jre/lib/jsse.jar:/usr/lib/jvm/java-6-oracle/jre/lib/resources.jar:/usr/lib/jvm/java-6-oracle/jre/lib/rt.jar:/usr/lib/jvm/java-6-oracle/jre/lib/ext/dnsns.jar:/usr/lib/jvm/java-6-oracle/jre/lib/ext/localedata.jar:/usr/lib/jvm/java-6-oracle/jre/lib/ext/sunjce_provider.jar:/usr/lib/jvm/java-6-oracle/jre/lib/ext/sunpkcs11.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/activation-1.1.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/antlr-2.7.7.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/asm-3.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/asm-analysis-3.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/asm-commons-3.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/asm-tree-3.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/asm-util-3.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/blueprints-core-2.5.0-20140320.105052-37.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/colt-1.2.0.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/commons-beanutils-1.7.0.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/commons-beanutils-core-1.8.0.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/commons-collections-3.2.1.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/commons-configuration-1.6.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/commons-digester-1.8.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/commons-lang-2.4.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/commons-logging-1.0.4.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/concurrent-1.3.4.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/concurrentlinkedhashmap-lru-1.4.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/gremlin-groovy-2.5.0-20140125.153413-8.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/gremlin-java-2.5.0-20140125.153323-8.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/groovy-1.8.9.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/hazelcast-3.1.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/hibernate-jpa-2.0-api-1.0.0.Final.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jackson-annotations-2.2.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jackson-core-2.2.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jackson-databind-2.2.2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jackson-datatype-json-org-2.2.3.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jansi-1.5.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/javassist-3.16.1-GA.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jettison-1.3.3.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jline-0.9.94.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jna-4.0.0.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/jna-platform-4.0.0.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/json-20090211.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/mail-1.4.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orient-commons-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-client-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-core-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-distributed-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-enterprise-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-graphdb-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-nativeos-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-object-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-server-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/orientdb-tools-1.7-rc2.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/pipes-2.5.0-20140125.162807-6.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/snappy-0.3.jar:/home/iswook/server/orientdb-community-1.7-rc2/lib/stax-api-1.0.1.jar ";
     vm_args.version = JNI_VERSION_1_6; //JDK version. This indicates version 1.6
     vm_args.nOptions = 1;
     vm_args.options = options;
@@ -111,14 +113,39 @@ bool CJNIOrientDB::_GetJNIMethodID()
 	m_JNIFuncGetEdge				= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "GetEdge", "(Ljava/lang/String;)Ljava/lang/String;");
 	m_JNIFuncCreateBlankEdge		= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "CreateBlankEdge", "(I)Ljava/lang/String;");
 	m_JNIFuncRemoveDeletedEdge	= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "RemoveDeletedEdge", "()Z");
-
-
+	m_JNIFuncGetNextEdgeRID		= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "GetNextEdgeRID", "()Ljava/lang/String;");
+	m_JNIFuncCreateEdges			= m_JNIEnv->GetMethodID(m_JNIOrientLibClass, "CreateEdges", "(Ljava/lang/String;)Z");
 
 	return m_JNIFuncInitDB && 				m_JNIFuncCreateEdge &&			m_JNIFuncGetVertex &&
 			m_JNIFuncGetVertexFromIdx && 	m_JNIFuncGetCountOfVertexs &&	m_JNIFuncGetCountOfEdges &&
 			m_JNIFuncUpdateEdge && 			m_JNIFuncUpdateVertex && 		m_JNIFuncDeleteEdge &&
 			m_JNIFuncSetRandomVertex &&		m_JNIFuncInit	&&					m_JNIFuncGetEdge &&
-			m_JNIFuncCreateBlankEdge &&		m_JNIFuncRemoveDeletedEdge;
+			m_JNIFuncCreateBlankEdge &&		m_JNIFuncRemoveDeletedEdge&&	m_JNIFuncGetNextEdgeRID&&
+			m_JNIFuncCreateEdges;
+}
+
+String CJNIOrientDB::GetNextEdgeRID()
+{
+	jstring jStrEdgeRID =  (jstring)m_JNIEnv->CallObjectMethod(m_JNIOrientLibObject, m_JNIFuncGetNextEdgeRID);
+	jboolean bInIsCopy;
+	const char* strCln = m_JNIEnv->GetStringUTFChars(jStrEdgeRID, &bInIsCopy);
+	String strRID = strCln;
+	m_JNIEnv->ReleaseStringUTFChars(jStrEdgeRID, strCln);
+	return strRID;
+}
+
+bool CJNIOrientDB::CreateEdges(String& strEdgeDatas)
+{
+	if (strEdgeDatas.length() == 0) {
+		return true;
+	}
+
+	jstring jStrEdgeDatas = m_JNIEnv->NewStringUTF(strEdgeDatas.c_str());
+
+	m_JNIEnv->CallBooleanMethod(m_JNIOrientLibObject, m_JNIFuncCreateEdges, jStrEdgeDatas);
+	m_JNIEnv->DeleteLocalRef(jStrEdgeDatas);
+	strEdgeDatas = "";
+	return true;
 }
 
 String CJNIOrientDB::CreateBlankEdge(int num)
