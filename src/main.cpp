@@ -2,30 +2,40 @@
 #include <time.h>
 
 int main(int argc, char* args[]) {
-	if (argc != 7) {
-		std::cout << "MakeTIN <DBURL> <DBName> <ID> <PW> <VertexClassName> <VertexIndexName> <EdgeClassName>\n";
+	if (argc != 8) {
+		std::cout << "OrientTIN <IP> <DBName> <ID> <PW> <VertexClassName> <VertexIdxName> <EdgeClassName>\n";
+		std::cout << "ex) OrientTIN 127.0.0.1 tin3 root root xyz xyUniq Eq\n";
 		return 0;
 	}
 
 	// Argument값 변수 초기화
-	String strURL 		= args[0];
-	String strDBName 		= args[1];
-	String strID 			= args[2];
-	String strPW 			= args[3];
-	String strVClassName = args[4];
-	String strVIndexName = args[5];
-	String strEClassName = args[6];
+	String strURL;
+	String strDBName;
+	String strID;
+	String strPW;
+	String strVClassName;
+	String strVIndexName;
+	String strEClassName;
 
 	// 값이 안들어 없을때 Default 값
-	if (argc!=7) {
+	if (argc!=8) {
 		strURL 		= "127.0.0.1";
-		strDBName 		= "tin";
+		strDBName 		= "tin3";
 		strID 			= "root";
 		strPW 			= "root";
-		strVClassName = "Vt";
-		strVIndexName = "";
+		strVClassName = "xyz";
+		strVIndexName = "xyUniq";
 		strEClassName = "Eg";
+	} else{
+		strURL 		= args[1];
+		strDBName 		= args[2];
+		strID 			= args[3];
+		strPW 			= args[4];
+		strVClassName = args[5];
+		strVIndexName = args[6];
+		strEClassName = args[7];
 	}
+
 
 	///////////////////////////////////////
 	// TinEdgeMaker 생성
@@ -48,7 +58,7 @@ int main(int argc, char* args[]) {
 
 
 	StartClock = clock();
-	tinDbStorage.SetCleanNRamdomVertexs(10000);
+	//tinDbStorage.SetCleanNRamdomVertexs(1000);
 	tinEdgeMaker.AttachTinStorage((ITinStorageManager*)&tinDbStorage);
 
 
