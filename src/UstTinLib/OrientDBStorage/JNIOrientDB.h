@@ -1,7 +1,7 @@
 #ifndef __JNI_ORIENTDB_H__
 #define __JNI_ORIENTDB_H__
 #include "../Common.h"
-#include "/usr/lib/jvm/java-7-openjdk-amd64/include/jni.h"
+#include "jni.h"
 
 class CTinOrientDBVertex;
 class CJNIOrientDB

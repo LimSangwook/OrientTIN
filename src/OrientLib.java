@@ -56,9 +56,9 @@ public class OrientLib {
 				e.setProperty("ccw", RIDCCW);
 				e.setProperty("cw", RIDCW);
 				idx++;
-				if (idx % 300 == 0) {
+//				if (idx % 300 == 0) {
 					m_Graph.commit();
-				}
+//				}
 			}
 			m_Graph.commit();
 		}catch (Exception e) {
@@ -127,8 +127,10 @@ boolean SetRandomVertex(int dataNum){
 		try{
 			m_Graph.getRawGraph().begin(TXTYPE.NOTX);
 			m_Graph.dropVertexType(m_VertexClassName);
+			m_Graph.commit();
 			m_Graph.getRawGraph().begin(TXTYPE.NOTX);
 			m_Graph.createVertexType(m_VertexClassName);
+//			m_Graph.commit();
 		} catch (Exception E){
 		}
 		
@@ -446,6 +448,9 @@ boolean SetRandomVertex(int dataNum){
 			Edge e = m_Graph.getEdge(RID);
 			if (e == null) {
 				return false;
+			}
+			if (e.getProperty("in") != RIDIn || e.getProperty("out") != RIDOut ) {
+				System.out.println("Error Update In Out!!!");
 			}
 			e.setProperty("out", RIDOut);
 			e.setProperty("in", RIDIn);

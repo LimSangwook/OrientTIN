@@ -20,11 +20,11 @@ int main(int argc, char* args[]) {
 	// 값이 안들어 없을때 Default 값
 	if (argc!=8) {
 		strURL 		= "127.0.0.1";
-		strDBName 		= "tin3";
+		strDBName 		= "tin";
 		strID 			= "root";
 		strPW 			= "root";
 		strVClassName = "xyz";
-		strVIndexName = "xyUniq";
+		strVIndexName = "";
 		strEClassName = "Eg";
 	} else{
 		strURL 		= args[1];
@@ -58,7 +58,7 @@ int main(int argc, char* args[]) {
 
 
 	StartClock = clock();
-	//tinDbStorage.SetCleanNRamdomVertexs(1000);
+	tinDbStorage.SetCleanNRamdomVertexs(1000);
 	tinEdgeMaker.AttachTinStorage((ITinStorageManager*)&tinDbStorage);
 
 

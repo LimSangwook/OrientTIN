@@ -163,7 +163,7 @@ void CTinOrientDBStorage::_FlushEdgeCache()
 				m_JNIOrientDB.CreateEdges(strCreateEdgeDatas);
 			}
 			pEdge->SetSyncDB();
-			//pEdge->ReSetDirty();
+//			pEdge->ReSetDirty();
 		}
 	}
 	m_JNIOrientDB.CreateEdges(strCreateEdgeDatas);
